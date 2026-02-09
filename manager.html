@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULKA - Manager Approval</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>body { font-family: 'Prompt', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 p-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-slate-800">📋 ตรวจสอบรายการเบิก (Manager)</h1>
+            <button onclick="loadData()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                <i class="fas fa-sync-alt"></i> รีเฟรช
+            </button>
+        </div>
+
+        <div id="loading" class="text-center p-10 text-slate-500">กำลังดึงข้อมูล...</div>
+        <div id="approvalList" class="space-y-4"></div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxsHABFjs_iKn5efkLLfiRmduOX8QIZ7KrGGo9Nz4OepYRExJcWvpGMkCBvQYRRwApb/exec";
+
+        async function loadData() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('approvalList').innerHTML = '';
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                const pending = data.filter(r => r.Status === 'pending_mgr');
+                
+                document.getElementById('loading').style.display = 'none';
+                if (pending.length === 0) {
+                    document.getElementById('approvalList').innerHTML = '<p class="text-center text-slate-400 p-10">ไม่มีรายการรออนุมัติ</p>';
+                    return;
+                }
+
+                pending.forEach(item => {
+                    const card = `
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-xs font-bold px-2 py-1 rounded bg-amber-100 text-amber-700 uppercase">${item.Type}</span>
+                                    <h3 class="text-lg font-bold mt-2">${item.Location}</h3>
+                                    <p class="text-sm text-slate-500">ผู้เบิก: ${item.Name} | วันที่: ${new Date(item.Timestamp).toLocaleDateString('th-TH')}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-bold text-indigo-600">${parseFloat(item.TotalAmount).toLocaleString()} ฿</p>
+                                </div>
+                            </div>
+                            <div class="border-t pt-4 flex gap-2">
+                                <button onclick="updateStatus('${item.ID}', 'pending_cfo')" class="flex-1 bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600">✅ อนุมัติ</button>
+                                <button onclick="updateStatus('${item.ID}', 'rejected')" class="flex-1 bg-red-100 text-red-600 py-2 rounded-lg font-bold hover:bg-red-200">❌ ไม่อนุมัติ</button>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('approvalList').innerHTML += card;
+                });
+            } catch (err) { alert("ดึงข้อมูลไม่สำเร็จ"); }
+        }
+
+        async function updateStatus(id, newStatus) {
+            if(!confirm("ยืนยันการดำเนินการ?")) return;
+            const payload = { action: "updateStatus", id: id, newStatus: newStatus };
+            
+            // ส่งข้อมูลกลับไปที่ Apps Script (doPost)
+            await fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+            
+            alert("ดำเนินการสำเร็จ!");
+            loadData();
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
