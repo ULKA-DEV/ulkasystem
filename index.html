@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM v20.26 (Live Database)</title>
+    <title>ULKA SYSTEM v20.26</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,37 +12,24 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        :root { --primary-hue: 211; --primary: hsl(var(--primary-hue), 100%, 50%); --primary-soft: hsl(var(--primary-hue), 100%, 95%); --bg-body: #f0f2f5; --bg-sidebar: #ffffff; --bg-card: #ffffff; --text-main: #344767; --text-muted: #8392ab; --border-color: rgba(0,0,0,0.05); --shadow-card: 0 2px 10px rgba(0,0,0,0.03); --sidebar-width: 260px; }
-        [data-theme="dark"] { --bg-body: #111827; --bg-sidebar: #1f2937; --bg-card: #1f2937; --text-main: #f9fafb; --text-muted: #9ca3af; --border-color: rgba(255,255,255,0.1); --shadow-card: 0 4px 20px rgba(0,0,0,0.3); --primary-soft: hsl(var(--primary-hue), 50%, 20%); }
+        :root { --primary-hue: 211; --primary: hsl(var(--primary-hue), 100%, 50%); --bg-body: #f0f2f5; --bg-sidebar: #ffffff; --text-main: #344767; --sidebar-width: 260px; }
+        [data-theme="dark"] { --bg-body: #111827; --bg-sidebar: #1f2937; --text-main: #f9fafb; }
         body { height: 100vh; margin: 0; font-family: 'Sarabun', sans-serif; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
-        #main-app { display: flex; height: 100%; transition: 0.3s; }
-        
-        /* Sidebar Styles */
-        .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 15px 10px; flex-shrink: 0; transition: all 0.3s ease; z-index: 1000; overflow-y: auto; }
+        #main-app { display: flex; height: 100%; }
+        .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 15px 10px; flex-shrink: 0; transition: 0.3s; }
         .sidebar.collapsed { width: 70px; }
-        .sidebar.collapsed .nav-text, .sidebar.collapsed .sidebar-brand-text, .sidebar.collapsed .nav-section, .sidebar.collapsed .sidebar-footer, .sidebar.collapsed .fa-chevron-down { display: none; }
-        
-        .nav-item { padding: 10px 15px; margin-bottom: 4px; border-radius: 8px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 12px; font-size: 0.95rem; transition: 0.2s; font-weight: 600; position: relative; }
-        .nav-item:hover { background: var(--primary-soft); color: var(--primary); }
-        .nav-item.active { background: var(--primary); color: #fff !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
-        .nav-section { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 10px; padding: 8px 15px; font-weight: 800; opacity: 0.8; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        
-        @media (max-width: 768px) { .sidebar { position: fixed; height: 100%; left: -100%; width: 260px; } .sidebar.show { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.2); } .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; } .sidebar-overlay.show { display: block; } }
-        
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; width: 100%; }
-        .top-navbar { height: 60px; background: var(--bg-card); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border-color); }
+        .sidebar.collapsed .nav-text, .sidebar.collapsed .sidebar-brand-text { display: none; }
+        .nav-item { padding: 10px 15px; margin-bottom: 4px; border-radius: 8px; cursor: pointer; color: #8392ab; display: flex; align-items: center; gap: 12px; font-weight: 600; text-decoration: none; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: #fff; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-navbar { height: 60px; background: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .content-scroll { flex: 1; overflow-y: auto; padding: 20px; }
-        .content-scroll.iframe-mode { padding: 0; overflow: hidden; }
-        
-        iframe { width: 100%; height: 100%; border: none; display: block; }
-        .theme-btn { width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        iframe { width: 100%; height: 100%; border: none; }
+        @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; height: 100%; z-index: 1001; } .sidebar.show { left: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebarMobile()"></div>
-    
     <div id="login-screen" style="position:fixed; inset:0; background:#0f172a; z-index:9999; display:flex; justify-content:center; align-items:center;">
         <div class="bg-white p-4 rounded-4 text-center shadow-lg" style="width:350px;">
             <i class="fas fa-cube fa-3x text-primary mb-3"></i>
@@ -51,222 +38,127 @@
                 <input type="text" id="user" class="form-control mb-2" placeholder="รหัสพนักงาน (User ID)">
                 <input type="password" id="pass" class="form-control" placeholder="รหัสผ่าน (Password)">
             </div>
-            <div class="form-check text-start mb-3">
-                <input class="form-check-input" type="checkbox" id="rememberMe">
-                <label class="form-check-label small text-muted" for="rememberMe">จำฉันไว้ในระบบ</label>
-            </div>
             <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 py-2 fw-bold">Login</button>
-            <p id="login-error" class="text-danger mt-2 small d-none">Login Failed!</p>
+            
+            <div class="mt-3">
+                <a href="mailto:info@ulka.co.th?subject=แจ้งลืมรหัสผ่านระบบ ULKA&body=แจ้งเรื่องลืมรหัสผ่าน%0D%0Aรหัสพนักงาน:%20%0D%0Aชื่อ-นามสกุล:%20" class="text-decoration-none small text-muted">
+                    <i class="fas fa-question-circle"></i> ลืมรหัสผ่าน? ส่งเมลหาฝ่าย IT
+                </a>
+            </div>
         </div>
     </div>
 
     <div id="main-app" style="display:none;">
         <div class="sidebar" id="sidebar">
             <div class="px-2 pb-3 pt-2 fw-bold d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2"><i class="fas fa-cube brand-icon fa-lg"></i><span class="sidebar-brand-text">ULKA v20.26</span></div>
-                <i class="fas fa-bars text-muted cursor-pointer d-none d-md-block" onclick="toggleSidebarDesktop()"></i>
+                <div class="d-flex align-items-center gap-2"><i class="fas fa-cube text-primary"></i><span class="sidebar-brand-text">ULKA v20.26</span></div>
+            </div>
+            <div onclick="switchView('news', this)" class="nav-item active"><i class="fas fa-newspaper"></i> <span class="nav-text">ข่าวสาร</span></div>
+            <div onclick="switchView('install', this)" class="nav-item"><i class="fas fa-tools"></i> <span class="nav-text">งานติดตั้ง</span></div>
+            
+            <div class="allow-admin allow-manager" style="display:none;">
+                <div class="small text-muted px-3 mt-3 mb-1">Executive</div>
+                <div onclick="switchView('biz', this)" class="nav-item"><i class="fas fa-briefcase"></i> <span class="nav-text">วางแผนการเงิน</span></div>
             </div>
 
-            <div onclick="switchView('news', this)" id="nav-news" class="nav-item active mt-2" data-name="ข่าวสาร (News)">
-                <i class="fas fa-newspaper nav-icon"></i> <span class="nav-text">ข่าวสาร (News)</span>
-            </div>
-
-            <div class="nav-section allow-admin allow-manager" data-bs-toggle="collapse" data-bs-target="#menu-executive">
-                <span>Executive</span> <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="collapse show allow-admin allow-manager" id="menu-executive">
-                <div onclick="switchView('biz', this)" class="nav-item" data-name="วางแผนการเงิน">
-                    <i class="fas fa-briefcase nav-icon"></i> <span class="nav-text">วางแผนการเงิน</span>
-                </div>
-                <div onclick="switchView('stock', this)" class="nav-item" data-name="สั่งสินค้า">
-                    <i class="fas fa-boxes nav-icon"></i> <span class="nav-text">สั่งสินค้า</span>
-                </div>
-            </div>
-
-            <div class="nav-section" data-bs-toggle="collapse" data-bs-target="#menu-operation">
-                <span>Operation</span> <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="collapse show" id="menu-operation">
-                <div onclick="switchView('install', this)" class="nav-item" data-name="งานติดตั้ง">
-                    <i class="fas fa-tools nav-icon"></i> <span class="nav-text">แพลนงานติดตั้ง</span>
-                </div>
-                <div onclick="switchView('joy_fix', this)" class="nav-item allow-admin allow-manager" data-name="แจ้งซ่อม">
-                    <i class="fas fa-wrench nav-icon"></i> <span class="nav-text">แจ้งซ่อม (Joy Fix)</span>
-                </div>
-            </div>
-
-            <div class="mt-auto p-2">
-                <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded mb-2 border">
-                    <div class="small fw-bold">Dark Mode</div>
-                    <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" id="darkModeToggle" onchange="toggleTheme()"></div>
-                </div>
-                <div class="nav-item text-danger justify-content-center" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> <span class="nav-text">Logout</span>
-                </div>
+            <div class="mt-auto">
+                <div class="nav-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span class="nav-text">Logout</span></div>
             </div>
         </div>
 
         <div class="main-content">
             <div class="top-navbar">
                 <div class="d-flex align-items-center gap-3">
-                    <i class="fas fa-bars d-md-none text-muted" onclick="toggleSidebarMobile()"></i>
-                    <div class="d-flex align-items-center gap-2"><i class="fas fa-user-circle text-primary fa-lg"></i><small class="fw-bold" id="user-display">Loading...</small></div>
+                    <i class="fas fa-bars d-md-none" onclick="toggleSidebarMobile()"></i>
+                    <small class="fw-bold" id="user-display">Loading...</small>
                 </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex gap-1">
-                        <div class="theme-btn" style="background:#0d6efd;" onclick="setColor(211, this)"></div>
-                        <div class="theme-btn" style="background:#dc3545;" onclick="setColor(354, this)"></div>
-                        <div class="theme-btn" style="background:#198754;" onclick="setColor(152, this)"></div>
-                    </div>
-                    <span class="badge bg-light text-dark border"><span id="clock">00:00</span></span>
-                </div>
+                <div id="clock" class="badge bg-light text-dark border">00:00</div>
             </div>
-
             <div id="content-container" class="content-scroll">
-                <div id="view-news" class="view-section">
-                    <h4 class="fw-bold text-primary"><i class="fas fa-bullhorn"></i> ประกาศบริษัท</h4>
-                    <hr>
-                    <div class="alert alert-info">ยินดีต้อนรับคุณ <span id="welcome-name"></span> เข้าสู่ระบบจัดการหลังบ้าน ULKA</div>
+                <div id="view-news">
+                    <h4 class="fw-bold">ยินดีต้อนรับคุณ <span id="welcome-name" class="text-primary"></span></h4>
+                    <p class="text-muted">เลือกเมนูจากแถบด้านซ้ายเพื่อเริ่มงาน</p>
                 </div>
-                <div id="view-iframe" class="view-section" style="display:none; height:100%;">
-                    <iframe id="main-iframe" src=""></iframe>
-                </div>
+                <div id="view-iframe" style="display:none; height:100%;"><iframe id="main-iframe"></iframe></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 🚀 1. ใส่ Web App URL จาก Apps Script ของพี่ตรงนี้ 🚀
-        const GOOGLE_SCRIPT_URL = "ใส่_WEB_APP_URL_ของพี่ที่นี่";
+        // 🚀 1. ใส่ Web App URL ของพี่เรียบร้อยแล้วครับ
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8KkHMLI2U2C0Zh5MWUZN9BOjTE2pEyillRHFDpuTz7b0OWFtJ6VgSodVhHaefYgrzdg/exec";
 
-        const AUTO_LOGOUT_TIME = 2 * 60 * 60 * 1000;
-        let logoutTimer;
-
-        // 🟢 LOGIN SYSTEM (เชื่อมต่อชีต)
+        // 🟢 ตรวจสอบการ Login
         async function checkLogin() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
-            const remember = document.getElementById('rememberMe').checked;
             const btn = document.getElementById('login-btn');
-            const error = document.getElementById('login-error');
 
-            if(!u || !p) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณากรอก User ID และ Password', 'warning');
+            if(!u || !p) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบ', 'warning');
 
             btn.disabled = true;
-            btn.innerText = "กำลังเข้าสู่ระบบ...";
-            error.classList.add('d-none');
+            btn.innerText = "กำลังตรวจสอบ...";
 
             try {
-                // ยิงไปที่ doGet ใน Code.gs ที่พี่แก้รวมร่างไว้
                 const resp = await fetch(`${GOOGLE_SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
                 const res = await resp.json();
 
                 if(res.success) {
-                    const userData = { user: res.user, role: res.role, name: res.name };
-                    if(remember) localStorage.setItem("user", JSON.stringify(userData));
-                    else sessionStorage.setItem("user", JSON.stringify(userData));
-                    
-                    initApp(userData);
-                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: `ยินดีต้อนรับคุณ ${res.name}`, timer: 1500, showConfirmButton: false });
+                    localStorage.setItem("user", JSON.stringify(res));
+                    initApp(res);
+                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: `สวัสดีคุณ ${res.name}`, timer: 1500, showConfirmButton: false });
                 } else {
-                    error.innerText = res.message;
-                    error.classList.remove('d-none');
                     Swal.fire('เข้าสู่ระบบไม่สำเร็จ', res.message, 'error');
                 }
             } catch (e) {
-                console.error(e);
-                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server ได้', 'error');
+                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server ได้ หรือกรุณาตรวจสอบการตั้งค่า Deployment ให้เป็น Anyone', 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Login";
             }
         }
 
-        function initApp(user) {
+        function initApp(res) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'flex';
-            document.getElementById('user-display').innerText = user.name;
-            document.getElementById('welcome-name').innerText = user.name;
+            document.getElementById('user-display').innerText = res.name;
+            document.getElementById('welcome-name').innerText = res.name;
 
-            // 🛡️ ระบบจัดการสิทธิ์ (Permission Control)
-            document.querySelectorAll('.allow-admin, .allow-manager').forEach(el => el.style.display = 'none');
-            if(user.role === 'admin') {
+            // จัดการสิทธิ์เมนู
+            if(res.role === 'admin' || res.role === 'manager') {
                 document.querySelectorAll('.allow-admin, .allow-manager').forEach(el => el.style.display = 'block');
-            } else if(user.role === 'manager') {
-                document.querySelectorAll('.allow-manager').forEach(el => el.style.display = 'block');
             }
 
-            startClock();
-            resetAutoLogout();
-            initTheme();
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
+            }, 1000);
         }
 
         function switchView(viewId, el) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if(el) el.classList.add('active');
             
-            const container = document.getElementById('content-container');
+            const news = document.getElementById('view-news');
+            const ifrContainer = document.getElementById('view-iframe');
             const iframe = document.getElementById('main-iframe');
 
             if(viewId === 'news') {
-                container.classList.remove('iframe-mode');
-                document.getElementById('view-news').style.display = 'block';
-                document.getElementById('view-iframe').style.display = 'none';
+                news.style.display = 'block';
+                ifrContainer.style.display = 'none';
             } else {
-                container.classList.add('iframe-mode');
-                document.getElementById('view-news').style.display = 'none';
-                document.getElementById('view-iframe').style.display = 'block';
-                
-                let urlMap = { 
-                    'biz': 'Biz_plan.html', 'stock': 'Product_plan.html', 
-                    'install': 'Onsite_Servier.html', 'joy_fix': 'joy_fix.html' 
-                };
-                iframe.src = urlMap[viewId] ? urlMap[viewId] + "?auth=ok" : "";
+                news.style.display = 'none';
+                ifrContainer.style.display = 'block';
+                let urls = { 'install': 'Onsite_Servier.html', 'biz': 'Biz_plan.html' };
+                iframe.src = urls[viewId] ? urls[viewId] + "?auth=ok" : "";
             }
         }
 
-        function logout() {
-            localStorage.removeItem("user");
-            sessionStorage.clear();
-            location.reload();
-        }
-
-        function startClock() {
-            setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
-            }, 1000);
-        }
-
-        function resetAutoLogout() {
-            clearTimeout(logoutTimer);
-            logoutTimer = setTimeout(() => {
-                Swal.fire('Timeout', 'เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่', 'info').then(logout);
-            }, AUTO_LOGOUT_TIME);
-        }
-
-        // Theme & UI Utils
-        function toggleTheme() {
-            const isDark = document.getElementById('darkModeToggle').checked;
-            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        }
-        function initTheme() {
-            const theme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', theme);
-            document.getElementById('darkModeToggle').checked = (theme === 'dark');
-        }
-        function setColor(hue) {
-            document.documentElement.style.setProperty('--primary-hue', hue);
-        }
-        function toggleSidebarDesktop() { document.getElementById('sidebar').classList.toggle('collapsed'); }
-        function toggleSidebarMobile() { 
-            document.getElementById('sidebar').classList.toggle('show');
-            document.getElementById('sidebar-overlay').classList.toggle('show');
-        }
+        function logout() { localStorage.removeItem("user"); location.reload(); }
+        function toggleSidebarMobile() { document.getElementById('sidebar').classList.toggle('show'); }
 
         window.onload = () => {
-            const savedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
-            if(savedUser) initApp(JSON.parse(savedUser));
+            const saved = localStorage.getItem("user");
+            if(saved) initApp(JSON.parse(saved));
         };
     </script>
 </body>
