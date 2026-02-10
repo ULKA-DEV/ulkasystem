@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM v20.26</title>
+    <title>ULKA SYSTEM v20.27</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,15 +16,17 @@
         [data-theme="dark"] { --bg-body: #111827; --bg-sidebar: #1f2937; --text-main: #f9fafb; }
         body { height: 100vh; margin: 0; font-family: 'Sarabun', sans-serif; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
         #main-app { display: flex; height: 100%; }
-        .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 15px 10px; flex-shrink: 0; transition: 0.3s; }
+        .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 15px 10px; flex-shrink: 0; transition: 0.3s; z-index: 1000; overflow-y: auto; }
         .sidebar.collapsed { width: 70px; }
         .sidebar.collapsed .nav-text, .sidebar.collapsed .sidebar-brand-text { display: none; }
-        .nav-item { padding: 10px 15px; margin-bottom: 4px; border-radius: 8px; cursor: pointer; color: #8392ab; display: flex; align-items: center; gap: 12px; font-weight: 600; text-decoration: none; }
+        .nav-item { padding: 10px 15px; margin-bottom: 4px; border-radius: 8px; cursor: pointer; color: #8392ab; display: flex; align-items: center; gap: 12px; font-weight: 600; text-decoration: none; transition: 0.2s; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: #fff; }
+        .nav-section { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #8392ab; margin-top: 15px; padding: 0 15px 5px; font-weight: 800; }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .top-navbar { height: 60px; background: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .content-scroll { flex: 1; overflow-y: auto; padding: 20px; }
-        iframe { width: 100%; height: 100%; border: none; }
+        .content-scroll.iframe-mode { padding: 0; }
+        iframe { width: 100%; height: 100%; border: none; display: block; }
         @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; height: 100%; z-index: 1001; } .sidebar.show { left: 0; } }
     </style>
 </head>
@@ -39,7 +41,6 @@
                 <input type="password" id="pass" class="form-control" placeholder="รหัสผ่าน (Password)">
             </div>
             <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 py-2 fw-bold">Login</button>
-            
             <div class="mt-3">
                 <a href="mailto:info@ulka.co.th?subject=แจ้งลืมรหัสผ่านระบบ ULKA&body=แจ้งเรื่องลืมรหัสผ่าน%0D%0Aรหัสพนักงาน:%20%0D%0Aชื่อ-นามสกุล:%20" class="text-decoration-none small text-muted">
                     <i class="fas fa-question-circle"></i> ลืมรหัสผ่าน? ส่งเมลหาฝ่าย IT
@@ -51,13 +52,19 @@
     <div id="main-app" style="display:none;">
         <div class="sidebar" id="sidebar">
             <div class="px-2 pb-3 pt-2 fw-bold d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2"><i class="fas fa-cube text-primary"></i><span class="sidebar-brand-text">ULKA v20.26</span></div>
+                <div class="d-flex align-items-center gap-2"><i class="fas fa-cube text-primary"></i><span class="sidebar-brand-text">ULKA v20.27</span></div>
             </div>
-            <div onclick="switchView('news', this)" class="nav-item active"><i class="fas fa-newspaper"></i> <span class="nav-text">ข่าวสาร</span></div>
+
+            <div class="nav-section">General</div>
+            <div onclick="switchView('news', this)" id="nav-news" class="nav-item active"><i class="fas fa-newspaper"></i> <span class="nav-text">ข่าวสาร</span></div>
+            
+            <div class="nav-section">Operations</div>
             <div onclick="switchView('install', this)" class="nav-item"><i class="fas fa-tools"></i> <span class="nav-text">งานติดตั้ง</span></div>
             
+            <div onclick="switchView('csr', this)" class="nav-item"><i class="fas fa-headset"></i> <span class="nav-text">ระบบ CSR</span></div>
+            
             <div class="allow-admin allow-manager" style="display:none;">
-                <div class="small text-muted px-3 mt-3 mb-1">Executive</div>
+                <div class="nav-section">Executive</div>
                 <div onclick="switchView('biz', this)" class="nav-item"><i class="fas fa-briefcase"></i> <span class="nav-text">วางแผนการเงิน</span></div>
             </div>
 
@@ -69,7 +76,7 @@
         <div class="main-content">
             <div class="top-navbar">
                 <div class="d-flex align-items-center gap-3">
-                    <i class="fas fa-bars d-md-none" onclick="toggleSidebarMobile()"></i>
+                    <i class="fas fa-bars d-md-none cursor-pointer" onclick="toggleSidebarMobile()"></i>
                     <small class="fw-bold" id="user-display">Loading...</small>
                 </div>
                 <div id="clock" class="badge bg-light text-dark border">00:00</div>
@@ -77,7 +84,7 @@
             <div id="content-container" class="content-scroll">
                 <div id="view-news">
                     <h4 class="fw-bold">ยินดีต้อนรับคุณ <span id="welcome-name" class="text-primary"></span></h4>
-                    <p class="text-muted">เลือกเมนูจากแถบด้านซ้ายเพื่อเริ่มงาน</p>
+                    <p class="text-muted">เลือกเมนูจากแถบด้านซ้ายเพื่อเริ่มงานระบบ ULKA</p>
                 </div>
                 <div id="view-iframe" style="display:none; height:100%;"><iframe id="main-iframe"></iframe></div>
             </div>
@@ -85,17 +92,15 @@
     </div>
 
     <script>
-        // 🚀 1. ใส่ Web App URL ของพี่เรียบร้อยแล้วครับ
+        // 🚀 1. ตรวจสอบ Web App URL ของพี่ให้ถูกต้อง
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8KkHMLI2U2C0Zh5MWUZN9BOjTE2pEyillRHFDpuTz7b0OWFtJ6VgSodVhHaefYgrzdg/exec";
 
-        // 🟢 ตรวจสอบการ Login
         async function checkLogin() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
             const btn = document.getElementById('login-btn');
 
             if(!u || !p) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบ', 'warning');
-
             btn.disabled = true;
             btn.innerText = "กำลังตรวจสอบ...";
 
@@ -111,7 +116,7 @@
                     Swal.fire('เข้าสู่ระบบไม่สำเร็จ', res.message, 'error');
                 }
             } catch (e) {
-                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server ได้ หรือกรุณาตรวจสอบการตั้งค่า Deployment ให้เป็น Anyone', 'error');
+                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server ได้', 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Login";
@@ -141,14 +146,24 @@
             const news = document.getElementById('view-news');
             const ifrContainer = document.getElementById('view-iframe');
             const iframe = document.getElementById('main-iframe');
+            const container = document.getElementById('content-container');
 
             if(viewId === 'news') {
                 news.style.display = 'block';
                 ifrContainer.style.display = 'none';
+                container.classList.remove('iframe-mode');
             } else {
                 news.style.display = 'none';
                 ifrContainer.style.display = 'block';
-                let urls = { 'install': 'Onsite_Servier.html', 'biz': 'Biz_plan.html' };
+                container.classList.add('iframe-mode');
+                
+                // 📂 แผนผังเมนูและชื่อไฟล์ ⭐ เพิ่ม 'csr' ตรงนี้
+                let urls = { 
+                    'install': 'Onsite_Servier.html', 
+                    'biz': 'Biz_plan.html',
+                    'csr': 'CSR.html' 
+                };
+                
                 iframe.src = urls[viewId] ? urls[viewId] + "?auth=ok" : "";
             }
         }
