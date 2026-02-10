@@ -1,178 +1,194 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="light">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM v20.27</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULKA SYSTEM Develop by.Numb-Chok 🐕</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <style>
-        :root { --primary-hue: 211; --primary: hsl(var(--primary-hue), 100%, 50%); --bg-body: #f0f2f5; --bg-sidebar: #ffffff; --text-main: #344767; --sidebar-width: 260px; }
-        [data-theme="dark"] { --bg-body: #111827; --bg-sidebar: #1f2937; --text-main: #f9fafb; }
-        body { height: 100vh; margin: 0; font-family: 'Sarabun', sans-serif; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
-        #main-app { display: flex; height: 100%; }
-        .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 15px 10px; flex-shrink: 0; transition: 0.3s; z-index: 1000; overflow-y: auto; }
-        .sidebar.collapsed { width: 70px; }
-        .sidebar.collapsed .nav-text, .sidebar.collapsed .sidebar-brand-text { display: none; }
-        .nav-item { padding: 10px 15px; margin-bottom: 4px; border-radius: 8px; cursor: pointer; color: #8392ab; display: flex; align-items: center; gap: 12px; font-weight: 600; text-decoration: none; transition: 0.2s; }
-        .nav-item:hover, .nav-item.active { background: var(--primary); color: #fff; }
-        .nav-section { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #8392ab; margin-top: 15px; padding: 0 15px 5px; font-weight: 800; }
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .top-navbar { height: 60px; background: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .content-scroll { flex: 1; overflow-y: auto; padding: 20px; }
-        .content-scroll.iframe-mode { padding: 0; }
-        iframe { width: 100%; height: 100%; border: none; display: block; }
-        @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; height: 100%; z-index: 1001; } .sidebar.show { left: 0; } }
+        :root { --primary: #007bff; --glass: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Sarabun', sans-serif; background: #f0f2f5; height: 100vh; overflow: hidden; }
+        
+        /* 🎨 Premium Login Background */
+        #login-screen {
+            position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #007bff, #0f172a);
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        .glass-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; padding: 40px; width: 380px; box-shadow: 0 25px 45px rgba(0,0,0,0.3); transition: 0.3s; }
+        .sidebar { width: 260px; background: #fff; border-right: 1px solid rgba(0,0,0,0.05); transition: 0.3s; flex-shrink: 0; }
+        .nav-item { padding: 12px 15px; margin: 4px 10px; border-radius: 10px; cursor: pointer; color: #8392ab; font-weight: 600; transition: 0.2s; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav-item.active, .nav-item:hover { background: var(--primary); color: #fff; }
+        
+        /* 🎂 Birthday Board Logic */
+        .bday-item { border-left: 5px solid #ff4757; background: #fff; margin-bottom: 10px; border-radius: 12px; padding: 15px; transition: 0.3s; display: flex; align-items: center; }
+        .bday-item.today { border-left-color: #28a745; background: #f8fff9; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2); }
+        .avatar-sm { width: 40px; height: 40px; border-radius: 50%; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary); margin-right: 15px; }
+        
+        #live-clock { font-size: 4rem; font-weight: 800; letter-spacing: -2px; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" style="position:fixed; inset:0; background:#0f172a; z-index:9999; display:flex; justify-content:center; align-items:center;">
-        <div class="bg-white p-4 rounded-4 text-center shadow-lg" style="width:350px;">
-            <i class="fas fa-cube fa-3x text-primary mb-3"></i>
-            <h4 class="fw-bold text-dark">ULKA SYSTEM</h4>
-            <div class="form-group text-start mb-3">
-                <input type="text" id="user" class="form-control mb-2" placeholder="รหัสพนักงาน (User ID)">
-                <input type="password" id="pass" class="form-control" placeholder="รหัสผ่าน (Password)">
+    <div id="login-screen">
+        <div class="glass-card text-center text-white">
+            <i class="fas fa-cube fa-3x mb-3 text-primary"></i>
+            <h4 class="fw-bold">ULKA SYSTEM</h4>
+            <p class="small opacity-50 mb-4">เข้าสู่ระบบเพื่อเริ่มงานวันนี้</p>
+            <input type="text" id="user" class="form-control mb-3 bg-transparent text-white border-secondary" placeholder="รหัสพนักงาน (User ID)">
+            <input type="password" id="pass" class="form-control mb-4 bg-transparent text-white border-secondary" placeholder="รหัสผ่าน (Password)">
+            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold py-2">SIGN IN</button>
+        </div>
+    </div>
+
+    <div id="main-app" class="d-none d-flex h-100">
+        <div class="sidebar d-flex flex-column py-3">
+            <div class="px-3 mb-4 fw-bold text-primary fs-5"><i class="fas fa-cube me-2"></i>ULKA v20.27</div>
+            <div onclick="switchView('news', this)" class="nav-item active"><i class="fas fa-newspaper"></i> ข่าวสาร</div>
+            <div onclick="switchView('csr', this)" class="nav-item"><i class="fas fa-headset"></i> ระบบ CSR</div>
+            <div class="mt-auto nav-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        </div>
+        
+        <div class="flex-grow-1 overflow-auto p-4">
+            <div id="view-news">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h2 class="fw-bold mb-1">สวัสดีคุณ <span id="welcome-name" class="text-primary"></span></h2>
+                        <p class="text-muted">ยินดีต้อนรับกลับสู่ระบบจัดการ ULKA ครับ</p>
+                        
+                        <div class="card border-0 shadow-sm p-4 mt-4 rounded-4">
+                            <h6 class="fw-bold mb-4"><i class="fas fa-birthday-cake text-danger me-2"></i>เพื่อนพนักงานที่เกิดในเดือนนี้</h6>
+                            <div id="birthday-board">
+                                </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 bg-dark text-white p-4 rounded-4 text-center mb-4 shadow-lg">
+                            <h1 id="live-clock">00:00:00</h1>
+                            <div id="live-date" class="text-info fw-bold"></div>
+                        </div>
+                        <div class="card border-0 shadow-sm p-4 rounded-4 bg-primary text-white">
+                            <h6 class="fw-bold mb-2">ULKA Update</h6>
+                            <p class="small mb-0 opacity-75">ระบบกำลังเชื่อมต่อฐานข้อมูล user_db เพื่อแสดงวันเกิดอัตโนมัติ</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 py-2 fw-bold">Login</button>
-            <div class="mt-3">
-                <a href="mailto:info@ulka.co.th?subject=แจ้งลืมรหัสผ่านระบบ ULKA&body=แจ้งเรื่องลืมรหัสผ่าน%0D%0Aรหัสพนักงาน:%20%0D%0Aชื่อ-นามสกุล:%20" class="text-decoration-none small text-muted">
-                    <i class="fas fa-question-circle"></i> ลืมรหัสผ่าน? ส่งเมลหาฝ่าย IT
-                </a>
+            
+            <div id="view-iframe" class="d-none h-100">
+                <iframe id="main-iframe" class="w-100 h-100 border-0 rounded-4 shadow-sm"></iframe>
             </div>
         </div>
     </div>
 
-    <div id="main-app" style="display:none;">
-        <div class="sidebar" id="sidebar">
-            <div class="px-2 pb-3 pt-2 fw-bold d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2"><i class="fas fa-cube text-primary"></i><span class="sidebar-brand-text">ULKA v20.27</span></div>
-            </div>
-
-            <div class="nav-section">General</div>
-            <div onclick="switchView('news', this)" id="nav-news" class="nav-item active"><i class="fas fa-newspaper"></i> <span class="nav-text">ข่าวสาร</span></div>
-            
-            <div class="nav-section">Operations</div>
-            <div onclick="switchView('install', this)" class="nav-item"><i class="fas fa-tools"></i> <span class="nav-text">งานติดตั้ง</span></div>
-            
-            <div onclick="switchView('csr', this)" class="nav-item"><i class="fas fa-headset"></i> <span class="nav-text">ระบบ CSR</span></div>
-            
-            <div class="allow-admin allow-manager" style="display:none;">
-                <div class="nav-section">Executive</div>
-                <div onclick="switchView('biz', this)" class="nav-item"><i class="fas fa-briefcase"></i> <span class="nav-text">วางแผนการเงิน</span></div>
-            </div>
-
-            <div class="mt-auto">
-                <div class="nav-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span class="nav-text">Logout</span></div>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="top-navbar">
-                <div class="d-flex align-items-center gap-3">
-                    <i class="fas fa-bars d-md-none cursor-pointer" onclick="toggleSidebarMobile()"></i>
-                    <small class="fw-bold" id="user-display">Loading...</small>
-                </div>
-                <div id="clock" class="badge bg-light text-dark border">00:00</div>
-            </div>
-            <div id="content-container" class="content-scroll">
-                <div id="view-news">
-                    <h4 class="fw-bold">ยินดีต้อนรับคุณ <span id="welcome-name" class="text-primary"></span></h4>
-                    <p class="text-muted">เลือกเมนูจากแถบด้านซ้ายเพื่อเริ่มงานระบบ ULKA</p>
-                </div>
-                <div id="view-iframe" style="display:none; height:100%;"><iframe id="main-iframe"></iframe></div>
-            </div>
-        </div>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // 🚀 1. ตรวจสอบ Web App URL ของพี่ให้ถูกต้อง
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8KkHMLI2U2C0Zh5MWUZN9BOjTE2pEyillRHFDpuTz7b0OWFtJ6VgSodVhHaefYgrzdg/exec";
+        // 🚀 ใช้งาน URL ที่พี่ Deploy มาล่าสุด
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9celQeYhtxoxJliTbnU0P4rZ96rmIBnQVC-I_6MFKP0IgrPhldxj0e9XUy2ISHS72qg/exec";
 
         async function checkLogin() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
             const btn = document.getElementById('login-btn');
-
-            if(!u || !p) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบ', 'warning');
+            
+            if(!u || !p) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบครับ', 'warning');
+            
             btn.disabled = true;
             btn.innerText = "กำลังตรวจสอบ...";
 
             try {
-                const resp = await fetch(`${GOOGLE_SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
+                const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
                 const res = await resp.json();
-
+                
                 if(res.success) {
-                    localStorage.setItem("user", JSON.stringify(res));
+                    localStorage.setItem("user_session", JSON.stringify(res));
                     initApp(res);
                     Swal.fire({ icon: 'success', title: 'สำเร็จ', text: `สวัสดีคุณ ${res.name}`, timer: 1500, showConfirmButton: false });
                 } else {
                     Swal.fire('เข้าสู่ระบบไม่สำเร็จ', res.message, 'error');
                 }
             } catch (e) {
-                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server ได้', 'error');
+                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Login";
+                btn.innerText = "SIGN IN";
             }
         }
 
-        function initApp(res) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'flex';
-            document.getElementById('user-display').innerText = res.name;
-            document.getElementById('welcome-name').innerText = res.name;
+        function initApp(data) {
+            document.getElementById('login-screen').classList.add('d-none');
+            document.getElementById('main-app').classList.remove('d-none');
+            document.getElementById('welcome-name').innerText = data.name; // ดึงชื่อจาก Database
+            
+            startLiveClock();
+            renderBirthdayBoard(data.allEmp); // ส่งรายชื่อพนักงานไปประมวลผลวันเกิด
+        }
 
-            // จัดการสิทธิ์เมนู
-            if(res.role === 'admin' || res.role === 'manager') {
-                document.querySelectorAll('.allow-admin, .allow-manager').forEach(el => el.style.display = 'block');
-            }
-
+        function startLiveClock() {
             setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
+                const now = new Date();
+                document.getElementById('live-clock').innerText = now.toLocaleTimeString('th-TH');
+                document.getElementById('live-date').innerText = now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             }, 1000);
+        }
+
+        function renderBirthdayBoard(emps) {
+            const board = document.getElementById('birthday-board');
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const todayDate = now.getDate();
+            
+            // กรองและเรียงลำดับวันเกิดเฉพาะเดือนนี้
+            let upcoming = emps.filter(e => {
+                if(!e.birthday) return false;
+                const bMonth = new Date(e.birthday).getMonth() + 1;
+                return bMonth === currentMonth;
+            }).sort((a, b) => new Date(a.birthday).getDate() - new Date(b.birthday).getDate());
+
+            board.innerHTML = upcoming.length ? '' : '<p class="text-center text-muted">เดือนนี้ไม่มีวันเกิดเพื่อนพนักงานครับ</p>';
+            
+            upcoming.forEach(e => {
+                const bDate = new Date(e.birthday).getDate();
+                const isToday = bDate === todayDate;
+                
+                board.innerHTML += `
+                    <div class="bday-item ${isToday ? 'today' : ''}">
+                        <div class="avatar-sm">${e.nickname ? e.nickname[0] : e.name[0]}</div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">${e.name} (${e.nickname || 'ไม่มีชื่อเล่น'})</div>
+                            <div class="small text-muted">วันที่ ${bDate} ${now.toLocaleDateString('th-TH', {month:'long'})}</div>
+                        </div>
+                        ${isToday ? '<span class="badge bg-danger pulse">HBD วันนี้! 🎂</span>' : ''}
+                    </div>
+                `;
+            });
         }
 
         function switchView(viewId, el) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if(el) el.classList.add('active');
+            el.classList.add('active');
             
             const news = document.getElementById('view-news');
             const ifrContainer = document.getElementById('view-iframe');
-            const iframe = document.getElementById('main-iframe');
-            const container = document.getElementById('content-container');
-
+            
             if(viewId === 'news') {
-                news.style.display = 'block';
-                ifrContainer.style.display = 'none';
-                container.classList.remove('iframe-mode');
+                news.classList.remove('d-none');
+                ifrContainer.classList.add('d-none');
             } else {
-                news.style.display = 'none';
-                ifrContainer.style.display = 'block';
-                container.classList.add('iframe-mode');
-                
-                // 📂 แผนผังเมนูและชื่อไฟล์ ⭐ เพิ่ม 'csr' ตรงนี้
-                let urls = { 
-                    'install': 'Onsite_Servier.html', 
-                    'biz': 'Biz_plan.html',
-                    'csr': 'CSR.html' 
-                };
-                
-                iframe.src = urls[viewId] ? urls[viewId] + "?auth=ok" : "";
+                news.classList.add('d-none');
+                ifrContainer.classList.remove('d-none');
+                document.getElementById('main-iframe').src = viewId.toUpperCase() + ".html";
             }
         }
 
-        function logout() { localStorage.removeItem("user"); location.reload(); }
-        function toggleSidebarMobile() { document.getElementById('sidebar').classList.toggle('show'); }
+        function logout() { localStorage.clear(); location.reload(); }
 
         window.onload = () => {
-            const saved = localStorage.getItem("user");
+            const saved = localStorage.getItem("user_session");
             if(saved) initApp(JSON.parse(saved));
         };
     </script>
