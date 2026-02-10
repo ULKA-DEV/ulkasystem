@@ -3,51 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULKA SYSTEM Develop by.Numb-Chok 🐕</title>
+    <title>ULKA SYSTEM Beta 0.05</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #007bff; --glass: rgba(255, 255, 255, 0.1); }
+        :root { --primary: #007bff; --navy-dark: #0f172a; }
         body { font-family: 'Sarabun', sans-serif; background: #f0f2f5; height: 100vh; overflow: hidden; }
         
-        /* 🎨 Premium Login Background */
-        #login-screen {
-            position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center;
-            background: linear-gradient(-45deg, #0f172a, #1e293b, #007bff, #0f172a);
-            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
-        }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        
-        .glass-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; padding: 40px; width: 380px; box-shadow: 0 25px 45px rgba(0,0,0,0.3); transition: 0.3s; }
-        .sidebar { width: 260px; background: #fff; border-right: 1px solid rgba(0,0,0,0.05); transition: 0.3s; flex-shrink: 0; }
-        .nav-item { padding: 12px 15px; margin: 4px 10px; border-radius: 10px; cursor: pointer; color: #8392ab; font-weight: 600; transition: 0.2s; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        /* 🎨 Login Section */
+        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: var(--navy-dark); }
+        .login-box { background: #ffffff; padding: 45px; border-radius: 24px; width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .company-name { font-size: 0.65rem; font-weight: 800; color: #64748b; letter-spacing: 1px; margin-top: 15px; text-transform: uppercase; }
+        .version-badge { font-size: 0.7rem; background: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 99px; display: inline-block; margin-top: 10px; font-weight: 600; }
+
+        /* 📱 Sidebar & Layout */
+        .sidebar { width: 260px; background: #fff; border-right: 1px solid rgba(0,0,0,0.05); flex-shrink: 0; }
+        .nav-item { padding: 12px 15px; margin: 4px 10px; border-radius: 10px; cursor: pointer; color: #8392ab; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 10px; }
         .nav-item.active, .nav-item:hover { background: var(--primary); color: #fff; }
         
-        /* 🎂 Birthday Board Logic */
-        .bday-item { border-left: 5px solid #ff4757; background: #fff; margin-bottom: 10px; border-radius: 12px; padding: 15px; transition: 0.3s; display: flex; align-items: center; }
-        .bday-item.today { border-left-color: #28a745; background: #f8fff9; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2); }
-        .avatar-sm { width: 40px; height: 40px; border-radius: 50%; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary); margin-right: 15px; }
-        
+        /* 📣 Announcement Board */
+        .announcement-card { background: #fff; border-radius: 15px; border-left: 5px solid var(--primary); padding: 20px; margin-bottom: 15px; transition: 0.3s; }
+        .announcement-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+        .bday-item { border-left: 5px solid #ff4757; background: #fff; margin-bottom: 10px; border-radius: 12px; padding: 15px; display: flex; align-items: center; }
+        .bday-item.today { border-left-color: #28a745; background: #f8fff9; }
         #live-clock { font-size: 4rem; font-weight: 800; letter-spacing: -2px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="glass-card text-center text-white">
+        <div class="login-box">
             <i class="fas fa-cube fa-3x mb-3 text-primary"></i>
-            <h4 class="fw-bold">ULKA SYSTEM</h4>
-            <p class="small opacity-50 mb-4">เข้าสู่ระบบเพื่อเริ่มงานวันนี้</p>
-            <input type="text" id="user" class="form-control mb-3 bg-transparent text-white border-secondary" placeholder="รหัสพนักงาน (User ID)">
-            <input type="password" id="pass" class="form-control mb-4 bg-transparent text-white border-secondary" placeholder="รหัสผ่าน (Password)">
-            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold py-2">SIGN IN</button>
+            <h3 class="fw-bold text-dark mb-0">ULKA SYSTEM</h3>
+            <div class="company-name">INTELLIGENT ELECTRICAL APPLIANCE CO., LTD.</div>
+            <div class="version-badge mb-4">Beta 0.05</div>
+            <input type="text" id="user" class="form-control mb-3" placeholder="User ID">
+            <input type="password" id="pass" class="form-control mb-4" placeholder="Password">
+            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold">SIGN IN</button>
         </div>
     </div>
 
     <div id="main-app" class="d-none d-flex h-100">
-        <div class="sidebar d-flex flex-column py-3">
-            <div class="px-3 mb-4 fw-bold text-primary fs-5"><i class="fas fa-cube me-2"></i>ULKA v20.27</div>
+        <div class="sidebar d-flex flex-column py-3 shadow-sm">
+            <div class="px-3 mb-1 fw-bold text-primary fs-5"><i class="fas fa-cube me-2"></i>ULKA v20.27</div>
+            <div class="px-3 mb-4 text-muted" style="font-size: 0.6rem;">Beta 0.05</div>
             <div onclick="switchView('news', this)" class="nav-item active"><i class="fas fa-newspaper"></i> ข่าวสาร</div>
             <div onclick="switchView('csr', this)" class="nav-item"><i class="fas fa-headset"></i> ระบบ CSR</div>
             <div class="mt-auto nav-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
@@ -57,75 +58,121 @@
             <div id="view-news">
                 <div class="row">
                     <div class="col-md-8">
-                        <h2 class="fw-bold mb-1">สวัสดีคุณ <span id="welcome-name" class="text-primary"></span></h2>
-                        <p class="text-muted">ยินดีต้อนรับกลับสู่ระบบจัดการ ULKA ครับ</p>
-                        
-                        <div class="card border-0 shadow-sm p-4 mt-4 rounded-4">
-                            <h6 class="fw-bold mb-4"><i class="fas fa-birthday-cake text-danger me-2"></i>เพื่อนพนักงานที่เกิดในเดือนนี้</h6>
-                            <div id="birthday-board">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h2 class="fw-bold mb-0">สวัสดีคุณ <span id="welcome-name" class="text-primary"></span></h2>
+                                <p class="text-muted">ตรวจสอบประกาศล่าสุดของบริษัทได้ที่นี่ครับ</p>
+                            </div>
+                            <div id="create-btn-area" class="d-none">
+                                <button class="btn btn-primary rounded-pill px-4" onclick="openAnnouncementModal()">
+                                    <i class="fas fa-plus me-2"></i>สร้างประกาศ
+                                </button>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold mb-3"><i class="fas fa-bullhorn text-warning me-2"></i>กระดานประกาศภายใน</h6>
+                        <div id="announcement-board">
+                            <div class="announcement-card">
+                                <div class="d-flex justify-content-between small text-muted mb-2">
+                                    <span>แจ้งอัปเดตระบบ</span>
+                                    <span>10 ก.พ. 2569</span>
                                 </div>
+                                <h6 class="fw-bold">เริ่มใช้งานระบบ ULKA SYSTEM Beta 0.05</h6>
+                                <p class="mb-0 small opacity-75">ยินดีต้อนรับทีมงานทุกท่านเข้าสู่ระบบเวอร์ชันใหม่ที่เสถียรขึ้นและรองรับการดึงข้อมูลจาก Google Sheets</p>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm p-4 mt-4 rounded-4">
+                            <h6 class="fw-bold mb-4"><i class="fas fa-birthday-cake text-danger me-2"></i>วันเกิดเพื่อนพนักงานเดือนนี้</h6>
+                            <div id="birthday-board"></div>
                         </div>
                     </div>
+
                     <div class="col-md-4">
-                        <div class="card border-0 bg-dark text-white p-4 rounded-4 text-center mb-4 shadow-lg">
+                        <div class="card border-0 bg-dark text-white p-4 rounded-4 text-center mb-4 shadow">
                             <h1 id="live-clock">00:00:00</h1>
                             <div id="live-date" class="text-info fw-bold"></div>
-                        </div>
-                        <div class="card border-0 shadow-sm p-4 rounded-4 bg-primary text-white">
-                            <h6 class="fw-bold mb-2">ULKA Update</h6>
-                            <p class="small mb-0 opacity-75">ระบบกำลังเชื่อมต่อฐานข้อมูล user_db เพื่อแสดงวันเกิดอัตโนมัติ</p>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div id="view-iframe" class="d-none h-100">
-                <iframe id="main-iframe" class="w-100 h-100 border-0 rounded-4 shadow-sm"></iframe>
-            </div>
+            <div id="view-iframe" class="d-none h-100"><iframe id="main-iframe" class="w-100 h-100 border-0"></iframe></div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // 🚀 ใช้งาน URL ที่พี่ Deploy มาล่าสุด
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9celQeYhtxoxJliTbnU0P4rZ96rmIBnQVC-I_6MFKP0IgrPhldxj0e9XUy2ISHS72qg/exec";
 
         async function checkLogin() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
             const btn = document.getElementById('login-btn');
-            
             if(!u || !p) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบครับ', 'warning');
-            
-            btn.disabled = true;
-            btn.innerText = "กำลังตรวจสอบ...";
+            btn.disabled = true; btn.innerText = "VERIFYING...";
 
             try {
                 const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
                 const res = await resp.json();
-                
                 if(res.success) {
                     localStorage.setItem("user_session", JSON.stringify(res));
                     initApp(res);
-                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: `สวัสดีคุณ ${res.name}`, timer: 1500, showConfirmButton: false });
                 } else {
-                    Swal.fire('เข้าสู่ระบบไม่สำเร็จ', res.message, 'error');
+                    Swal.fire('ล้มเหลว', res.message, 'error');
                 }
             } catch (e) {
-                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
+                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server ได้ครับ', 'error');
             } finally {
-                btn.disabled = false;
-                btn.innerText = "SIGN IN";
+                btn.disabled = false; btn.innerText = "SIGN IN";
             }
         }
 
         function initApp(data) {
             document.getElementById('login-screen').classList.add('d-none');
             document.getElementById('main-app').classList.remove('d-none');
-            document.getElementById('welcome-name').innerText = data.name; // ดึงชื่อจาก Database
+            document.getElementById('welcome-name').innerText = data.name;
             
+            // ตรวจสอบสิทธิ์เพื่อแสดงปุ่มสร้างประกาศ
+            if(data.role === 'admin' || data.role === 'manager') {
+                document.getElementById('create-btn-area').classList.remove('d-none');
+            }
+
             startLiveClock();
-            renderBirthdayBoard(data.allEmp); // ส่งรายชื่อพนักงานไปประมวลผลวันเกิด
+            renderBirthdayBoard(data.allEmp);
+        }
+
+        async function openAnnouncementModal() {
+            const { value: formValues } = await Swal.fire({
+                title: '📢 สร้างประกาศใหม่',
+                html:
+                    '<input id="swal-title" class="swal2-input" placeholder="หัวข้อประกาศ">' +
+                    '<textarea id="swal-body" class="swal2-textarea" placeholder="เนื้อหาประกาศ"></textarea>',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'โพสต์ประกาศ',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-title').value,
+                        document.getElementById('swal-body').value
+                    ]
+                }
+            });
+
+            if (formValues && formValues[0] !== "" && formValues[1] !== "") {
+                const board = document.getElementById('announcement-board');
+                const newCard = document.createElement('div');
+                newCard.className = 'announcement-card';
+                newCard.innerHTML = `
+                    <div class="d-flex justify-content-between small text-muted mb-2">
+                        <span>ประกาศใหม่</span>
+                        <span>วันนี้</span>
+                    </div>
+                    <h6 class="fw-bold">${formValues[0]}</h6>
+                    <p class="mb-0 small opacity-75">${formValues[1]}</p>
+                `;
+                board.prepend(newCard); // เอาประกาศใหม่ไว้บนสุด
+                Swal.fire('สำเร็จ!', 'ประกาศของคุณถูกโพสต์แล้ว', 'success');
+            }
         }
 
         function startLiveClock() {
@@ -142,27 +189,23 @@
             const currentMonth = now.getMonth() + 1;
             const todayDate = now.getDate();
             
-            // กรองและเรียงลำดับวันเกิดเฉพาะเดือนนี้
             let upcoming = emps.filter(e => {
                 if(!e.birthday) return false;
                 const bMonth = new Date(e.birthday).getMonth() + 1;
                 return bMonth === currentMonth;
             }).sort((a, b) => new Date(a.birthday).getDate() - new Date(b.birthday).getDate());
 
-            board.innerHTML = upcoming.length ? '' : '<p class="text-center text-muted">เดือนนี้ไม่มีวันเกิดเพื่อนพนักงานครับ</p>';
-            
+            board.innerHTML = upcoming.length ? '' : '<p class="text-center text-muted">เดือนนี้ไม่มีวันเกิดครับ</p>';
             upcoming.forEach(e => {
                 const bDate = new Date(e.birthday).getDate();
                 const isToday = bDate === todayDate;
-                
                 board.innerHTML += `
                     <div class="bday-item ${isToday ? 'today' : ''}">
-                        <div class="avatar-sm">${e.nickname ? e.nickname[0] : e.name[0]}</div>
                         <div class="flex-grow-1">
-                            <div class="fw-bold">${e.name} (${e.nickname || 'ไม่มีชื่อเล่น'})</div>
+                            <div class="fw-bold text-dark">${e.name} (${e.nickname || '-'})</div>
                             <div class="small text-muted">วันที่ ${bDate} ${now.toLocaleDateString('th-TH', {month:'long'})}</div>
                         </div>
-                        ${isToday ? '<span class="badge bg-danger pulse">HBD วันนี้! 🎂</span>' : ''}
+                        ${isToday ? '<span class="badge bg-danger">HBD วันนี้! 🎂</span>' : ''}
                     </div>
                 `;
             });
@@ -171,22 +214,17 @@
         function switchView(viewId, el) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-            
-            const news = document.getElementById('view-news');
-            const ifrContainer = document.getElementById('view-iframe');
-            
             if(viewId === 'news') {
-                news.classList.remove('d-none');
-                ifrContainer.classList.add('d-none');
+                document.getElementById('view-news').classList.remove('d-none');
+                document.getElementById('view-iframe').classList.add('d-none');
             } else {
-                news.classList.add('d-none');
-                ifrContainer.classList.remove('d-none');
+                document.getElementById('view-news').classList.add('d-none');
+                document.getElementById('view-iframe').classList.remove('d-none');
                 document.getElementById('main-iframe').src = viewId.toUpperCase() + ".html";
             }
         }
 
         function logout() { localStorage.clear(); location.reload(); }
-
         window.onload = () => {
             const saved = localStorage.getItem("user_session");
             if(saved) initApp(JSON.parse(saved));
