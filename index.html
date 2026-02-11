@@ -185,28 +185,41 @@
             }, 1000);
         }
 
-        function renderBirthdayBoard(emps) {
-            const board = document.getElementById('birthday-board');
-            const now = new Date();
-            const month = now.getMonth() + 1;
-            const today = now.getDate();
-            let upcoming = emps.filter(e => e.birthDt && (new Date(e.birthDt).getMonth() + 1) === month)
-                               .sort((a, b) => new Date(a.birthDt).getDate() - new Date(b.birthDt).getDate());
-            
-            board.innerHTML = upcoming.length ? '' : 'เดือนนี้ไม่มีวันเกิดเพื่อนพนักงาน';
-            upcoming.forEach(e => {
-                const bDate = new Date(e.birthDt).getDate();
-                const isToday = bDate === today;
-                board.innerHTML += `
-                    <div class="d-flex align-items-center p-3 mb-2 rounded-3 border-start border-4 ${isToday ? 'border-success bg-success bg-opacity-10' : 'border-primary bg-light'}">
-                        <div class="flex-grow-1">
-                            <div class="fw-bold">${e.firstName} ${e.lastName} (${e.nickname || '-'})</div>
-                            <div class="text-muted small">วันที่ ${bDate} ${now.toLocaleDateString('th-TH', {month:'long'})}</div>
-                        </div>
-                        ${isToday ? '<span class="badge bg-danger">HBD วันนี้! 🎂</span>' : ''}
-                    </div>`;
-            });
-        }
+       function renderBirthdayBoard(emps) {
+    const board = document.getElementById('birthday-board');
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0 = Jan, 1 = Feb...
+    const todayDate = now.getDate();
+    
+    // กรองเฉพาะคนเกิดเดือนนี้ (รองรับทั้ง format 1992-07-03 และ 07-03)
+    let upcoming = emps.filter(e => {
+        if (!e.birthDt) return false;
+        let bDate = new Date(e.birthDt);
+        // เช็คว่า Month ตรงกับเดือนปัจจุบันไหม
+        return bDate.getMonth() === currentMonth;
+    }).sort((a, b) => new Date(a.birthDt).getDate() - new Date(b.birthDt).getDate());
+
+    board.innerHTML = upcoming.length ? '' : '<p class="text-center text-muted small py-3">เดือนนี้ไม่มีวันเกิดเพื่อนพนักงานครับ</p>';
+    
+    upcoming.forEach(e => {
+        const bDateObj = new Date(e.birthDt);
+        const bDate = bDateObj.getDate();
+        const isToday = (bDate === todayDate);
+        const isPast = (bDate < todayDate); // คนที่ผ่านวันเกิดไปแล้วในเดือนนี้
+
+        board.innerHTML += `
+            <div class="d-flex align-items-center p-3 mb-2 rounded-3 border-start border-4 ${isToday ? 'border-success bg-success bg-opacity-10 shadow-sm' : 'border-primary bg-light'}" 
+                 style="${isPast ? 'opacity: 0.6; filter: grayscale(0.5);' : ''}">
+                <div class="flex-grow-1">
+                    <div class="fw-bold small text-dark">${e.firstName} ${e.lastName} (${e.nickname || '-'})</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">
+                        <i class="fas fa-calendar-day me-1"></i>วันที่ ${bDate} ${now.toLocaleDateString('th-TH', {month:'long'})}
+                    </div>
+                </div>
+                ${isToday ? '<span class="badge bg-danger pulse-animation">HBD วันนี้! 🎂</span>' : ''}
+            </div>`;
+    });
+}
 
         function switchView(viewId, el) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
