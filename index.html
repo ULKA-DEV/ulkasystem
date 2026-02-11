@@ -9,37 +9,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #007bff; --navy: #0f172a; }
-        body { font-family: 'Sarabun', sans-serif; background: #f8f9fa; height: 100vh; overflow: hidden; }
+        body { font-family: 'Sarabun', sans-serif; background: #f4f7f6; height: 100vh; overflow: hidden; }
         #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: var(--navy); }
-        .login-box { background: #fff; padding: 40px; border-radius: 24px; width: 400px; text-align: center; }
-        .company-name { font-size: 0.65rem; font-weight: 800; color: #64748b; letter-spacing: 1px; margin-top: 15px; text-transform: uppercase; }
+        .login-box { background: #fff; padding: 40px; border-radius: 24px; width: 400px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
         .sidebar { width: 260px; background: #fff; border-right: 1px solid #eee; flex-shrink: 0; }
-        .nav-item { padding: 12px 15px; margin: 4px 10px; border-radius: 10px; cursor: pointer; color: #8392ab; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 10px; }
-        .nav-item.active { background: var(--primary); color: #fff; }
-        .announcement-card { background: #fff; border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; }
-        .announce-img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 10px; margin-top: 10px; }
-        #live-clock { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; }
-        .avatar-sm { width: 45px; height: 45px; border-radius: 12px; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary); }
+        .nav-item { padding: 12px 15px; margin: 4px 10px; border-radius: 10px; cursor: pointer; color: #8392ab; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .nav-item.active, .nav-item:hover { background: var(--primary); color: #fff; text-decoration: none; }
+        .announcement-card { background: #fff; border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .announce-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; margin-top: 15px; border: 1px solid #eee; }
+        #live-clock { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; line-height: 1; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-box shadow-lg">
+        <div class="login-box">
             <i class="fas fa-cube fa-3x mb-3 text-primary"></i>
-            <h3 class="fw-bold">ULKA SYSTEM</h3>
-            <div class="company-name">INTELLIGENT ELECTRICAL APPLIANCE CO., LTD.</div>
-            <div class="badge bg-light text-secondary mt-2 mb-4">Beta 0.05</div>
+            <h3 class="fw-bold text-dark">ULKA SYSTEM</h3>
+            <div class="small text-muted mb-4">INTELLIGENT ELECTRICAL APPLIANCE CO., LTD.<br>Beta 1.0.21.1</div>
             <input type="text" id="user" class="form-control mb-3" placeholder="รหัสพนักงาน (User ID)">
             <input type="password" id="pass" class="form-control mb-4" placeholder="รหัสผ่าน (Password)">
-            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold py-2">SIGN IN</button>
+            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">SIGN IN</button>
         </div>
     </div>
 
     <div id="main-app" class="d-none d-flex h-100">
         <div class="sidebar d-flex flex-column py-3 shadow-sm">
-            <div class="px-3 mb-1 fw-bold text-primary fs-5"><i class="fas fa-cube me-2"></i>ULKA v20.27</div>
-            <div class="px-3 mb-4 text-muted" style="font-size: 0.6rem;">Beta 0.05</div>
+            <div class="px-3 mb-1 fw-bold text-primary fs-5"><i class="fas fa-cube me-2"></i>ULKA System</div>
+            <div class="px-3 mb-4 text-muted small">Beta 1.0.21.1</div>
             <div onclick="switchView('news', this)" class="nav-item active"><i class="fas fa-newspaper"></i> ข่าวสาร</div>
             <div onclick="switchView('csr', this)" class="nav-item"><i class="fas fa-headset"></i> ระบบ CSR</div>
             <div class="mt-auto nav-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
@@ -50,30 +47,26 @@
                 <div class="row">
                     <div class="col-md-8">
                         <div class="mb-4">
-                            <h2 class="fw-bold mb-1 text-dark">สวัสดีคุณ <span id="welcome-name" class="text-primary"></span></h2>
-                            <div id="welcome-info" class="text-muted small fw-bold"></div>
+                            <h2 class="fw-bold mb-1">สวัสดีคุณ <span id="welcome-name" class="text-primary"></span></h2>
+                            <div id="welcome-info" class="badge bg-light text-dark p-2 border shadow-sm"></div>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold mb-0"><i class="fas fa-bullhorn text-warning me-2"></i>ประกาศล่าสุด</h5>
-                            <button id="mgr-btn" class="btn btn-primary btn-sm rounded-pill d-none" onclick="openAnnounceModal()">+ สร้างประกาศ</button>
+                            <h5 class="fw-bold mb-0 text-secondary">📢 ประกาศภายใน</h5>
+                            <button id="mgr-btn" class="btn btn-primary btn-sm rounded-pill px-3 d-none" onclick="openAnnounceModal()">+ สร้างประกาศ</button>
                         </div>
-                        <div id="announcement-board" class="mb-4">กำลังโหลดประกาศ...</div>
+                        <div id="announcement-board">กำลังโหลดประกาศ...</div>
 
-                        <div class="card border-0 shadow-sm p-4 rounded-4">
+                        <div class="card border-0 shadow-sm p-4 mt-4 rounded-4">
                             <h6 class="fw-bold mb-4 text-danger"><i class="fas fa-birthday-cake me-2"></i>พนักงานที่เกิดในเดือนนี้</h6>
                             <div id="birthday-board"></div>
                         </div>
                     </div>
 
                     <div class="col-md-4 text-center">
-                        <div class="card border-0 bg-dark text-white p-4 rounded-4 mb-4 shadow">
+                        <div class="card border-0 bg-dark text-white p-4 rounded-4 mb-4 shadow-lg">
                             <h1 id="live-clock">00:00:00</h1>
-                            <div id="live-date" class="text-info fw-bold small"></div>
-                        </div>
-                        <div class="card border-0 shadow-sm p-4 rounded-4 bg-primary text-white text-start">
-                            <h6 class="fw-bold mb-2">ULKA Update</h6>
-                            <p class="small mb-0 opacity-75">เชื่อมต่อระบบประกาศและฐานข้อมูลพนักงาน Beta 0.05 เรียบร้อยแล้ว</p>
+                            <div id="live-date" class="text-info fw-bold small mt-2"></div>
                         </div>
                     </div>
                 </div>
@@ -86,17 +79,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // 🚀 ผูกกับ Web App URL ตัวล่าสุดของลูกพี่
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxy4tAlBvaPOYethvAqd8Zd4r8jReb0MR7tS57Ak_g5rwVy0qIZspcn542jRKQXo0L07A/exec";
+        // ⚠️ เปลี่ยน URL ตรงนี้เป็น Web App URL ล่าสุดของลูกพี่นะครับ
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzU3c9YBus6C2uzyFNSgTnsDyQmQMjfHt6zXUpHv-Kwc66UfdwtFptzwizRWSql2Y0Ggg/exec";
         let sessionData = null;
 
         async function checkLogin() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
-            if(!u || !p) return Swal.fire('เตือน', 'กรุณากรอกข้อมูลครับ', 'warning');
-            
+            if(!u || !p) return;
             const btn = document.getElementById('login-btn');
-            btn.disabled = true; btn.innerText = "VERIFYING...";
+            btn.disabled = true; btn.innerText = "กำลังตรวจสอบ...";
 
             try {
                 const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
@@ -106,7 +98,7 @@
                     initApp(res);
                 } else { Swal.fire('ล้มเหลว', res.message, 'error'); }
             } catch (e) {
-                Swal.fire('Error', 'ไม่สามารถติดต่อ Server ได้', 'error');
+                Swal.fire('Error', 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้', 'error');
             } finally {
                 btn.disabled = false; btn.innerText = "SIGN IN";
             }
@@ -117,7 +109,11 @@
             document.getElementById('login-screen').classList.add('d-none');
             document.getElementById('main-app').classList.remove('d-none');
             document.getElementById('welcome-name').innerText = data.name;
-            document.getElementById('welcome-info').innerText = `แผนก: ${data.dept || '-'} | ตำแหน่ง: ${data.pos || '-'}`;
+            
+            // แสดงแผนก และ ตำแหน่ง
+            const d = data.dept || "ไม่ระบุแผนก";
+            const p = data.pos || "ไม่ระบุตำแหน่ง";
+            document.getElementById('welcome-info').innerText = `🏢 แผนก: ${d}  |  💼 ตำแหน่ง: ${p}`;
             
             if(data.role === 'admin' || data.role === 'manager') document.getElementById('mgr-btn').classList.remove('d-none');
             
@@ -130,17 +126,18 @@
             const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
             const list = await resp.json();
             const board = document.getElementById('announcement-board');
-            board.innerHTML = list.length ? '' : '<p class="text-muted small">ยังไม่มีประกาศในขณะนี้</p>';
+            board.innerHTML = list.length ? '' : '<p class="text-muted">ยังไม่มีประกาศ</p>';
+            
             list.forEach(a => {
                 board.innerHTML += `
-                    <div class="announcement-card shadow-sm">
+                    <div class="announcement-card">
                         <div class="d-flex justify-content-between small text-muted mb-2 fw-bold">
-                            <span>โดย: ${a.author}</span>
+                            <span><i class="fas fa-user-circle me-1"></i>${a.author}</span>
                             <span>${new Date(a.date).toLocaleDateString('th-TH')}</span>
                         </div>
                         <h6 class="fw-bold text-dark">${a.title}</h6>
                         <p class="mb-0 small text-secondary">${a.body}</p>
-                        ${a.img ? `<img src="${a.img}" class="announce-img shadow-sm mt-3">` : ''}
+                        ${a.img ? `<img src="${a.img}" class="announce-img shadow-sm">` : ''}
                     </div>`;
             });
         }
@@ -150,11 +147,10 @@
                 title: 'สร้างประกาศใหม่',
                 html: `
                     <input id="swal-title" class="swal2-input" placeholder="หัวข้อประกาศ">
-                    <textarea id="swal-body" class="swal2-textarea" placeholder="รายละเอียด..."></textarea>
-                    <div class="mt-3 small text-muted text-start">แนบรูปภาพประกาศ (ถ้ามี)</div>
+                    <textarea id="swal-body" class="swal2-textarea" placeholder="เนื้อหาประกาศ..."></textarea>
+                    <div class="text-start mt-3 small fw-bold">แนบรูปภาพประกาศ:</div>
                     <input type="file" id="swal-file" class="swal2-file" accept="image/*">`,
                 showCancelButton: true,
-                confirmButtonText: 'โพสต์ประกาศ',
                 preConfirm: () => {
                     const file = document.getElementById('swal-file').files[0];
                     return new Promise((resolve) => {
@@ -170,13 +166,13 @@
             });
 
             if (formValues) {
-                Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                Swal.fire({ title: 'กำลังโพสต์...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify({ ...formValues, author: sessionData.name }),
                     mode: 'no-cors'
                 });
-                Swal.fire('สำเร็จ!', 'ประกาศถูกบันทึกลงฐานข้อมูลแล้ว', 'success');
+                Swal.fire('สำเร็จ!', 'ประกาศถูกบันทึกแล้ว', 'success');
                 setTimeout(loadAnnouncements, 2000);
             }
         }
@@ -196,18 +192,18 @@
             const today = now.getDate();
             let upcoming = emps.filter(e => e.birthDt && (new Date(e.birthDt).getMonth() + 1) === month)
                                .sort((a, b) => new Date(a.birthDt).getDate() - new Date(b.birthDt).getDate());
-            board.innerHTML = upcoming.length ? '' : '<p class="text-center text-muted small py-3">เดือนนี้ไม่มีวันเกิดเพื่อนพนักงาน</p>';
+            
+            board.innerHTML = upcoming.length ? '' : 'เดือนนี้ไม่มีวันเกิดเพื่อนพนักงาน';
             upcoming.forEach(e => {
                 const bDate = new Date(e.birthDt).getDate();
                 const isToday = bDate === today;
                 board.innerHTML += `
                     <div class="d-flex align-items-center p-3 mb-2 rounded-3 border-start border-4 ${isToday ? 'border-success bg-success bg-opacity-10' : 'border-primary bg-light'}">
-                        <div class="avatar-sm me-3">${e.nickname ? e.nickname[0] : e.firstName[0]}</div>
                         <div class="flex-grow-1">
-                            <div class="fw-bold small">${e.firstName} ${e.lastName} (${e.nickname || '-'})</div>
+                            <div class="fw-bold">${e.firstName} ${e.lastName} (${e.nickname || '-'})</div>
                             <div class="text-muted small">วันที่ ${bDate} ${now.toLocaleDateString('th-TH', {month:'long'})}</div>
                         </div>
-                        ${isToday ? '<span class="badge bg-danger pulse">HBD วันนี้! 🎂</span>' : ''}
+                        ${isToday ? '<span class="badge bg-danger">HBD วันนี้! 🎂</span>' : ''}
                     </div>`;
             });
         }
