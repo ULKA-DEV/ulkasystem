@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULKA SYSTEM Beta 0.05</title>
+    <title>ULKA SYSTEM Beta 1.0.21.1</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -13,19 +13,21 @@
         #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: var(--navy); }
         .login-box { background: #fff; padding: 40px; border-radius: 24px; width: 400px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
         .sidebar { width: 260px; background: #fff; border-right: 1px solid #eee; flex-shrink: 0; }
-        .nav-item { padding: 12px 15px; margin: 4px 10px; border-radius: 10px; cursor: pointer; color: #8392ab; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-        .nav-item.active, .nav-item:hover { background: var(--primary); color: #fff; text-decoration: none; }
+        .nav-item { padding: 12px 15px; margin: 4px 10px; border-radius: 10px; cursor: pointer; color: #8392ab; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: 0.2s; text-decoration: none; }
+        .nav-item.active, .nav-item:hover { background: var(--primary); color: #fff; }
         .announcement-card { background: #fff; border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .announce-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; margin-top: 15px; border: 1px solid #eee; }
         #live-clock { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; line-height: 1; }
+        .bday-item { transition: 0.3s; }
+        .bday-item:hover { transform: scale(1.02); }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-box">
+        <div class="login-box shadow-lg">
             <i class="fas fa-cube fa-3x mb-3 text-primary"></i>
-            <h3 class="fw-bold text-dark">ULKA SYSTEM</h3>
+            <h3 class="fw-bold">ULKA SYSTEM</h3>
             <div class="small text-muted mb-4">INTELLIGENT ELECTRICAL APPLIANCE CO., LTD.<br>Beta 1.0.21.1</div>
             <input type="text" id="user" class="form-control mb-3" placeholder="รหัสพนักงาน (User ID)">
             <input type="password" id="pass" class="form-control mb-4" placeholder="รหัสผ่าน (Password)">
@@ -45,10 +47,10 @@
         <div class="flex-grow-1 overflow-auto p-4">
             <div id="view-news">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-8 text-start">
                         <div class="mb-4">
                             <h2 class="fw-bold mb-1">สวัสดีคุณ <span id="welcome-name" class="text-primary"></span></h2>
-                            <div id="welcome-info" class="badge bg-light text-dark p-2 border shadow-sm"></div>
+                            <div id="welcome-info" class="badge bg-light text-dark p-2 border shadow-sm fw-bold"></div>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -68,6 +70,10 @@
                             <h1 id="live-clock">00:00:00</h1>
                             <div id="live-date" class="text-info fw-bold small mt-2"></div>
                         </div>
+                        <div class="card border-0 shadow-sm p-4 rounded-4 bg-primary text-white text-start">
+                            <h6 class="fw-bold mb-2">ULKA Update</h6>
+                            <p class="small mb-0 opacity-75">เชื่อมต่อระบบสมบูรณ์แบบ v1.0.21.1 (ดึงข้อมูล แผนก/ตำแหน่ง เรียบร้อย)</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -79,14 +85,15 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // ⚠️ เปลี่ยน URL ตรงนี้เป็น Web App URL ล่าสุดของลูกพี่นะครับ
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzU3c9YBus6C2uzyFNSgTnsDyQmQMjfHt6zXUpHv-Kwc66UfdwtFptzwizRWSql2Y0Ggg/exec";
+        // 🚀 ผูกกับ Web App URL ล่าสุดของลูกพี่
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6twgLRoTJ2ByD6ckPbI9nnBeO0bhTSmRtrvAo3duIFHe_6yurrILMQg2UgKLyWbQ/exec";
         let sessionData = null;
 
         async function checkLogin() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
-            if(!u || !p) return;
+            if(!u || !p) return Swal.fire('เตือน','กรุณากรอกข้อมูล','warning');
+            
             const btn = document.getElementById('login-btn');
             btn.disabled = true; btn.innerText = "กำลังตรวจสอบ...";
 
@@ -110,7 +117,7 @@
             document.getElementById('main-app').classList.remove('d-none');
             document.getElementById('welcome-name').innerText = data.name;
             
-            // แสดงแผนก และ ตำแหน่ง
+            // แสดงแผนก และ ตำแหน่ง จาก Google Sheets
             const d = data.dept || "ไม่ระบุแผนก";
             const p = data.pos || "ไม่ระบุตำแหน่ง";
             document.getElementById('welcome-info').innerText = `🏢 แผนก: ${d}  |  💼 ตำแหน่ง: ${p}`;
@@ -123,23 +130,25 @@
         }
 
         async function loadAnnouncements() {
-            const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
-            const list = await resp.json();
-            const board = document.getElementById('announcement-board');
-            board.innerHTML = list.length ? '' : '<p class="text-muted">ยังไม่มีประกาศ</p>';
-            
-            list.forEach(a => {
-                board.innerHTML += `
-                    <div class="announcement-card">
-                        <div class="d-flex justify-content-between small text-muted mb-2 fw-bold">
-                            <span><i class="fas fa-user-circle me-1"></i>${a.author}</span>
-                            <span>${new Date(a.date).toLocaleDateString('th-TH')}</span>
-                        </div>
-                        <h6 class="fw-bold text-dark">${a.title}</h6>
-                        <p class="mb-0 small text-secondary">${a.body}</p>
-                        ${a.img ? `<img src="${a.img}" class="announce-img shadow-sm">` : ''}
-                    </div>`;
-            });
+            try {
+                const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
+                const list = await resp.json();
+                const board = document.getElementById('announcement-board');
+                board.innerHTML = list.length ? '' : '<p class="text-muted">ยังไม่มีประกาศ</p>';
+                
+                list.forEach(a => {
+                    board.innerHTML += `
+                        <div class="announcement-card text-start">
+                            <div class="d-flex justify-content-between small text-muted mb-2 fw-bold">
+                                <span><i class="fas fa-user-circle me-1"></i>${a.author}</span>
+                                <span>${new Date(a.date).toLocaleDateString('th-TH')}</span>
+                            </div>
+                            <h6 class="fw-bold text-dark">${a.title}</h6>
+                            <p class="mb-0 small text-secondary">${a.body}</p>
+                            ${a.img ? `<img src="${a.img}" class="announce-img shadow-sm">` : ''}
+                        </div>`;
+                });
+            } catch (e) { console.error("Load Announce Error"); }
         }
 
         async function openAnnounceModal() {
@@ -185,41 +194,39 @@
             }, 1000);
         }
 
-       function renderBirthdayBoard(emps) {
-    const board = document.getElementById('birthday-board');
-    const now = new Date();
-    const currentMonth = now.getMonth(); // 0 = Jan, 1 = Feb...
-    const todayDate = now.getDate();
-    
-    // กรองเฉพาะคนเกิดเดือนนี้ (รองรับทั้ง format 1992-07-03 และ 07-03)
-    let upcoming = emps.filter(e => {
-        if (!e.birthDt) return false;
-        let bDate = new Date(e.birthDt);
-        // เช็คว่า Month ตรงกับเดือนปัจจุบันไหม
-        return bDate.getMonth() === currentMonth;
-    }).sort((a, b) => new Date(a.birthDt).getDate() - new Date(b.birthDt).getDate());
+        function renderBirthdayBoard(emps) {
+            const board = document.getElementById('birthday-board');
+            const now = new Date();
+            const currentMonth = now.getMonth(); 
+            const todayDate = now.getDate();
+            
+            let upcoming = emps.filter(e => {
+                if (!e.birthDt) return false;
+                let bDate = new Date(e.birthDt);
+                return !isNaN(bDate.getTime()) && bDate.getMonth() === currentMonth;
+            }).sort((a, b) => new Date(a.birthDt).getDate() - new Date(b.birthDt).getDate());
 
-    board.innerHTML = upcoming.length ? '' : '<p class="text-center text-muted small py-3">เดือนนี้ไม่มีวันเกิดเพื่อนพนักงานครับ</p>';
-    
-    upcoming.forEach(e => {
-        const bDateObj = new Date(e.birthDt);
-        const bDate = bDateObj.getDate();
-        const isToday = (bDate === todayDate);
-        const isPast = (bDate < todayDate); // คนที่ผ่านวันเกิดไปแล้วในเดือนนี้
+            board.innerHTML = upcoming.length ? '' : '<p class="text-center text-muted small py-3">เดือนนี้ไม่มีวันเกิดเพื่อนพนักงานครับ</p>';
+            
+            upcoming.forEach(e => {
+                const bDateObj = new Date(e.birthDt);
+                const bDate = bDateObj.getDate();
+                const isToday = (bDate === todayDate);
+                const isPast = (bDate < todayDate);
 
-        board.innerHTML += `
-            <div class="d-flex align-items-center p-3 mb-2 rounded-3 border-start border-4 ${isToday ? 'border-success bg-success bg-opacity-10 shadow-sm' : 'border-primary bg-light'}" 
-                 style="${isPast ? 'opacity: 0.6; filter: grayscale(0.5);' : ''}">
-                <div class="flex-grow-1">
-                    <div class="fw-bold small text-dark">${e.firstName} ${e.lastName} (${e.nickname || '-'})</div>
-                    <div class="text-muted" style="font-size: 0.75rem;">
-                        <i class="fas fa-calendar-day me-1"></i>วันที่ ${bDate} ${now.toLocaleDateString('th-TH', {month:'long'})}
-                    </div>
-                </div>
-                ${isToday ? '<span class="badge bg-danger pulse-animation">HBD วันนี้! 🎂</span>' : ''}
-            </div>`;
-    });
-}
+                board.innerHTML += `
+                    <div class="bday-item d-flex align-items-center p-3 mb-2 rounded-3 border-start border-4 ${isToday ? 'border-success bg-success bg-opacity-10 shadow-sm' : 'border-primary bg-light'}" 
+                         style="${isPast ? 'opacity: 0.6; filter: grayscale(0.5);' : ''}">
+                        <div class="flex-grow-1 text-start">
+                            <div class="fw-bold small text-dark">${e.firstName} ${e.lastName} (${e.nickname || '-'})</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">
+                                <i class="fas fa-calendar-day me-1"></i>วันที่ ${bDate} ${now.toLocaleDateString('th-TH', {month:'long'})}
+                            </div>
+                        </div>
+                        ${isToday ? '<span class="badge bg-danger">HBD วันนี้! 🎂</span>' : ''}
+                    </div>`;
+            });
+        }
 
         function switchView(viewId, el) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
