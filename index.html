@@ -1,61 +1,117 @@
-<div id="news-section" class="overview-banner mb-4">
-    <small class="opacity-75 fw-bold">📢 ข่าวสารประกาศวันนี้</small>
-    <h3 class="fw-bold mb-0">เป้ายอดขายกุมภาพันธ์: ฿ 2,500,000</h3>
-    <p class="small mb-0 mt-2">* ยอดขายสาขาหลักปัจจุบัน: <span id="main-sales">฿ 1,984,469.24</span></p>
-</div>
-
-<div class="widget-switch" id="control-panel">
-    <div class="sw-item active" onclick="showHome()"><i class="fas fa-home"></i> หน้าแรก</div>
-    
-    <div class="sw-item d-none" id="btn-exec" onclick="loadPage('exec_warroom.html', 'btn-exec')">บริหาร</div>
-    <div class="sw-item d-none" id="btn-mkt" onclick="loadPage('mkt_planner.html', 'btn-mkt')">การตลาด</div>
-    <div class="sw-item d-none" id="btn-csr" onclick="loadPage('csr_system.html', 'btn-csr')">บริการลูกค้า</div>
-    <div class="sw-item d-none" id="btn-acc" onclick="loadPage('acc_hr.html', 'btn-acc')">บัญชี</div>
-    <div class="sw-item d-none" id="btn-tech" onclick="loadPage('tech_work.html', 'btn-tech')">งานช่าง</div>
-</div>
-
-<script>
-    // ดึงข้อมูลพนักงานจาก LocalStorage (ที่ได้จากหน้า Login)
-    const user = JSON.parse(localStorage.getItem('user_session')) || { dept: 'guest', role: 'none' };
-
-    function checkAccess() {
-        const dept = user.dept;
-        const role = user.role;
-
-        // 1. ถ้าเป็นประธานหรือ Admin ให้เห็นครบ
-        if (role === 'admin' || dept.includes('ประธาน')) {
-            document.querySelectorAll('.sw-item').forEach(el => el.classList.remove('d-none'));
-        } 
-        // 2. พนักงานทั่วไป เห็นข่าวสาร + แผนกตัวเอง
-        else {
-            if (dept === 'ฝ่ายกลยุทธ์การตลาด') document.getElementById('btn-mkt').classList.remove('d-none');
-            if (dept === 'ฝ่ายบริการหลังการขาย') document.getElementById('btn-csr').classList.remove('d-none');
-            if (dept === 'ฝ่ายบัญชีและบุคคล') document.getElementById('btn-acc').classList.remove('d-none');
-            if (dept === 'แผนกงานช่าง') document.getElementById('btn-tech').classList.remove('d-none');
-        }
-    }
-
-    function loadPage(fileName, btnId) {
-        // ซ่อนข่าวสาร
-        document.getElementById('news-section').style.display = 'none';
-        // เปิด Iframe
-        const container = document.getElementById('widget-container');
-        const iframe = document.getElementById('main-iframe');
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULKA SYSTEM v.1.0</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; font-family: 'Sarabun', sans-serif; padding: 10px; }
         
-        container.style.display = 'block';
-        iframe.src = fileName;
+        /* 📰 News Banner (หน้าแรก) */
+        .news-banner { 
+            background: linear-gradient(135deg, #0d6efd, #0099ff); 
+            color: white; padding: 25px; border-radius: 15px; margin-bottom: 15px; 
+        }
 
-        // เปลี่ยนสีปุ่ม
-        document.querySelectorAll('.sw-item').forEach(el => el.classList.remove('active'));
-        document.getElementById(btnId).classList.add('active');
-    }
+        /* 🎮 แผงปุ่มกด (เมนู) */
+        .menu-grid { 
+            display: flex; gap: 10px; overflow-x: auto; 
+            padding-bottom: 10px; margin-bottom: 15px; 
+            scrollbar-width: none;
+        }
+        .btn-menu { 
+            flex: 0 0 auto; background: white; border: 1px solid #ddd; 
+            padding: 10px 20px; border-radius: 50px; font-weight: bold; font-size: 14px;
+        }
+        .btn-menu.active { background: #0d6efd; color: white; border-color: #0d6efd; }
 
-    function showHome() {
-        document.getElementById('news-section').style.display = 'block';
-        document.getElementById('widget-container').style.display = 'none';
-        document.querySelectorAll('.sw-item').forEach(el => el.classList.remove('active'));
-    }
+        /* 📦 พื้นที่แสดง Widget */
+        .widget-window { 
+            display: none; background: white; border-radius: 15px; 
+            height: 75vh; border: 1px solid #ddd; overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        .d-none { display: none !important; }
+    </style>
+</head>
+<body>
 
-    // รันระบบเช็คสิทธิ์ทันที
-    checkAccess();
-</script>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-primary mb-0">ULKA SYSTEM</h5>
+        <div id="user-info" class="small fw-bold"></div>
+    </div>
+
+    <div class="menu-grid" id="main-menu">
+        <button class="btn-menu active" onclick="goHome()" id="btn-home">📢 ข่าวสาร</button>
+        <button class="btn-menu d-none" id="btn-exec" onclick="openWidget('exec_dashboard.html', 'btn-exec')">บริหาร</button>
+        <button class="btn-menu d-none" id="btn-mkt" onclick="openWidget('mkt_planner.html', 'btn-mkt')">การตลาด</button>
+        <button class="btn-menu d-none" id="btn-csr" onclick="openWidget('csr_system.html', 'btn-csr')">บริการลูกค้า</button>
+        <button class="btn-menu d-none" id="btn-acc" onclick="openWidget('acc_hr.html', 'btn-acc')">บัญชี</button>
+        <button class="btn-menu d-none" id="btn-tech" onclick="openWidget('tech_work.html', 'btn-tech')">งานช่าง</button>
+    </div>
+
+    <div id="home-view">
+        <div class="news-banner">
+            <small class="fw-bold opacity-75">ยอดขายรวมสาขาหลัก (MTD)</small>
+            <h1 class="fw-bold">฿ 1,984,469.24</h1>
+            <p class="mb-0 mt-2 small">* อัปเดตล่าสุด: <span id="current-time"></span></p>
+        </div>
+        <div class="card border-0 shadow-sm rounded-4 p-3">
+            <h6 class="fw-bold"><i class="fas fa-bullhorn me-2 text-danger"></i>ประกาศประกาศ</h6>
+            <p class="text-muted small">ยินดีต้อนรับสู่ระบบ ULKA ใหม่ แยกส่วนงานชัดเจนเพื่อประสิทธิภาพสูงสุด!</p>
+        </div>
+    </div>
+
+    <div id="widget-view" class="widget-window">
+        <iframe id="main-iframe" src=""></iframe>
+    </div>
+
+    <script>
+        // ข้อมูลจำลองจาก Session (ลูกพี่เอามาจากหน้า Login จริงได้เลย)
+        const sessionData = JSON.parse(localStorage.getItem('user_session')) || { user: 'Guest', dept: 'guest', role: 'none' };
+        
+        // 🛠️ เช็คสิทธิ์และแสดงปุ่ม
+        function initApp() {
+            document.getElementById('user-info').innerText = `👤 ${sessionData.user} (${sessionData.dept})`;
+            document.getElementById('current-time').innerText = new Date().toLocaleString('th-TH');
+
+            const dept = sessionData.dept;
+            const role = sessionData.role;
+
+            // สิทธิ์ Admin/ประธาน
+            if (role === 'admin' || dept.includes('ประธาน')) {
+                document.querySelectorAll('.btn-menu').forEach(b => b.classList.remove('d-none'));
+            } else {
+                // สิทธิ์รายแผนก
+                if (dept === 'ฝ่ายกลยุทธ์การตลาด') document.getElementById('btn-mkt').classList.remove('d-none');
+                if (dept === 'ฝ่ายบริการหลังการขาย') document.getElementById('btn-csr').classList.remove('d-none');
+                if (dept === 'ฝ่ายบัญชีและบุคคล') document.getElementById('btn-acc').classList.remove('d-none');
+                if (dept === 'แผนกงานช่าง') document.getElementById('btn-tech').classList.remove('d-none');
+            }
+        }
+
+        function openWidget(url, btnId) {
+            document.getElementById('home-view').style.display = 'none';
+            document.getElementById('widget-view').style.display = 'block';
+            document.getElementById('main-iframe').src = url;
+
+            document.querySelectorAll('.btn-menu').forEach(b => b.classList.remove('active'));
+            document.getElementById(btnId).classList.add('active');
+        }
+
+        function goHome() {
+            document.getElementById('home-view').style.display = 'block';
+            document.getElementById('widget-view').style.display = 'none';
+            document.getElementById('main-iframe').src = "";
+            document.querySelectorAll('.btn-menu').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-home').classList.add('active');
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
