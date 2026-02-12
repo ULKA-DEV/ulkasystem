@@ -1,52 +1,61 @@
-<style>
-    /* 📱 ปรับแถบปุ่มกดให้เหมาะกับนิ้วโป้งและมือถือ */
-    .widget-switch { 
-        display: flex; 
-        gap: 10px; 
-        overflow-x: auto; /* เลื่อนซ้ายขวาได้ถ้าปุ่มล้น */
-        padding: 10px 5px;
-        -webkit-overflow-scrolling: touch; /* ให้เลื่อนแบบลื่นๆ ใน iPhone */
-        scrollbar-width: none; /* ซ่อนแถบเลื่อนในคอท */
-    }
-    .widget-switch::-webkit-scrollbar { display: none; } /* ซ่อนแถบเลื่อนใน Chrome */
-
-    .sw-item { 
-        flex: 0 0 auto; /* ป้องกันปุ่มหดตัว */
-        padding: 8px 18px; 
-        border-radius: 50px; 
-        font-size: 13px; 
-        font-weight: 700;
-        background: var(--card-bg);
-        border: 2px solid #e2e8f0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        white-space: nowrap; /* ห้ามตัวหนังสือตัดบรรทัด */
-    }
-    .sw-item.active { 
-        background: var(--primary); 
-        color: white; 
-        border-color: var(--primary); 
-    }
-
-    /* 📦 ปรับแต่ง Widget Box ให้เต็มจอในมือถือ */
-    @media (max-width: 768px) {
-        .widget-box { 
-            height: 80vh !important; /* ในมือถือให้สูงเกือบเต็มจอ */
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
-        .main-container { padding: 10px; }
-        .page-title { font-size: 0.9rem; }
-    }
-</style>
-
-<div class="widget-switch mt-2 border-top pt-2" id="control-panel">
-    <div class="sw-item d-none" id="btn-exec" onclick="toggleWidget('exec')"><i class="fas fa-crown me-1"></i> บริหาร</div>
-    <div class="sw-item d-none" id="btn-sales-strat" onclick="toggleWidget('sales-strat')"><i class="fas fa-chess me-1"></i> กลยุทธ์ขาย</div>
-    <div class="sw-item d-none" id="btn-mkt" onclick="toggleWidget('mkt')"><i class="fas fa-ad me-1"></i> การตลาด</div>
-    <div class="sw-item d-none" id="btn-it" onclick="toggleWidget('it')"><i class="fas fa-code me-1"></i> ไอที/คอนเทนต์</div>
-    <div class="sw-item d-none" id="btn-after" onclick="toggleWidget('after')"><i class="fas fa-headset me-1"></i> บริการลูกค้า</div>
-    <div class="sw-item d-none" id="btn-acc" onclick="toggleWidget('acc')"><i class="fas fa-calculator me-1"></i> บัญชี/บุคคล</div>
-    <div class="sw-item d-none" id="btn-tech" onclick="toggleWidget('tech')"><i class="fas fa-tools me-1"></i> งานช่าง</div>
-    <div class="sw-item d-none" id="btn-sales-ops" onclick="toggleWidget('sales-ops')"><i class="fas fa-shopping-cart me-1"></i> งานขาย</div>
-    <div class="sw-item d-none" id="btn-install" onclick="toggleWidget('install')"><i class="fas fa-truck-loading me-1"></i> งานติดตั้ง</div>
+<div id="news-section" class="overview-banner mb-4">
+    <small class="opacity-75 fw-bold">📢 ข่าวสารประกาศวันนี้</small>
+    <h3 class="fw-bold mb-0">เป้ายอดขายกุมภาพันธ์: ฿ 2,500,000</h3>
+    <p class="small mb-0 mt-2">* ยอดขายสาขาหลักปัจจุบัน: <span id="main-sales">฿ 1,984,469.24</span></p>
 </div>
+
+<div class="widget-switch" id="control-panel">
+    <div class="sw-item active" onclick="showHome()"><i class="fas fa-home"></i> หน้าแรก</div>
+    
+    <div class="sw-item d-none" id="btn-exec" onclick="loadPage('exec_warroom.html', 'btn-exec')">บริหาร</div>
+    <div class="sw-item d-none" id="btn-mkt" onclick="loadPage('mkt_planner.html', 'btn-mkt')">การตลาด</div>
+    <div class="sw-item d-none" id="btn-csr" onclick="loadPage('csr_system.html', 'btn-csr')">บริการลูกค้า</div>
+    <div class="sw-item d-none" id="btn-acc" onclick="loadPage('acc_hr.html', 'btn-acc')">บัญชี</div>
+    <div class="sw-item d-none" id="btn-tech" onclick="loadPage('tech_work.html', 'btn-tech')">งานช่าง</div>
+</div>
+
+<script>
+    // ดึงข้อมูลพนักงานจาก LocalStorage (ที่ได้จากหน้า Login)
+    const user = JSON.parse(localStorage.getItem('user_session')) || { dept: 'guest', role: 'none' };
+
+    function checkAccess() {
+        const dept = user.dept;
+        const role = user.role;
+
+        // 1. ถ้าเป็นประธานหรือ Admin ให้เห็นครบ
+        if (role === 'admin' || dept.includes('ประธาน')) {
+            document.querySelectorAll('.sw-item').forEach(el => el.classList.remove('d-none'));
+        } 
+        // 2. พนักงานทั่วไป เห็นข่าวสาร + แผนกตัวเอง
+        else {
+            if (dept === 'ฝ่ายกลยุทธ์การตลาด') document.getElementById('btn-mkt').classList.remove('d-none');
+            if (dept === 'ฝ่ายบริการหลังการขาย') document.getElementById('btn-csr').classList.remove('d-none');
+            if (dept === 'ฝ่ายบัญชีและบุคคล') document.getElementById('btn-acc').classList.remove('d-none');
+            if (dept === 'แผนกงานช่าง') document.getElementById('btn-tech').classList.remove('d-none');
+        }
+    }
+
+    function loadPage(fileName, btnId) {
+        // ซ่อนข่าวสาร
+        document.getElementById('news-section').style.display = 'none';
+        // เปิด Iframe
+        const container = document.getElementById('widget-container');
+        const iframe = document.getElementById('main-iframe');
+        
+        container.style.display = 'block';
+        iframe.src = fileName;
+
+        // เปลี่ยนสีปุ่ม
+        document.querySelectorAll('.sw-item').forEach(el => el.classList.remove('active'));
+        document.getElementById(btnId).classList.add('active');
+    }
+
+    function showHome() {
+        document.getElementById('news-section').style.display = 'block';
+        document.getElementById('widget-container').style.display = 'none';
+        document.querySelectorAll('.sw-item').forEach(el => el.classList.remove('active'));
+    }
+
+    // รันระบบเช็คสิทธิ์ทันที
+    checkAccess();
+</script>
