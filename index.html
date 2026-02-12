@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULKA SYSTEM v1.0.25</title>
+    <title>ULKA SYSTEM v1.0.26</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -17,23 +17,21 @@
         #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; }
         .login-box { background: #fff; padding: 40px; border-radius: 24px; width: 380px; text-align: center; }
 
-        /* 🏢 Layout & Sidebar */
+        /* 🏢 Sidebar & Layout */
         .sidebar { width: 260px; background: var(--card-bg); border-right: 1px solid #eee; flex-shrink: 0; text-align: left; transition: 0.3s; }
         .nav-item { padding: 12px 15px; margin: 4px 10px; border-radius: 10px; cursor: pointer; color: #8392ab; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: 0.2s; text-decoration: none; }
         .nav-item.active, .nav-item:hover { background: var(--primary); color: #fff; }
         .widget-card { background: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid #eee; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.02); overflow: hidden; }
 
         /* 📢 Marquee (ตัวหนังสือวิ่ง) */
-        .marquee-box { background: #ff4757; color: white; padding: 8px 0; font-weight: bold; overflow: hidden; white-space: nowrap; border-radius: 10px; margin-bottom: 20px; }
-        .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
+        .marquee-box { background: #ff4757; color: white; padding: 8px 0; font-weight: bold; overflow: hidden; white-space: nowrap; border-radius: 10px; margin-bottom: 20px; border: 2px solid rgba(255,255,255,0.2); }
+        .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 30s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
         /* 🌙 Dark Mode Toggle */
         .dark-toggle { position: fixed; bottom: 20px; right: 20px; z-index: 1060; }
-        .settings-drawer { position: fixed; right: -320px; top: 0; width: 320px; height: 100%; background: var(--card-bg); box-shadow: -5px 0 15px rgba(0,0,0,0.1); z-index: 1050; transition: 0.3s; padding: 25px; }
-        .settings-drawer.show { right: 0; }
-        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1040; display: none; }
-        .drawer-overlay.show { display: block; }
+        
+        iframe { transition: 0.3s; }
     </style>
 </head>
 <body>
@@ -42,20 +40,16 @@
         <div class="login-box shadow-lg">
             <i class="fas fa-cube fa-3x mb-3 text-primary"></i>
             <h3 class="fw-bold text-dark">ULKA SYSTEM</h3>
-            <div class="small text-muted mb-4">Beta 1.0.25</div>
+            <div class="small text-muted mb-4">INTELLIGENT ELECTRICAL APPLIANCE<br>Beta 1.0.26</div>
             <input type="text" id="user" class="form-control mb-3" placeholder="User ID">
             <input type="password" id="pass" class="form-control mb-4" placeholder="Password">
-            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold py-2 mb-3 shadow-sm">SIGN IN</button>
-            <div class="mt-3 pt-3 border-top">
-                <a href="mailto:info@ulka.co.th" class="small text-primary fw-bold text-decoration-none">ติดต่อ info@ulka.co.th</a>
-            </div>
+            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold py-2 mb-3">SIGN IN</button>
+            <div class="mt-3 pt-3 border-top"><a href="mailto:info@ulka.co.th" class="small text-primary text-decoration-none fw-bold">ติดต่อ info@ulka.co.th</a></div>
         </div>
     </div>
 
     <div class="dark-toggle">
-        <button class="btn btn-dark rounded-circle shadow" onclick="toggleDarkMode()">
-            <i class="fas fa-moon"></i>
-        </button>
+        <button class="btn btn-dark rounded-circle shadow-lg p-3" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
     </div>
 
     <div id="main-app" class="d-none d-flex h-100">
@@ -64,9 +58,8 @@
             <div onclick="switchView('news', this)" class="nav-item active"><i class="fas fa-newspaper"></i> ข่าวสาร</div>
             <div onclick="switchView('dashboard', this)" class="nav-item"><i class="fas fa-chart-line"></i> Sales War Room</div>
             <div onclick="switchView('biz_plan', this)" class="nav-item"><i class="fas fa-file-invoice-dollar"></i> Business Plan</div>
-            <div onclick="switchView('csr', this)" class="nav-item"><i class="fas fa-headset"></i> ระบบ CSR</div>
-            <div class="mt-auto nav-item text-secondary" onclick="toggleDrawer()"><i class="fas fa-plus-circle"></i> ปรับแต่ง Widget</div>
-            <div class="nav-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+            <div onclick="switchView('CSR', this)" class="nav-item"><i class="fas fa-headset"></i> ระบบ CSR</div>
+            <div class="mt-auto nav-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </div>
         
         <div class="flex-grow-1 overflow-auto p-4 text-start">
@@ -80,22 +73,25 @@
                         <h2 class="fw-bold mb-1">สวัสดีคุณ <span id="welcome-name" class="text-primary"></span></h2>
                         <div id="welcome-info" class="badge bg-light text-dark p-2 border shadow-sm fw-bold"></div>
                     </div>
-                    <button id="admin-announce-btn" class="btn btn-primary rounded-pill d-none" onclick="openAnnounceModal()">
+                    <button id="admin-announce-btn" class="btn btn-primary rounded-pill d-none shadow-sm" onclick="openAnnounceModal()">
                         <i class="fas fa-plus me-2"></i> สร้างประกาศใหม่
                     </button>
                 </div>
 
-                <div class="row g-4 mb-4" id="news-widget-grid"></div>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4"><div class="widget-card text-center shadow-sm" id="content-clock">โหลดนาฬิกา...</div></div>
+                    <div class="col-md-8"><div class="widget-card shadow-sm" id="content-birthday">โหลดวันเกิดพนักงาน...</div></div>
+                </div>
 
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <div class="widget-card">
+                        <div class="widget-card shadow-sm border-top border-primary border-4">
                             <h6 class="fw-bold mb-3 text-primary"><i class="fas fa-bullhorn me-2"></i>ประกาศทั่วไป</h6>
                             <div id="general-news-list" class="small">กำลังโหลด...</div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="widget-card">
+                        <div class="widget-card shadow-sm border-top border-success border-4">
                             <h6 class="fw-bold mb-3 text-success"><i class="fas fa-info-circle me-2"></i>แจ้งข่าวสารบริษัท</h6>
                             <div id="info-news-list" class="small">กำลังโหลด...</div>
                         </div>
@@ -111,53 +107,45 @@
 
     <div class="modal fade" id="announceModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-                <div class="modal-header">
-                    <h5 class="fw-bold">เขียนประกาศใหม่</h5>
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold">📢 ส่งประกาศใหม่</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <input type="text" id="ann-title" class="form-control mb-3" placeholder="หัวข้อประกาศ (เช่น แจ้งวันหยุด)">
-                    <textarea id="ann-body" class="form-control mb-3" rows="4" placeholder="รายละเอียดเนื้อหา..."></textarea>
+                <div class="modal-body pt-3">
+                    <label class="small fw-bold mb-1">หมวดหมู่ประกาศ:</label>
+                    <select id="ann-category" class="form-select mb-3 shadow-sm">
+                        <option value="important">🚩 ประกาศสำคัญ (ตัวหนังสือวิ่ง)</option>
+                        <option value="general">📢 ประกาศทั่วไป</option>
+                        <option value="info">ℹ️ แจ้งข่าวสารบริษัท</option>
+                    </select>
+                    <input type="text" id="ann-title" class="form-control mb-3" placeholder="หัวข้อประกาศ">
+                    <textarea id="ann-body" class="form-control mb-3" rows="4" placeholder="เนื้อหาประกาศ..."></textarea>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-primary w-100 rounded-pill" onclick="submitAnnounce()">🚀 ส่งประกาศไปที่ Sheets</button>
+                    <button type="button" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow" onclick="submitAnnounce()">ยืนยันและประกาศ</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="drawer-overlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
-    <div id="settings-drawer" class="settings-drawer">
-        <h5 class="fw-bold mb-4">ปรับแต่ง Widgets</h5>
-        <div id="widget-selectors"></div>
-        <button class="btn btn-primary w-100 mt-4 rounded-pill fw-bold" onclick="toggleDrawer()">ตกลง</button>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // 🚀 URL ที่ลูกพี่ระบุล่าสุด
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGdZYUboeNA4HD-QKRPkveP67g23CvAMVFFPyfn_8tg3gnC9PQ5chLlsOMOA_pix7p5Q/exec";
+        // 🚀 URL ล่าสุดที่คุณส่งมา
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcCjV81SFv-2Y8rdzb5qZ_u8iRIyHEtuJTruMyff9sVAVyfK_SWntv28vS7FKf77FFZQ/exec";
         let sessionData = null;
 
-        const widgetLibrary = {
-            'clock': { name: 'นาฬิกา', icon: 'fa-clock', col: 'col-md-4', default: true },
-            'birthday': { name: 'วันเกิด (Active)', icon: 'fa-birthday-cake', col: 'col-md-4', default: true }
-        };
-
         async function checkLogin() {
-            const u = document.getElementById('user').value.trim();
-            const p = document.getElementById('pass').value.trim();
+            const u = document.getElementById('user').value, p = document.getElementById('pass').value;
             if(!u || !p) return;
             const btn = document.getElementById('login-btn');
-            btn.disabled = true; btn.innerText = "กำลังเข้าสู่ระบบ...";
-
+            btn.disabled = true; btn.innerText = "กำลังเข้าระบบ...";
             try {
                 const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
                 const res = await resp.json();
                 if(res.success) { localStorage.setItem("user_session", JSON.stringify(res)); initApp(res); }
-                else { Swal.fire('ล้มเหลว', res.message, 'error'); }
+                else { Swal.fire('ผิดพลาด', 'ID หรือรหัสผ่านไม่ถูกต้อง', 'error'); }
             } catch (e) { Swal.fire('Error', 'เซิร์ฟเวอร์ขัดข้อง', 'error'); }
             finally { btn.disabled = false; btn.innerText = "SIGN IN"; }
         }
@@ -168,43 +156,42 @@
             document.getElementById('main-app').classList.remove('d-none');
             document.getElementById('welcome-name').innerText = data.name;
             document.getElementById('welcome-info').innerText = `🏢 ${data.dept} | 💼 ${data.pos}`;
-            
             if(data.role === 'admin' || data.role === 'manager') document.getElementById('admin-announce-btn').classList.remove('d-none');
-
-            setupWidgetDrawer();
-            applyWidgetSettings();
-            loadNewsCategories();
+            startClock(); loadNews(); loadBday();
         }
 
-        async function loadNewsCategories() {
+        async function loadNews() {
             const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
             const list = await resp.json();
-            if(list.length > 0) {
+            
+            // 1. จัดการตัวหนังสือวิ่ง
+            const important = list.find(a => a.category === 'important');
+            if(important) {
                 document.getElementById('important-news-bar').classList.remove('d-none');
-                document.getElementById('marquee-content').innerText = `ประกาศสำคัญ: ${list[0].title} - ${list[0].body} (โดย ${list[0].author})`;
+                document.getElementById('marquee-content').innerText = `🔥 สำคัญ: ${important.title} - ${important.body} (${important.author})`;
+            } else {
+                document.getElementById('important-news-bar').classList.add('d-none');
             }
-            const genNews = list.filter(a => !a.title.includes('แจ้ง'));
-            const infoNews = list.filter(a => a.title.includes('แจ้ง'));
 
-            document.getElementById('general-news-list').innerHTML = genNews.map(a => `<div class="p-2 border-bottom mb-1"><b>${a.title}</b><br><span class="text-muted">${a.body}</span></div>`).join('') || 'ไม่มีข้อมูล';
-            document.getElementById('info-news-list').innerHTML = infoNews.map(a => `<div class="p-2 border-bottom mb-1"><b>${a.title}</b><br><span class="text-muted">${a.body}</span></div>`).join('') || 'ไม่มีข้อมูล';
+            // 2. แยกหมวดหมู่ข่าว
+            document.getElementById('general-news-list').innerHTML = list.filter(a => a.category === 'general').slice(0, 5).map(a => `
+                <div class="p-2 border-bottom mb-2"><b class="text-primary">${a.title}</b><br><span class="text-muted small">${a.body}</span></div>
+            `).join('') || 'ไม่มีประกาศทั่วไป';
+
+            document.getElementById('info-news-list').innerHTML = list.filter(a => a.category === 'info').slice(0, 5).map(a => `
+                <div class="p-2 border-bottom mb-2"><b class="text-success">${a.title}</b><br><span class="text-muted small">${a.body}</span></div>
+            `).join('') || 'ไม่มีข่าวสารบริษัท';
         }
 
         async function submitAnnounce() {
-            const title = document.getElementById('ann-title').value.trim();
-            const body = document.getElementById('ann-body').value.trim();
+            const title = document.getElementById('ann-title').value, body = document.getElementById('ann-body').value, category = document.getElementById('ann-category').value;
             if(!title || !body) return;
-
-            const payload = { action: 'addAnnounce', title: title, body: body, author: sessionData.name };
+            const payload = { action: 'addAnnounce', title, body, category, author: sessionData.name };
+            Swal.fire({title: 'กำลังส่งประกาศ...', didOpen: () => Swal.showLoading()});
             await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-            Swal.fire('สำเร็จ', 'ประกาศถูกบันทึกลง Sheets แล้ว', 'success');
+            Swal.fire('สำเร็จ', 'ประกาศถูกจัดเข้าหมวดหมู่เรียบร้อย', 'success');
             bootstrap.Modal.getInstance(document.getElementById('announceModal')).hide();
-            loadNewsCategories();
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode'));
+            loadNews();
         }
 
         function switchView(v, el) {
@@ -216,11 +203,21 @@
             if(!isNews) document.getElementById('main-iframe').src = v + ".html";
         }
 
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode'));
+        }
+
+        function startClock() { setInterval(() => { const now = new Date(); if(document.getElementById('content-clock')) document.getElementById('content-clock').innerHTML = `<h2 class="fw-bold mb-0 text-primary">${now.toLocaleTimeString('th-TH')}</h2><div class="small text-muted fw-bold">${now.toLocaleDateString('th-TH',{weekday:'long', day:'numeric', month:'long'})}</div>`; }, 1000); }
+        
+        function loadBday() {
+            const month = new Date().getMonth();
+            const bdays = sessionData.allEmp.filter(e => e.birthDt && new Date(e.birthDt).getMonth() === month);
+            document.getElementById('content-birthday').innerHTML = `<h6 class="fw-bold mb-3 text-danger"><i class="fas fa-birthday-cake me-2"></i>วันเกิดพนักงานเดือนนี้</h6>` + 
+                (bdays.length ? bdays.map(e => `<span class="badge bg-light text-dark border me-2 p-2 mb-2">${e.firstName} (${e.nickname})</span>`).join('') : 'ไม่มีวันเกิดในเดือนนี้');
+        }
+
         function openAnnounceModal() { new bootstrap.Modal(document.getElementById('announceModal')).show(); }
-        function setupWidgetDrawer() { /* โค้ดสร้างสวิตช์ Widget */ }
-        function applyWidgetSettings() { /* โค้ดเปิดปิด Widget */ }
-        function startClock() { setInterval(() => { const now = new Date(); if(document.getElementById('content-clock')) document.getElementById('content-clock').innerHTML = `<div class="text-center py-2 bg-dark text-white rounded-4"><h2 class="mb-0">${now.toLocaleTimeString('th-TH')}</h2></div>`; }, 1000); }
-        function toggleDrawer() { document.getElementById('settings-drawer').classList.toggle('show'); document.getElementById('drawer-overlay').classList.toggle('show'); }
         function logout() { localStorage.clear(); location.reload(); }
 
         window.onload = () => {
