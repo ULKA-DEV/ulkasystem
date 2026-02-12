@@ -2,147 +2,212 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ULKA SYSTEM v1.0.31</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #007bff; --success: #10b981; --danger: #ef4444; }
-        body { font-family: 'Sarabun', sans-serif; background: transparent; padding: 10px; color: #1e293b; overflow-x: hidden; }
+        :root { --primary: #007bff; --navy: #0f172a; --bg-app: #f4f7f6; --text-main: #1e293b; --card-bg: #ffffff; }
+        body.dark-mode { --bg-app: #0f172a; --text-main: #f1f5f9; --card-bg: #1e293b; }
         
-        /* 📱 Container Adjustments */
-        .war-card { background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-app); color: var(--text-main); min-height: 100vh; margin: 0; padding-top: 110px; transition: 0.3s; }
         
-        /* 💰 Stats */
-        .stat-value { font-size: calc(1.8rem + 1vw); font-weight: 800; color: var(--primary); line-height: 1.2; word-break: break-all; }
-        .progress { height: 12px; border-radius: 10px; margin: 12px 0; background: #f1f5f9; }
-        
-        /* 🎯 Target Input */
-        .input-group-target { background: #fff; padding: 10px 15px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #dee2e6; width: 100%; max-width: 350px; }
-        .input-target { border: 2px solid var(--primary); border-radius: 8px; width: 120px; text-align: center; font-weight: 800; color: var(--primary); outline: none; }
+        /* 🔒 Login Screen */
+        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; }
+        .login-box { background: #fff; padding: 30px; border-radius: 24px; width: 350px; text-align: center; }
 
-        /* 📊 Grid Adjustments */
-        @media (max-width: 768px) {
-            body { padding: 5px; }
-            .war-card { padding: 15px; }
-            .stat-value { font-size: 1.8rem; }
-            .header-row { flex-direction: column; text-align: center; gap: 15px; }
-            .target-box { justify-content: center !important; }
-            .detail-row > div { border-bottom: 1px solid #eee; border-right: none !important; padding: 10px 0; }
-            .detail-row > div:last-child { border-bottom: none; }
+        /* 🔝 Command Header */
+        .command-center { 
+            position: fixed; top: 0; left: 0; right: 0; 
+            background: var(--card-bg); border-bottom: 1px solid rgba(0,0,0,0.1);
+            z-index: 1100; padding: 10px 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .badge-live { font-size: 0.65rem; background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 50px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        /* 🔘 Toggle Switch Styling */
+        .widget-switch { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .widget-switch::-webkit-scrollbar { display: none; }
+        .sw-item { 
+            background: rgba(0,0,0,0.05); border-radius: 50px; padding: 5px 15px; 
+            font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap;
+            border: 2px solid transparent; transition: 0.2s; color: #8392ab;
+        }
+        body.dark-mode .sw-item { background: rgba(255,255,255,0.1); }
+        .sw-item.active { border-color: var(--primary); color: var(--primary); background: rgba(0,123,255,0.1); }
+
+        /* 📦 Widget System */
+        .widget-box { background: var(--card-bg); border-radius: 24px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: 500px; overflow: hidden; position: relative; }
+        .widget-box.hidden { display: none; }
+        .widget-header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 📢 Marquee */
+        .marquee-box { background: #ff4757; color: white; padding: 8px 0; font-weight: 800; overflow: hidden; white-space: nowrap; border-radius: 12px; margin-bottom: 20px; }
+        .marquee-text { display: inline-block; animation: marquee 25s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        iframe { width: 100%; height: calc(100% - 55px); border: none; }
+        .btn-tool { background: none; border: none; color: var(--text-main); font-size: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="container-fluid pb-5">
-        <div class="d-flex justify-content-between align-items-center mb-3 header-row">
-            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-rocket text-primary me-2"></i>Sales War Room</h5>
-            <div class="d-flex align-items-center target-box">
-                <div class="input-group-target d-flex align-items-center justify-content-center">
-                    <span class="small fw-bold me-2">เป้า:</span>
-                    <input type="number" id="target-val" class="input-target" value="8000000" oninput="calculate()">
-                    <span class="small fw-bold ms-2">฿</span>
-                </div>
+    <div id="login-screen">
+        <div class="login-box shadow-lg">
+            <i class="fas fa-cube fa-3x text-primary mb-3"></i>
+            <h4 class="fw-bold text-dark">ULKA CONTROL</h4>
+            <input type="text" id="user" class="form-control mb-2" placeholder="User ID">
+            <input type="password" id="pass" class="form-control mb-3" placeholder="Password">
+            <button onclick="checkLogin()" class="btn btn-primary w-100 fw-bold">ENTER SYSTEM</button>
+        </div>
+    </div>
+
+    <header class="command-center" id="main-app-header" style="display:none;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex align-items-center gap-2">
+                <div class="fw-black text-primary" id="h-time" style="font-size: 1.3rem;">00:00:00</div>
+                <div class="badge bg-danger rounded-pill" id="h-bday-badge" style="display:none;"><i class="fas fa-cake-candles"></i> <span id="h-bday-name"></span></div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn-tool" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+                <button class="btn-tool text-danger" onclick="logout()"><i class="fas fa-power-off"></i></button>
             </div>
         </div>
+        <div class="widget-switch">
+            <div class="sw-item active" id="sw-news" onclick="toggleWidget('news')"><i class="fas fa-newspaper me-1"></i> ข่าวสาร</div>
+            <div class="sw-item" id="sw-sales" onclick="toggleWidget('sales')"><i class="fas fa-chart-line me-1"></i> ยอดขาย</div>
+            <div class="sw-item" id="sw-plan" onclick="toggleWidget('plan')"><i class="fas fa-file-invoice-dollar me-1"></i> แผนธุรกิจ</div>
+            <div class="sw-item" id="sw-csr" onclick="toggleWidget('csr')"><i class="fas fa-headset me-1"></i> CSR</div>
+        </div>
+    </header>
 
-        <div class="row g-3 mb-3">
-            <div class="col-12 col-md-4">
-                <div class="war-card border-top border-primary border-4">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted fw-bold text-uppercase" style="font-size: 0.7rem;">ยอดขายปัจจุบัน</small>
-                        <span class="badge-live fw-bold">LIVE SYNC</span>
-                    </div>
-                    <div class="stat-value my-1" id="cur-sales">฿0</div>
-                    <div class="progress">
-                        <div id="prog-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 0%"></div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <small class="fw-bold text-primary" id="prog-pct">0%</small>
-                        <small class="text-muted" style="font-size: 0.7rem;">ของเป้าหมาย</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-4">
-                <div class="war-card shadow-sm">
-                    <small class="text-muted fw-bold text-uppercase" style="font-size: 0.7rem;">พนักงาน</small>
-                    <div class="d-flex align-items-baseline gap-1">
-                        <div class="stat-value text-dark" style="font-size: 2rem;">51</div>
-                        <div class="fw-bold text-muted small">คน</div>
-                    </div>
-                    <div style="font-size: 0.6rem;" class="text-success fw-bold"><i class="fas fa-user-check"></i> Active Only</div>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-4">
-                <div class="war-card bg-primary text-white border-0 shadow">
-                    <small class="fw-bold opacity-75 text-uppercase" style="font-size: 0.7rem;">เฉลี่ย/คน</small>
-                    <div class="stat-value text-white mt-1" id="per-head" style="font-size: 1.5rem;">฿0</div>
-                    <div style="font-size: 0.6rem;" class="opacity-75 mt-1">ยอดขาย ÷ 51</div>
-                </div>
-            </div>
+    <div class="container-fluid px-3" id="dashboard-area" style="display:none;">
+        
+        <div class="marquee-box d-none" id="important-news-bar">
+            <div class="marquee-text" id="marquee-content"></div>
         </div>
 
-        <div class="war-card bg-light border-0">
-            <div class="row text-center detail-row">
-                <div class="col-12 col-md-4 border-end">
-                    <small class="text-muted fw-bold d-block" style="font-size: 0.75rem;">ทำไปแล้ว</small>
-                    <div class="fw-bold text-success h5 mb-0" id="done-sales">฿0</div>
+        <div class="row g-4">
+            <div class="col-12 col-xl-6" id="wd-news">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <b class="text-primary"><i class="fas fa-newspaper me-2"></i>ประกาศภายใน</b>
+                        <button id="admin-announce-btn" class="btn btn-sm btn-primary rounded-pill d-none" onclick="openAnnounceModal()">+ เขียนประกาศ</button>
+                    </div>
+                    <div class="p-3 overflow-auto h-100 pb-5">
+                        <div class="row">
+                            <div class="col-6"><h6 class="fw-bold small">📢 ทั่วไป</h6><div id="list-gen" class="small"></div></div>
+                            <div class="col-6 border-start"><h6 class="fw-bold small">ℹ️ แจ้งทราบ</h6><div id="list-info" class="small"></div></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-12 col-md-4 border-end">
-                    <small class="text-muted fw-bold d-block" style="font-size: 0.75rem;">ยังขาดอีก</small>
-                    <div class="fw-bold text-danger h5 mb-0" id="remaining">฿0</div>
+            </div>
+
+            <div class="col-12 col-xl-6 hidden" id="wd-sales">
+                <div class="widget-box">
+                    <div class="widget-header"><b><i class="fas fa-chart-line me-2 text-success"></i>Sales War Room</b></div>
+                    <iframe src="dashboard.html"></iframe>
                 </div>
-                <div class="col-12 col-md-4">
-                    <small class="text-muted fw-bold d-block" style="font-size: 0.75rem;">ต้องทำเฉลี่ย/วัน (18 วัน)</small>
-                    <div class="fw-bold text-dark h5 mb-0" id="avg-daily">฿0</div>
+            </div>
+
+            <div class="col-12 col-xl-6 hidden" id="wd-plan">
+                <div class="widget-box">
+                    <div class="widget-header"><b><i class="fas fa-file-invoice-dollar me-2 text-warning"></i>Business Plan</b></div>
+                    <iframe src="biz_plan.html"></iframe>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-6 hidden" id="wd-csr">
+                <div class="widget-box">
+                    <div class="widget-header"><b><i class="fas fa-headset me-2 text-info"></i>Customer Service</b></div>
+                    <iframe src="CSR.html"></iframe>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="announceModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-body">
+                    <select id="ann-category" class="form-select mb-2"><option value="important">ประกาศสำคัญ (ตัววิ่ง)</option><option value="general">ทั่วไป</option><option value="info">แจ้งข่าวสาร</option></select>
+                    <input type="text" id="ann-title" class="form-control mb-2" placeholder="หัวข้อ">
+                    <textarea id="ann-body" class="form-control mb-3" rows="3" placeholder="เนื้อหา..."></textarea>
+                    <button class="btn btn-primary w-100 rounded-pill" onclick="submitAnnounce()">ยืนยันประกาศ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcCjV81SFv-2Y8rdzb5qZ_u8iRIyHEtuJTruMyff9sVAVyfK_SWntv28vS7FKf77FFZQ/exec";
-        let salesTotal = 0;
-        const staffCount = 51;
+        let sessionData = null;
 
-        async function init() {
-            try {
-                const sResp = await fetch(`${SCRIPT_URL}?action=getSalesData`);
-                const sData = await sResp.json();
-                // รวมยอดขายทั้งหมดจากข้อมูลที่ได้
-                salesTotal = sData.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
-                calculate();
-            } catch (e) { 
-                console.error("Fetch Error:", e);
-                salesTotal = 1984469.24; // ยอดสำรองกรณี Error
-                calculate();
+        async function checkLogin() {
+            const u = document.getElementById('user').value, p = document.getElementById('pass').value;
+            if(!u || !p) return;
+            const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
+            const res = await resp.json();
+            if(res.success) { localStorage.setItem("user_session", JSON.stringify(res)); initApp(res); }
+            else { Swal.fire('Error', 'ID/Pass ผิด', 'error'); }
+        }
+
+        function initApp(data) {
+            sessionData = data;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app-header').style.display = 'block';
+            document.getElementById('dashboard-area').style.display = 'block';
+            if(data.role === 'admin' || data.role === 'manager') document.getElementById('admin-announce-btn').classList.remove('d-none');
+            startClock(); loadNews(); loadBday();
+        }
+
+        function toggleWidget(id) {
+            const wd = document.getElementById('wd-' + id);
+            const sw = document.getElementById('sw-' + id);
+            wd.classList.toggle('hidden');
+            sw.classList.toggle('active');
+        }
+
+        async function loadNews() {
+            const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
+            const list = await resp.json();
+            const imp = list.find(a => a.category === 'important');
+            if(imp) {
+                document.getElementById('important-news-bar').classList.remove('d-none');
+                document.getElementById('marquee-content').innerText = `🔥 สำคัญ: ${imp.title} - ${imp.body}`;
+            }
+            document.getElementById('list-gen').innerHTML = list.filter(a => a.category === 'general').map(a => `<div class="mb-2 p-1 border-bottom"><b>${a.title}</b><br><span class="text-muted" style="font-size:10px;">${a.body}</span></div>`).join('');
+            document.getElementById('list-info').innerHTML = list.filter(a => a.category === 'info').map(a => `<div class="mb-2 p-1 border-bottom"><b>${a.title}</b><br><span class="text-muted" style="font-size:10px;">${a.body}</span></div>`).join('');
+        }
+
+        async function submitAnnounce() {
+            const title = document.getElementById('ann-title').value, body = document.getElementById('ann-body').value, category = document.getElementById('ann-category').value;
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addAnnounce', title, body, category, author: sessionData.name }) });
+            bootstrap.Modal.getInstance(document.getElementById('announceModal')).hide();
+            loadNews();
+        }
+
+        function startClock() { 
+            setInterval(() => { 
+                const now = new Date(); 
+                document.getElementById('h-time').innerText = now.toLocaleTimeString('th-TH');
+            }, 1000); 
+        }
+
+        function loadBday() {
+            const month = new Date().getMonth();
+            const bdays = sessionData.allEmp.filter(e => e.birthDt && new Date(e.birthDt).getMonth() === month);
+            if(bdays.length > 0) {
+                document.getElementById('h-bday-badge').style.display = 'inline-block';
+                document.getElementById('h-bday-name').innerText = bdays[0].nickname;
             }
         }
 
-        function calculate() {
-            const target = parseFloat(document.getElementById('target-val').value) || 1;
-            const progress = (salesTotal / target * 100).toFixed(1);
-            const remain = target - salesTotal;
-            const daysLeft = 18;
-            const avg = remain > 0 ? (remain / daysLeft) : 0;
-
-            document.getElementById('cur-sales').innerText = '฿' + salesTotal.toLocaleString(undefined, {maximumFractionDigits: 0});
-            document.getElementById('done-sales').innerText = '฿' + salesTotal.toLocaleString();
-            document.getElementById('per-head').innerText = '฿' + (salesTotal / staffCount).toLocaleString(undefined, {maximumFractionDigits: 0});
-            document.getElementById('prog-pct').innerText = progress + '%';
-            document.getElementById('prog-bar').style.width = Math.min(progress, 100) + '%';
-            document.getElementById('remaining').innerText = '฿' + (remain > 0 ? remain : 0).toLocaleString();
-            document.getElementById('avg-daily').innerText = '฿' + avg.toLocaleString(undefined, {maximumFractionDigits: 0});
-        }
-        
-        init();
-        setInterval(init, 300000); // อัปเดตทุก 5 นาที
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); }
+        function openAnnounceModal() { new bootstrap.Modal(document.getElementById('announceModal')).show(); }
+        function logout() { localStorage.clear(); location.reload(); }
+        window.onload = () => { if(localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode'); if(localStorage.getItem("user_session")) initApp(JSON.parse(localStorage.getItem("user_session"))); };
     </script>
 </body>
 </html>
