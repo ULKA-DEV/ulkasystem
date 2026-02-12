@@ -3,142 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM v1.0.31</title>
+    <title>ULKA SYSTEM v1.0.35 - Command Center</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #007bff; --navy: #0f172a; --bg-app: #f4f7f6; --text-main: #1e293b; --card-bg: #ffffff; }
-        body.dark-mode { --bg-app: #0f172a; --text-main: #f1f5f9; --card-bg: #1e293b; }
+        :root { --primary: #007bff; --bg-app: #f4f7f6; --text-main: #1e293b; --card-bg: #ffffff; --header-bg: #ffffff; }
+        body.dark-mode { --bg-app: #0f172a; --text-main: #f1f5f9; --card-bg: #1e293b; --header-bg: #1e293b; }
         
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg-app); color: var(--text-main); min-height: 100vh; margin: 0; padding-top: 110px; transition: 0.3s; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-app); color: var(--text-main); height: 100vh; overflow: hidden; margin: 0; transition: 0.3s; padding-top: 110px; }
         
         /* 🔒 Login Screen */
-        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; }
-        .login-box { background: #fff; padding: 30px; border-radius: 24px; width: 350px; text-align: center; }
+        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; padding: 20px; }
+        .login-box { background: #fff; padding: 30px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; }
 
-        /* 🔝 Command Header */
-        .command-center { 
-            position: fixed; top: 0; left: 0; right: 0; 
-            background: var(--card-bg); border-bottom: 1px solid rgba(0,0,0,0.1);
-            z-index: 1100; padding: 10px 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        /* 🔘 Toggle Switch Styling */
-        .widget-switch { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
-        .widget-switch::-webkit-scrollbar { display: none; }
-        .sw-item { 
-            background: rgba(0,0,0,0.05); border-radius: 50px; padding: 5px 15px; 
-            font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap;
-            border: 2px solid transparent; transition: 0.2s; color: #8392ab;
-        }
-        body.dark-mode .sw-item { background: rgba(255,255,255,0.1); }
-        .sw-item.active { border-color: var(--primary); color: var(--primary); background: rgba(0,123,255,0.1); }
-
-        /* 📦 Widget System */
-        .widget-box { background: var(--card-bg); border-radius: 24px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: 500px; overflow: hidden; position: relative; }
-        .widget-box.hidden { display: none; }
-        .widget-header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        /* 🔝 Double-Layer Header (ศูนย์รวมปุ่ม) */
+        .top-nav-area { position: fixed; top: 0; left: 0; right: 0; z-index: 1100; background: var(--header-bg); border-bottom: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         
-        /* 📢 Marquee */
-        .marquee-box { background: #ff4757; color: white; padding: 8px 0; font-weight: 800; overflow: hidden; white-space: nowrap; border-radius: 12px; margin-bottom: 20px; }
-        .marquee-text { display: inline-block; animation: marquee 25s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        /* Layer 1: Clock & Info */
+        .header-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 5px 15px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        
+        /* Layer 2: Menu Buttons (เลื่อนได้) */
+        .header-menu-bar { 
+            display: flex; gap: 8px; overflow-x: auto; padding: 8px 15px; 
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
+        }
+        .header-menu-bar::-webkit-scrollbar { display: none; }
 
-        iframe { width: 100%; height: calc(100% - 55px); border: none; }
-        .btn-tool { background: none; border: none; color: var(--text-main); font-size: 18px; cursor: pointer; }
+        /* 🔘 ปุ่มเมนูแบบวงรี (Pill) */
+        .btn-dept { 
+            flex: 0 0 auto; padding: 6px 16px; border-radius: 50px; border: 1px solid #ddd;
+            background: var(--card-bg); color: var(--text-main); font-weight: 700; font-size: 13px;
+            transition: 0.2s; white-space: nowrap; cursor: pointer;
+        }
+        .btn-dept.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* 📦 Main Content Area */
+        .main-container { height: calc(100vh - 120px); overflow-y: auto; padding: 15px; }
+        .widget-card { background: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 15px; }
+        
+        iframe { width: 100%; height: 100%; border-radius: 15px; background: #fff; border: 1px solid rgba(0,0,0,0.1); }
+        .iframe-container { height: 100%; display: none; }
+        .iframe-container.active { display: block; }
+
+        /* ⏰ Clock Style */
+        .clock-text { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+        
+        .btn-tool { background: rgba(0,0,0,0.05); border: none; width: 34px; height: 34px; border-radius: 10px; color: var(--text-main); }
+        body.dark-mode .btn-tool { background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-box shadow-lg">
+        <div class="login-box">
             <i class="fas fa-cube fa-3x text-primary mb-3"></i>
-            <h4 class="fw-bold text-dark">ULKA CONTROL</h4>
+            <h4 class="fw-bold">ULKA SYSTEM</h4>
             <input type="text" id="user" class="form-control mb-2" placeholder="User ID">
             <input type="password" id="pass" class="form-control mb-3" placeholder="Password">
-            <button onclick="checkLogin()" class="btn btn-primary w-100 fw-bold">ENTER SYSTEM</button>
+            <button onclick="checkLogin()" class="btn btn-primary w-100 fw-bold">SIGN IN</button>
         </div>
     </div>
 
-    <header class="command-center" id="main-app-header" style="display:none;">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="d-flex align-items-center gap-2">
-                <div class="fw-black text-primary" id="h-time" style="font-size: 1.3rem;">00:00:00</div>
-                <div class="badge bg-danger rounded-pill" id="h-bday-badge" style="display:none;"><i class="fas fa-cake-candles"></i> <span id="h-bday-name"></span></div>
+    <div id="main-app" class="d-none">
+        <div class="top-nav-area">
+            <div class="header-top-bar">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-cube text-primary"></i>
+                    <span id="h-time" class="clock-text">00:00:00</span>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <div id="header-bday" class="small fw-bold text-danger d-none d-md-block"><i class="fas fa-birthday-cake"></i> <span id="h-bday-name"></span></div>
+                    <button class="btn-tool" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+                    <button class="btn-tool text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn-tool" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
-                <button class="btn-tool text-danger" onclick="logout()"><i class="fas fa-power-off"></i></button>
+            
+            <div class="header-menu-bar" id="dept-menu">
+                <div onclick="switchView('news', this)" class="btn-dept active" id="btn-news">📢 ข่าวสาร</div>
+                <div onclick="switchView('Executive/index', this)" class="btn-dept d-none" id="btn-exec">👑 บริหาร</div>
+                <div onclick="switchView('Marketing/index', this)" class="btn-dept d-none" id="btn-mkt">📈 การตลาด</div>
+                <div onclick="switchView('Customer Service/index', this)" class="btn-dept d-none" id="btn-csr">🎧 CSR</div>
+                <div onclick="switchView('Accounting/index', this)" class="btn-dept d-none" id="btn-acc">💰 บัญชี</div>
+                <div onclick="switchView('Technician/index', this)" class="btn-dept d-none" id="btn-tech">🛠️ ช่าง</div>
+                <div onclick="switchView('Installation/index', this)" class="btn-dept d-none" id="btn-install">🚚 ติดตั้ง</div>
             </div>
         </div>
-        <div class="widget-switch">
-            <div class="sw-item active" id="sw-news" onclick="toggleWidget('news')"><i class="fas fa-newspaper me-1"></i> ข่าวสาร</div>
-            <div class="sw-item" id="sw-sales" onclick="toggleWidget('sales')"><i class="fas fa-chart-line me-1"></i> ยอดขาย</div>
-            <div class="sw-item" id="sw-plan" onclick="toggleWidget('plan')"><i class="fas fa-file-invoice-dollar me-1"></i> แผนธุรกิจ</div>
-            <div class="sw-item" id="sw-csr" onclick="toggleWidget('csr')"><i class="fas fa-headset me-1"></i> CSR</div>
-        </div>
-    </header>
 
-    <div class="container-fluid px-3" id="dashboard-area" style="display:none;">
-        
-        <div class="marquee-box d-none" id="important-news-bar">
-            <div class="marquee-text" id="marquee-content"></div>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-12 col-xl-6" id="wd-news">
-                <div class="widget-box">
-                    <div class="widget-header">
-                        <b class="text-primary"><i class="fas fa-newspaper me-2"></i>ประกาศภายใน</b>
-                        <button id="admin-announce-btn" class="btn btn-sm btn-primary rounded-pill d-none" onclick="openAnnounceModal()">+ เขียนประกาศ</button>
+        <main class="main-container">
+            <div id="view-news">
+                <div class="widget-card bg-primary text-white border-0 shadow-lg mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <small class="opacity-75 fw-bold">ยอดขายรวมสาขาหลัก (MTD)</small>
+                            <h2 class="fw-bold mb-0">฿ 1,984,469.24</h2>
+                        </div>
+                        <div class="col-4 text-end opacity-50"><i class="fas fa-chart-line fa-3x"></i></div>
                     </div>
-                    <div class="p-3 overflow-auto h-100 pb-5">
-                        <div class="row">
-                            <div class="col-6"><h6 class="fw-bold small">📢 ทั่วไป</h6><div id="list-gen" class="small"></div></div>
-                            <div class="col-6 border-start"><h6 class="fw-bold small">ℹ️ แจ้งทราบ</h6><div id="list-info" class="small"></div></div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div class="widget-card shadow-sm">
+                            <h6 class="fw-bold text-primary mb-3"><i class="fas fa-bullhorn me-2"></i>ประกาศทั่วไป</h6>
+                            <div id="general-news-list" class="small">กำลังโหลด...</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="widget-card shadow-sm">
+                            <h6 class="fw-bold text-success mb-3"><i class="fas fa-birthday-cake me-2"></i>ฉลองวันเกิดเดือนนี้</h6>
+                            <div id="info-news-list" class="small">ไม่มีข้อมูล</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-12 col-xl-6 hidden" id="wd-sales">
-                <div class="widget-box">
-                    <div class="widget-header"><b><i class="fas fa-chart-line me-2 text-success"></i>Sales War Room</b></div>
-                    <iframe src="dashboard.html"></iframe>
-                </div>
+            <div id="view-iframe" class="iframe-container h-100">
+                <iframe id="main-iframe" src=""></iframe>
             </div>
-
-            <div class="col-12 col-xl-6 hidden" id="wd-plan">
-                <div class="widget-box">
-                    <div class="widget-header"><b><i class="fas fa-file-invoice-dollar me-2 text-warning"></i>Business Plan</b></div>
-                    <iframe src="biz_plan.html"></iframe>
-                </div>
-            </div>
-
-            <div class="col-12 col-xl-6 hidden" id="wd-csr">
-                <div class="widget-box">
-                    <div class="widget-header"><b><i class="fas fa-headset me-2 text-info"></i>Customer Service</b></div>
-                    <iframe src="CSR.html"></iframe>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
 
-    <div class="modal fade" id="announceModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4">
-                <div class="modal-body">
-                    <select id="ann-category" class="form-select mb-2"><option value="important">ประกาศสำคัญ (ตัววิ่ง)</option><option value="general">ทั่วไป</option><option value="info">แจ้งข่าวสาร</option></select>
-                    <input type="text" id="ann-title" class="form-control mb-2" placeholder="หัวข้อ">
-                    <textarea id="ann-body" class="form-control mb-3" rows="3" placeholder="เนื้อหา..."></textarea>
-                    <button class="btn btn-primary w-100 rounded-pill" onclick="submitAnnounce()">ยืนยันประกาศ</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcCjV81SFv-2Y8rdzb5qZ_u8iRIyHEtuJTruMyff9sVAVyfK_SWntv28vS7FKf77FFZQ/exec";
@@ -147,67 +132,84 @@
         async function checkLogin() {
             const u = document.getElementById('user').value, p = document.getElementById('pass').value;
             if(!u || !p) return;
-            const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
-            const res = await resp.json();
-            if(res.success) { localStorage.setItem("user_session", JSON.stringify(res)); initApp(res); }
-            else { Swal.fire('Error', 'ID/Pass ผิด', 'error'); }
+            try {
+                const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
+                const res = await resp.json();
+                if(res.success) { 
+                    localStorage.setItem("user_session", JSON.stringify(res)); 
+                    initApp(res); 
+                } else { 
+                    Swal.fire('Error', 'ID หรือรหัสผ่านไม่ถูกต้อง', 'error'); 
+                }
+            } catch(e) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อระบบได้', 'error'); }
         }
 
         function initApp(data) {
             sessionData = data;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-app-header').style.display = 'block';
-            document.getElementById('dashboard-area').style.display = 'block';
-            if(data.role === 'admin' || data.role === 'manager') document.getElementById('admin-announce-btn').classList.remove('d-none');
-            startClock(); loadNews(); loadBday();
-        }
-
-        function toggleWidget(id) {
-            const wd = document.getElementById('wd-' + id);
-            const sw = document.getElementById('sw-' + id);
-            wd.classList.toggle('hidden');
-            sw.classList.toggle('active');
-        }
-
-        async function loadNews() {
-            const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
-            const list = await resp.json();
-            const imp = list.find(a => a.category === 'important');
-            if(imp) {
-                document.getElementById('important-news-bar').classList.remove('d-none');
-                document.getElementById('marquee-content').innerText = `🔥 สำคัญ: ${imp.title} - ${imp.body}`;
-            }
-            document.getElementById('list-gen').innerHTML = list.filter(a => a.category === 'general').map(a => `<div class="mb-2 p-1 border-bottom"><b>${a.title}</b><br><span class="text-muted" style="font-size:10px;">${a.body}</span></div>`).join('');
-            document.getElementById('list-info').innerHTML = list.filter(a => a.category === 'info').map(a => `<div class="mb-2 p-1 border-bottom"><b>${a.title}</b><br><span class="text-muted" style="font-size:10px;">${a.body}</span></div>`).join('');
-        }
-
-        async function submitAnnounce() {
-            const title = document.getElementById('ann-title').value, body = document.getElementById('ann-body').value, category = document.getElementById('ann-category').value;
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addAnnounce', title, body, category, author: sessionData.name }) });
-            bootstrap.Modal.getInstance(document.getElementById('announceModal')).hide();
+            document.getElementById('login-screen').classList.add('d-none');
+            document.getElementById('main-app').classList.remove('d-none');
+            
+            // ล็อคสิทธิ์การเห็นปุ่ม
+            checkPermissions(data.dept, data.role);
+            
+            startClock(); 
             loadNews();
         }
 
-        function startClock() { 
-            setInterval(() => { 
-                const now = new Date(); 
-                document.getElementById('h-time').innerText = now.toLocaleTimeString('th-TH');
-            }, 1000); 
+        function checkPermissions(dept, role) {
+            // ถ้าเป็น Admin หรือประธาน โชว์หมด
+            if(role === 'admin' || dept.includes('ประธาน')) {
+                document.querySelectorAll('.btn-dept').forEach(b => b.classList.remove('d-none'));
+                return;
+            }
+            // แยกตามแผนก
+            if(dept === 'ฝ่ายกลยุทธ์การตลาด') document.getElementById('btn-mkt').classList.remove('d-none');
+            if(dept === 'ฝ่ายบริการหลังการขาย') document.getElementById('btn-csr').classList.remove('d-none');
+            if(dept === 'ฝ่ายบัญชีและบุคคล') document.getElementById('btn-acc').classList.remove('d-none');
+            if(dept === 'แผนกงานช่าง') document.getElementById('btn-tech').classList.remove('d-none');
         }
 
-        function loadBday() {
-            const month = new Date().getMonth();
-            const bdays = sessionData.allEmp.filter(e => e.birthDt && new Date(e.birthDt).getMonth() === month);
-            if(bdays.length > 0) {
-                document.getElementById('h-bday-badge').style.display = 'inline-block';
-                document.getElementById('h-bday-name').innerText = bdays[0].nickname;
+        function switchView(v, el) {
+            document.querySelectorAll('.btn-dept').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+
+            const isNews = v === 'news';
+            document.getElementById('view-news').classList.toggle('d-none', !isNews);
+            document.getElementById('view-iframe').classList.toggle('d-none', isNews);
+            document.getElementById('view-iframe').classList.toggle('active', !isNews);
+            
+            if(!isNews) {
+                document.getElementById('main-iframe').src = v + ".html";
             }
         }
 
-        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); }
-        function openAnnounceModal() { new bootstrap.Modal(document.getElementById('announceModal')).show(); }
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('h-time').innerText = now.toLocaleTimeString('th-TH');
+            }, 1000);
+        }
+
+        async function loadNews() {
+            try {
+                const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
+                const list = await resp.json();
+                document.getElementById('general-news-list').innerHTML = list.filter(a => a.category === 'general').map(a => `<div class="mb-2 p-2 border-bottom"><b>${a.title}</b><br><small class="text-muted">${a.body}</small></div>`).join('') || 'ไม่มีประกาศ';
+            } catch(e) { console.log("News load fail"); }
+        }
+
+        function toggleDarkMode() { 
+            document.body.classList.toggle('dark-mode'); 
+            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); 
+        }
+
         function logout() { localStorage.clear(); location.reload(); }
-        window.onload = () => { if(localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode'); if(localStorage.getItem("user_session")) initApp(JSON.parse(localStorage.getItem("user_session"))); };
+
+        window.onload = () => {
+            if(localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
+            const savedSession = localStorage.getItem("user_session");
+            if(savedSession) initApp(JSON.parse(savedSession));
+        };
     </script>
 </body>
 </html>
