@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM v1.0.28</title>
+    <title>ULKA SYSTEM v1.0.29</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #007bff; --navy: #0f172a; --bg-app: #f4f7f6; --text-main: #1e293b; --card-bg: #ffffff; }
-        body.dark-mode { --bg-app: #0f172a; --text-main: #f1f5f9; --card-bg: #1e293b; --navy: #020617; }
+        :root { --primary: #007bff; --navy: #0f172a; --bg-app: #f4f7f6; --text-main: #1e293b; --card-bg: #ffffff; --header-bg: #ffffff; }
+        body.dark-mode { --bg-app: #0f172a; --text-main: #f1f5f9; --card-bg: #1e293b; --navy: #020617; --header-bg: #1e293b; }
         
         body { font-family: 'Sarabun', sans-serif; background: var(--bg-app); color: var(--text-main); height: 100vh; overflow: hidden; margin: 0; transition: 0.3s; }
         
@@ -17,7 +17,16 @@
         #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; padding: 20px; }
         .login-box { background: #fff; padding: 30px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; }
 
-        /* 📱 Bottom Navigation (เฉพาะมือถือ) */
+        /* 🔝 Fixed Top Header */
+        .top-header { 
+            position: fixed; top: 0; left: 0; right: 0; height: 60px;
+            background: var(--header-bg); border-bottom: 1px solid rgba(0,0,0,0.08);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; z-index: 1100; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+        .page-title { font-weight: 800; font-size: 1.1rem; color: var(--primary); }
+
+        /* 📱 Bottom Navigation */
         .bottom-nav { 
             position: fixed; bottom: 0; left: 0; right: 0; 
             background: var(--card-bg); height: 70px; 
@@ -26,21 +35,17 @@
             padding-bottom: env(safe-area-inset-bottom);
             box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
         }
-        .nav-item-bottom { 
-            display: flex; flex-direction: column; align-items: center; 
-            color: #8392ab; font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
-        .nav-item-bottom i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item-bottom { display: flex; flex-direction: column; align-items: center; color: #8392ab; font-size: 10px; font-weight: 600; cursor: pointer; }
         .nav-item-bottom.active { color: var(--primary); }
 
         /* 🏢 Desktop Sidebar */
-        .app-wrapper { display: flex; height: 100vh; width: 100vw; }
-        .sidebar { width: 260px; background: var(--card-bg); border-right: 1px solid #eee; display: flex; flex-direction: column; padding: 20px 0; }
-        .nav-link-custom { padding: 12px 20px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: #8392ab; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; text-decoration: none; }
-        .nav-link-custom.active, .nav-link-custom:hover { background: var(--primary); color: #fff; }
+        .app-wrapper { display: flex; height: 100vh; width: 100vw; padding-top: 60px; }
+        .sidebar { width: 260px; background: var(--card-bg); border-right: 1px solid #eee; display: flex; flex-direction: column; padding: 10px 0; }
+        .nav-link-custom { padding: 12px 20px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: #8392ab; font-weight: 600; display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .nav-link-custom.active { background: var(--primary); color: #fff; }
 
         /* 📑 Content Area */
-        .main-container { flex-grow: 1; overflow-y: auto; padding: 25px; padding-bottom: 100px; } /* เผื่อที่ให้ Bottom Nav */
+        .main-container { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
 
         /* 📢 Marquee */
         .marquee-box { background: #ff4757; color: white; padding: 8px 0; font-weight: 800; overflow: hidden; white-space: nowrap; border-radius: 12px; margin-bottom: 20px; font-size: 13px; }
@@ -49,48 +54,52 @@
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .bottom-nav { display: flex; }
-            .main-container { padding: 15px 15px 90px 15px; }
-            h2 { font-size: 1.4rem; }
+            .top-header { padding: 0 15px; }
         }
 
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        .dark-toggle { position: fixed; top: 15px; right: 15px; z-index: 1060; }
         iframe { width: 100%; height: 100%; border-radius: 15px; background: var(--card-bg); }
-        .widget-card { background: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid #eee; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .widget-card { background: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid #eee; margin-bottom: 15px; }
+        .btn-dark-mode { background: rgba(0,0,0,0.05); border: none; width: 40px; height: 40px; border-radius: 50%; color: var(--text-main); }
+        body.dark-mode .btn-dark-mode { background: rgba(255,255,255,0.1); color: #ffcc00; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-box shadow-lg text-start">
-            <div class="text-center mb-4">
-                <i class="fas fa-cube fa-3x text-primary mb-2"></i>
-                <h4 class="fw-bold text-dark">ULKA SYSTEM</h4>
-                <div class="small text-muted">v1.0.28 - Intelligence Center</div>
-            </div>
-            <label class="small fw-bold mb-1">User ID</label>
-            <input type="text" id="user" class="form-control mb-3" placeholder="กรอกไอดีพนักงาน">
-            <label class="small fw-bold mb-1">Password</label>
-            <input type="password" id="pass" class="form-control mb-4" placeholder="••••••••">
-            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold py-2 mb-3 shadow">เข้าสู่ระบบ</button>
-            <div class="text-center"><a href="mailto:info@ulka.co.th" class="small text-muted text-decoration-none">ติดต่อฝ่าย IT / ลืมรหัสผ่าน</a></div>
+        <div class="login-box shadow-lg">
+            <i class="fas fa-cube fa-3x text-primary mb-3"></i>
+            <h4 class="fw-bold">ULKA SYSTEM</h4>
+            <div class="small text-muted mb-4">v1.0.29 - Mobile Ready</div>
+            <input type="text" id="user" class="form-control mb-3" placeholder="User ID">
+            <input type="password" id="pass" class="form-control mb-4" placeholder="Password">
+            <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 fw-bold py-2">เข้าสู่ระบบ</button>
         </div>
     </div>
 
-    <div class="dark-toggle d-flex gap-2">
-        <button class="btn btn-light shadow-sm rounded-pill btn-sm fw-bold px-3 d-md-none" onclick="logout()">Logout</button>
-        <button class="btn btn-dark rounded-circle shadow p-2" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
-    </div>
-
     <div id="main-app" class="d-none h-100">
+        <header class="top-header">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-cube text-primary"></i>
+                <div class="page-title" id="current-page-name">หน้าข่าวสาร</div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn-dark-mode" onclick="toggleDarkMode()" title="สลับโหมด">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="dropdown d-none d-md-block">
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+
         <div class="app-wrapper">
-            <div class="sidebar shadow-sm">
-                <div class="px-4 mb-4 fw-bold text-primary fs-5"><i class="fas fa-cube me-2"></i>ULKA System</div>
+            <div class="sidebar">
                 <div onclick="switchView('news', this)" class="nav-link-custom active"><i class="fas fa-newspaper"></i> ข่าวสาร</div>
                 <div onclick="switchView('dashboard', this)" class="nav-link-custom"><i class="fas fa-chart-line"></i> Dashboard</div>
                 <div onclick="switchView('biz_plan', this)" class="nav-link-custom"><i class="fas fa-file-invoice-dollar"></i> Business Plan</div>
                 <div onclick="switchView('CSR', this)" class="nav-link-custom"><i class="fas fa-headset"></i> ระบบ CSR</div>
-                <div class="mt-auto nav-link-custom text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</div>
+                <div class="mt-auto px-4"><small class="text-muted">Beta v1.0.29</small></div>
             </div>
 
             <div class="main-container">
@@ -99,32 +108,26 @@
                         <div class="marquee-text" id="marquee-content"></div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h2 class="fw-bold mb-1">สวัสดีคุณ <span id="welcome-name" class="text-primary"></span></h2>
-                            <div id="welcome-info" class="small text-muted fw-bold"></div>
-                        </div>
-                        <button id="admin-announce-btn" class="btn btn-primary rounded-pill d-none shadow-sm" onclick="openAnnounceModal()">
-                            <i class="fas fa-plus me-1"></i> <span class="d-none d-md-inline">สร้างประกาศ</span>
-                        </button>
-                    </div>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-12 col-md-4"><div class="widget-card text-center" id="content-clock"></div></div>
-                        <div class="col-12 col-md-8"><div class="widget-card" id="content-birthday"></div></div>
-                    </div>
-
                     <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <div class="widget-card border-top border-primary border-4">
-                                <h6 class="fw-bold text-primary mb-3"><i class="fas fa-bullhorn me-2"></i>ประกาศทั่วไป</h6>
-                                <div id="general-news-list" class="small"></div>
+                        <div class="col-12 col-md-4">
+                            <div class="widget-card text-center" id="content-clock"></div>
+                            <div class="widget-card mt-3">
+                                <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-birthday-cake me-2"></i>วันเกิดพนักงาน</h6>
+                                <div id="content-birthday"></div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
+
+                        <div class="col-12 col-md-8 text-start">
+                            <div class="widget-card border-top border-primary border-4">
+                                <h6 class="fw-bold text-primary mb-3">📢 ประกาศทั่วไป</h6>
+                                <div id="general-news-list" class="small"></div>
+                            </div>
                             <div class="widget-card border-top border-success border-4">
-                                <h6 class="fw-bold text-success mb-3"><i class="fas fa-info-circle me-2"></i>แจ้งข่าวสารบริษัท</h6>
+                                <h6 class="fw-bold text-success mb-3">ℹ️ แจ้งข่าวสารบริษัท</h6>
                                 <div id="info-news-list" class="small"></div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button id="admin-announce-btn" class="btn btn-primary rounded-pill d-none w-100" onclick="openAnnounceModal()">+ สร้างประกาศใหม่</button>
                             </div>
                         </div>
                     </div>
@@ -136,9 +139,9 @@
             </div>
 
             <nav class="bottom-nav">
-                <div onclick="switchView('news', this)" class="nav-item-bottom active"><i class="fas fa-newspaper"></i><span>ข่าว</span></div>
+                <div onclick="switchView('news', this)" class="nav-item-bottom active"><i class="fas fa-newspaper"></i><span>ข่าวสาร</span></div>
                 <div onclick="switchView('dashboard', this)" class="nav-item-bottom"><i class="fas fa-chart-line"></i><span>ขาย</span></div>
-                <div onclick="switchView('biz_plan', this)" class="nav-item-bottom"><i class="fas fa-file-invoice-dollar"></i><span>แผน</span></div>
+                <div onclick="switchView('biz_plan', this)" class="nav-item-bottom"><i class="fas fa-file-invoice-dollar"></i><span>แผนธุรกิจ</span></div>
                 <div onclick="switchView('CSR', this)" class="nav-item-bottom"><i class="fas fa-headset"></i><span>CSR</span></div>
             </nav>
         </div>
@@ -146,13 +149,13 @@
 
     <div class="modal fade" id="announceModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered p-3">
-            <div class="modal-content border-0 rounded-4 shadow-lg">
-                <div class="modal-header border-0 pb-0"><h6 class="fw-bold">สร้างประกาศใหม่</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header"><b>สร้างประกาศ</b><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                 <div class="modal-body">
-                    <select id="ann-category" class="form-select mb-2 shadow-sm"><option value="important">🚩 ประกาศสำคัญ (ตัววิ่ง)</option><option value="general">📢 ประกาศทั่วไป</option><option value="info">ℹ️ แจ้งข่าวสาร</option></select>
-                    <input type="text" id="ann-title" class="form-control mb-2 shadow-sm" placeholder="หัวข้อ">
-                    <textarea id="ann-body" class="form-control shadow-sm" rows="3" placeholder="เนื้อหาประกาศ..."></textarea>
-                    <button class="btn btn-primary w-100 rounded-pill fw-bold mt-3 py-2 shadow" onclick="submitAnnounce()">ยืนยันประกาศ</button>
+                    <select id="ann-category" class="form-select mb-2"><option value="important">ประกาศสำคัญ (ตัววิ่ง)</option><option value="general">ประกาศทั่วไป</option><option value="info">แจ้งข่าวสาร</option></select>
+                    <input type="text" id="ann-title" class="form-control mb-2" placeholder="หัวข้อ">
+                    <textarea id="ann-body" class="form-control" rows="3" placeholder="เนื้อหา..."></textarea>
+                    <button class="btn btn-primary w-100 rounded-pill mt-3 fw-bold" onclick="submitAnnounce()">ยืนยัน</button>
                 </div>
             </div>
         </div>
@@ -167,25 +170,33 @@
         async function checkLogin() {
             const u = document.getElementById('user').value, p = document.getElementById('pass').value;
             if(!u || !p) return;
-            const btn = document.getElementById('login-btn');
-            btn.disabled = true; btn.innerText = "WAIT...";
-            try {
-                const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
-                const res = await resp.json();
-                if(res.success) { localStorage.setItem("user_session", JSON.stringify(res)); initApp(res); }
-                else { Swal.fire('Error', 'ID หรือรหัสผ่านไม่ถูกต้อง', 'error'); }
-            } catch (e) { Swal.fire('Error', 'ติดต่อเซิร์ฟเวอร์ไม่ได้', 'error'); }
-            finally { btn.disabled = false; btn.innerText = "เข้าสู่ระบบ"; }
+            const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
+            const res = await resp.json();
+            if(res.success) { localStorage.setItem("user_session", JSON.stringify(res)); initApp(res); }
+            else { Swal.fire('Error', 'ID หรือรหัสผ่านไม่ถูกต้อง', 'error'); }
         }
 
         function initApp(data) {
             sessionData = data;
             document.getElementById('login-screen').classList.add('d-none');
             document.getElementById('main-app').classList.remove('d-none');
-            document.getElementById('welcome-name').innerText = data.name;
-            document.getElementById('welcome-info').innerText = data.dept + " | " + data.pos;
             if(data.role === 'admin' || data.role === 'manager') document.getElementById('admin-announce-btn').classList.remove('d-none');
             startClock(); loadNews(); loadBday();
+        }
+
+        function switchView(v, el) {
+            document.querySelectorAll('.nav-link-custom, .nav-item-bottom').forEach(n => n.classList.remove('active'));
+            const names = { news: 'หน้าข่าวสาร', dashboard: 'Sales War Room', biz_plan: 'วางแผนธุรกิจ (Biz Plan)', CSR: 'ระบบ CSR' };
+            document.getElementById('current-page-name').innerText = names[v];
+            
+            // Highlight current button
+            if(el.classList.contains('nav-link-custom')) el.classList.add('active');
+            else el.classList.add('active');
+
+            const isNews = v === 'news';
+            document.getElementById('view-news').classList.toggle('d-none', !isNews);
+            document.getElementById('view-iframe').classList.toggle('d-none', isNews);
+            if(!isNews) document.getElementById('main-iframe').src = v + ".html";
         }
 
         async function loadNews() {
@@ -194,10 +205,10 @@
             const imp = list.find(a => a.category === 'important');
             if(imp) {
                 document.getElementById('important-news-bar').classList.remove('d-none');
-                document.getElementById('marquee-content').innerText = `🔥 ประกาศด่วน: ${imp.title} - ${imp.body}`;
+                document.getElementById('marquee-content').innerText = `🔥 ด่วน: ${imp.title} - ${imp.body}`;
             }
-            document.getElementById('general-news-list').innerHTML = list.filter(a => a.category === 'general').slice(0,5).map(a => `<div class="p-2 border-bottom mb-2"><b class="text-primary">${a.title}</b><br><small class="text-muted">${a.body}</small></div>`).join('') || 'ไม่มีประกาศ';
-            document.getElementById('info-news-list').innerHTML = list.filter(a => a.category === 'info').slice(0,5).map(a => `<div class="p-2 border-bottom mb-2"><b class="text-success">${a.title}</b><br><small class="text-muted">${a.body}</small></div>`).join('') || 'ไม่มีข่าวสาร';
+            document.getElementById('general-news-list').innerHTML = list.filter(a => a.category === 'general').slice(0,5).map(a => `<div class="p-2 border-bottom mb-2"><b>${a.title}</b><br><small class="text-muted">${a.body}</small></div>`).join('') || 'ไม่มีประกาศ';
+            document.getElementById('info-news-list').innerHTML = list.filter(a => a.category === 'info').slice(0,5).map(a => `<div class="p-2 border-bottom mb-2"><b>${a.title}</b><br><small class="text-muted">${a.body}</small></div>`).join('') || 'ไม่มีข่าวสาร';
         }
 
         async function submitAnnounce() {
@@ -208,29 +219,12 @@
             loadNews();
         }
 
-        function switchView(v, el) {
-            // ปรับสถานะปุ่มทั้ง Desktop และ Mobile
-            document.querySelectorAll('.nav-link-custom, .nav-item-bottom').forEach(n => n.classList.remove('active'));
-            
-            // หาปุ่มที่คลิกและใส่ active (รองรับทั้งสองที่)
-            const targetClasses = ['.nav-link-custom', '.nav-item-bottom'];
-            targetClasses.forEach(cls => {
-                const btns = document.querySelectorAll(cls);
-                btns.forEach(b => { if(b.innerText.includes(el.innerText) || b.innerHTML.includes(v)) b.classList.add('active'); });
-            });
-
-            const isNews = v === 'news';
-            document.getElementById('view-news').classList.toggle('d-none', !isNews);
-            document.getElementById('view-iframe').classList.toggle('d-none', isNews);
-            if(!isNews) document.getElementById('main-iframe').src = v + ".html";
-        }
-
         function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); }
         function startClock() { setInterval(() => { const now = new Date(); if(document.getElementById('content-clock')) document.getElementById('content-clock').innerHTML = `<h3 class="fw-bold mb-0 text-primary">${now.toLocaleTimeString('th-TH')}</h3><div class="small text-muted fw-bold">${now.toLocaleDateString('th-TH')}</div>`; }, 1000); }
         function loadBday() {
             const month = new Date().getMonth();
             const bdays = sessionData.allEmp.filter(e => e.birthDt && new Date(e.birthDt).getMonth() === month);
-            document.getElementById('content-birthday').innerHTML = `<h6 class="fw-bold mb-2 text-danger"><i class="fas fa-birthday-cake me-2"></i>แฮปปี้เบิร์ธเดย์พนักงานเดือนนี้</h6>` + (bdays.length ? bdays.map(e => `<span class="badge bg-light text-dark border me-1 mb-1 p-2">${e.nickname}</span>`).join('') : 'ไม่มี');
+            document.getElementById('content-birthday').innerHTML = bdays.length ? bdays.map(e => `<span class="badge bg-light text-dark border me-1 mb-1 p-2">${e.nickname}</span>`).join('') : '<small class="text-muted">ไม่มีวันเกิดเดือนนี้</small>';
         }
         function openAnnounceModal() { new bootstrap.Modal(document.getElementById('announceModal')).show(); }
         function logout() { localStorage.clear(); location.reload(); }
