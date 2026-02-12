@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM v1.0.80</title>
+    <title>ULKA SYSTEM v1.0.90</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
             --primary: #007bff; --bg: #f4f7f6; --card: #ffffff; --text: #1e293b; 
-            --text-muted: #64748b; --border: #e2e8f0; --header-h: 70px; --sidebar-w: 240px; 
+            --text-muted: #64748b; --border: #e2e8f0; --header-h: 75px; --sidebar-w: 240px; 
         }
         body.dark-mode { 
             --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; 
@@ -20,58 +20,39 @@
 
         /* 🔒 Login Screen */
         #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; }
+        .login-box { background: #fff; padding: 35px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; color: #333; }
 
-        /* 🔝 Top Header */
+        /* 🔝 Header with Profile */
         .top-header { 
             position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
             background: var(--card); border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 2000;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 2000;
         }
 
-        /* 🔘 Tool Buttons */
-        .btn-tool { width: 38px; height: 38px; border-radius: 10px; border: none; background: rgba(0,0,0,0.05); color: var(--text); display: flex; align-items: center; justify-content: center; }
-        body.dark-mode .btn-tool { background: rgba(255,255,255,0.1); color: #fff; }
-
-        /* 📂 Widget Dropdown */
-        .widget-dropdown { 
-            position: absolute; top: 75px; right: 20px; width: 240px;
-            background: var(--card); border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 15px; display: none; z-index: 2100; border: 1px solid var(--border);
-        }
-        .widget-dropdown.show { display: block; }
-
-        /* 🏢 Sidebar & Layout */
+        /* 🏢 Layout */
         .app-wrapper { display: flex; height: 100vh; padding-top: var(--header-h); }
         .sidebar { width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border); padding: 15px 0; overflow-y: auto; }
-        .nav-item-side { padding: 12px 20px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .nav-item-side { padding: 12px 20px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; text-decoration: none; }
         .nav-item-side.active { background: var(--primary); color: #fff !important; }
 
-        /* 📱 Bottom Nav (Mobile) */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: var(--card);
-            display: none; align-items: center; border-top: 1px solid var(--border); z-index: 1050;
-            overflow-x: auto; scrollbar-width: none; gap: 15px; padding: 0 20px;
-        }
-        .nav-item-bottom { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; min-width: 60px; }
-        .nav-item-bottom.active { color: var(--primary); }
-
-        /* 📦 Main Content */
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 20px; position: relative; }
-        .post-card { background: var(--card); border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        /* 📦 Feed Style */
+        .main-content { flex-grow: 1; overflow-y: auto; padding: 15px; }
+        .post-card { background: var(--card); border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
         
-        @media (max-width: 768px) {
-            .sidebar { display: none !important; }
-            .bottom-nav { display: flex; }
-            .main-content { padding-bottom: 80px; }
-        }
+        .btn-tool { width: 38px; height: 38px; border-radius: 10px; border: none; background: rgba(0,0,0,0.05); color: var(--text); }
+        body.dark-mode .btn-tool { background: rgba(255,255,255,0.1); color: #fff; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: var(--card); border-top: 1px solid var(--border); display: none; overflow-x: auto; scrollbar-width: none; z-index: 1050; }
+        @media (max-width: 768px) { .sidebar { display: none; } .bottom-nav { display: flex; } .main-content { padding-bottom: 80px; } }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="bg-white p-4 rounded-4 shadow-lg text-center" style="width: 320px; color: #333;">
+        <div class="login-box shadow-lg">
             <i class="fas fa-cube fa-3x text-primary mb-3"></i>
-            <h5 class="fw-bold">ULKA SYSTEM</h5>
+            <h4 class="fw-bold">ULKA SYSTEM</h4>
+            <div class="small text-muted mb-4 text-uppercase">Internal Command Center</div>
             <input type="text" id="user" class="form-control mb-2" placeholder="User ID">
             <input type="password" id="pass" class="form-control mb-3" placeholder="Password">
             <button onclick="checkLogin()" class="btn btn-primary w-100 fw-bold">SIGN IN</button>
@@ -80,73 +61,58 @@
 
     <div id="main-app" class="d-none">
         <header class="top-header">
-            <div class="d-flex align-items-center gap-3">
-                <div id="u-initial" class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px; font-size: 1.2rem;">?</div>
-                <div style="line-height: 1.2;">
-                    <div id="u-name" class="fw-bold text-truncate" style="max-width: 150px;">กำลังโหลด...</div>
-                    <div class="small text-muted"><span id="u-pos">ตำแหน่ง</span> | <span id="u-dept">แผนก</span></div>
+            <div class="d-flex align-items-center gap-2">
+                <div id="u-initial" class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">?</div>
+                <div style="line-height: 1.1;">
+                    <div id="u-name" class="fw-bold small text-truncate" style="max-width: 140px;">...</div>
+                    <div style="font-size: 9px; font-weight: 800; color: var(--text-muted);"><span id="u-pos">POSITION</span> | <span id="u-dept">DEPT</span></div>
                 </div>
             </div>
-            
             <div class="d-flex gap-2">
                 <button class="btn-tool" onclick="toggleWidgetDropdown()"><i class="fas fa-th-large"></i></button>
                 <button class="btn-tool" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
                 <button class="btn-tool text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
-            
-            <div class="widget-dropdown" id="widget-dropdown">
-                <h6 class="fw-bold mb-3 small">ตั้งค่าหน้า News</h6>
-                <div id="widget-selectors"></div>
+            <div class="widget-dropdown" id="widget-dropdown" style="display:none; position:absolute; top:75px; right:15px; background:var(--card); padding:15px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1); z-index:3000;">
+                <h6 class="fw-bold small mb-2">GREETINGS</h6>
+                <div class="small">สวัสดีวันพฤหัสบดีครับลูกพี่!</div>
             </div>
         </header>
 
         <div class="app-wrapper">
             <aside class="sidebar">
-                <div onclick="switchView('news', this)" class="nav-item-side active"><i class="fas fa-newspaper text-primary"></i> ข่าวสาร</div>
+                <div onclick="switchView('news', this)" class="nav-item-side active"><i class="fas fa-newspaper"></i> ข่าวสาร</div>
                 <hr class="mx-3 my-2 opacity-50">
-                <div onclick="switchView('exec', this)" class="nav-item-side"><i class="fas fa-crown text-warning"></i> ฝ่ายบริหาร</div>
-                <div onclick="switchView('biz', this)" class="nav-item-side"><i class="fas fa-file-invoice-dollar text-success"></i> แผนธุรกิจ</div>
-                <div onclick="switchView('mkt', this)" class="nav-item-side"><i class="fas fa-ad text-danger"></i> การตลาด</div>
-                <div onclick="switchView('csr', this)" class="nav-item-side"><i class="fas fa-headset text-info"></i> บริการลูกค้า</div>
+                <div onclick="switchView('exec', this)" class="nav-item-side"><i class="fas fa-crown"></i> ฝ่ายบริหาร</div>
+                <div onclick="switchView('biz', this)" class="nav-item-side"><i class="fas fa-file-invoice-dollar"></i> แผนธุรกิจ</div>
+                <div onclick="switchView('mkt', this)" class="nav-item-side"><i class="fas fa-ad"></i> การตลาด</div>
+                <div onclick="switchView('csr', this)" class="nav-item-side"><i class="fas fa-headset"></i> บริการลูกค้า</div>
             </aside>
 
             <main class="main-content">
                 <div id="view-news">
-                    <div class="post-card bg-primary text-white p-3 border-0 mb-4 shadow-sm">
-                        <small class="opacity-75">ยอดขายสาขาหลัก (MTD)</small>
+                    <div class="post-card bg-primary text-white p-3 border-0 shadow-sm mb-4">
+                        <small class="fw-bold opacity-75">MAIN SALES (MTD)</small>
                         <h2 class="fw-bold mb-0">฿ 1,984,469.24</h2>
                     </div>
-                    
                     <div id="news-feed"></div>
                 </div>
-
                 <div id="view-iframe" class="d-none h-100">
-                    <iframe id="main-iframe" style="width:100%; height:100%; border:none; border-radius:20px; background:white;"></iframe>
+                    <iframe id="main-iframe" style="width:100%; height:100%; border:none; border-radius:20px;"></iframe>
                 </div>
             </main>
-
-            <nav class="bottom-nav">
-                <div onclick="switchView('news', this)" class="nav-item-bottom active"><i class="fas fa-newspaper"></i><span>ข่าวสาร</span></div>
-                <div onclick="switchView('exec', this)" class="nav-item-bottom"><i class="fas fa-crown"></i><span>บริหาร</span></div>
-                <div onclick="switchView('biz', this)" class="nav-item-bottom"><i class="fas fa-file-invoice"></i><span>แผน</span></div>
-                <div onclick="switchView('mkt', this)" class="nav-item-bottom"><i class="fas fa-ad"></i><span>ตลาด</span></div>
-                <div onclick="switchView('csr', this)" class="nav-item-bottom"><i class="fas fa-headset"></i><span>CSR</span></div>
-            </nav>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcCjV81SFv-2Y8rdzb5qZ_u8iRIyHEtuJTruMyff9sVAVyfK_SWntv28vS7FKf77FFZQ/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx51TIt5GbfJ9iWfesKMcEsCxLuM_5n49f75LFn2RBpbzYJuo2Z_me70rhY3STF9hDRGA/exec";
         let sessionData = null;
 
         async function checkLogin() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
+            const u = document.getElementById('user').value, p = document.getElementById('pass').value;
             if(!u || !p) return;
-            
-            Swal.fire({ title: 'กำลังเข้าสู่ระบบ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-            
+            Swal.fire({ title: 'กำลังเข้าสู่ระบบ...', didOpen: () => { Swal.showLoading(); } });
             try {
                 const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
                 const res = await resp.json();
@@ -154,10 +120,8 @@
                     localStorage.setItem("user_session", JSON.stringify(res));
                     initApp(res);
                     Swal.close();
-                } else {
-                    Swal.fire('ล้มเหลว', 'ID หรือรหัสผ่านไม่ถูกต้อง', 'error');
-                }
-            } catch(e) { Swal.fire('Error', 'เชื่อมต่อสคริปต์ไม่ได้', 'error'); }
+                } else { Swal.fire('Error', 'ID หรือรหัสผ่านผิด', 'error'); }
+            } catch(e) { Swal.fire('Error', 'เชื่อมต่อไม่ได้', 'error'); }
         }
 
         function initApp(data) {
@@ -165,47 +129,51 @@
             document.getElementById('login-screen').classList.add('d-none');
             document.getElementById('main-app').classList.remove('d-none');
             
-            // ✅ แสดงผลข้อมูลผู้ใช้
-            document.getElementById('u-name').innerText = data.name || "User";
-            document.getElementById('u-pos').innerText = data.pos || "Position";
-            document.getElementById('u-dept').innerText = data.dept || "Department";
+            // ✅ ดึงข้อมูลโชว์บน Header (ดึงจาก GS: firstName, nickname, pos, dept)
+            document.getElementById('u-name').innerText = data.name;
+            document.getElementById('u-pos').innerText = data.pos || 'Position';
+            document.getElementById('u-dept').innerText = data.dept || 'Dept';
             document.getElementById('u-initial').innerText = (data.nickname || data.name || "U")[0].toUpperCase();
-
-            renderFeed();
+            
+            loadAnnounce();
         }
 
-        function renderFeed() {
-            // ข้อมูลจำลอง (ในอนาคตดึงจาก Gid 1162138956)
-            const demoPosts = [
-                { id: 1, author: "Admin", time: "1 ชม. ที่แล้ว", text: "ประกาศ: ปรับปรุงระบบบอร์ดใหม่ เพิ่มคอมเม้นต์ได้แล้ว!", img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=500", likes: 5, comments: [{u: "Moo", t: "รับทราบครับ"}] }
-            ];
-            
+        async function loadAnnounce() {
+            const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
+            const list = await resp.json();
             const feed = document.getElementById('news-feed');
-            feed.innerHTML = demoPosts.map(p => `
-                <div class="post-card shadow-sm">
+            feed.innerHTML = list.map(p => `
+                <div class="post-card shadow-sm mb-3">
                     <div class="p-3 d-flex align-items-center gap-2">
-                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:35px; height:35px; font-size:12px;">${p.author[0]}</div>
-                        <div><div class="fw-bold small">${p.author}</div><div class="text-muted" style="font-size:10px;">${p.time}</div></div>
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:35px; height:35px; font-size:12px;">${p.author ? p.author[0] : 'A'}</div>
+                        <div><div class="fw-bold small">${p.author}</div><div class="text-muted" style="font-size:10px;">${new Date(p.date).toLocaleString('th-TH')}</div></div>
                     </div>
-                    <div class="px-3 pb-2 small">${p.text}</div>
-                    <img src="${p.img}" style="width:100%; max-height:250px; object-fit:cover;">
-                    <div class="p-2 px-3 border-top d-flex gap-3 small fw-bold">
-                        <span class="text-danger" onclick="alert('Liked!')"><i class="fas fa-heart"></i> ${p.likes}</span>
-                        <span class="text-muted"><i class="fas fa-comment"></i> ${p.comments.length} คอมเม้นต์</span>
-                    </div>
+                    <div class="px-3 pb-2 small fw-bold">${p.title}</div>
+                    <div class="px-3 pb-2 small">${p.body}</div>
+                    ${p.img ? `<img src="${p.img}" style="width:100%; max-height:250px; object-fit:cover;">` : ''}
                     <div class="bg-light p-2 px-3 border-top">
-                        ${p.comments.map(c => `<div style="font-size:11px;"><b>${c.u}:</b> ${c.t}</div>`).join('')}
+                        <div id="comments-${p.id}">
+                            ${p.comments ? p.comments.map(c => `<div style="font-size:11px;"><b>${c.user}:</b> ${c.text}</div>`).join('') : ''}
+                        </div>
                         <div class="input-group input-group-sm mt-2">
-                            <input type="text" class="form-control" placeholder="คอมเม้นต์...">
-                            <button class="btn btn-primary">ส่ง</button>
+                            <input type="text" id="inp-${p.id}" class="form-control" placeholder="คอมเม้นต์...">
+                            <button class="btn btn-primary" onclick="sendComment('${p.id}')">ส่ง</button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
+        async function sendComment(postId) {
+            const text = document.getElementById(`inp-${postId}`).value;
+            if(!text) return;
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addComment', postId: postId, user: sessionData.name, text: text }) });
+            document.getElementById(`inp-${postId}`).value = '';
+            loadAnnounce();
+        }
+
         function switchView(v, el) {
-            document.querySelectorAll('.nav-item-side, .nav-item-bottom').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-item-side').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
             const isNews = v === 'news';
             document.getElementById('view-news').classList.toggle('d-none', !isNews);
@@ -216,12 +184,8 @@
             }
         }
 
-        function toggleDarkMode() { 
-            document.body.classList.toggle('dark-mode'); 
-            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode'));
-        }
-
-        function toggleWidgetDropdown() { document.getElementById('widget-dropdown').classList.toggle('show'); }
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); }
+        function toggleWidgetDropdown() { const d = document.getElementById('widget-dropdown'); d.style.display = d.style.display === 'none' ? 'block' : 'none'; }
         function logout() { localStorage.clear(); location.reload(); }
 
         window.onload = () => {
