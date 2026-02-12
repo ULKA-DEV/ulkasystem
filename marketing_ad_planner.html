@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Ad Planner - ULKA SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #0d6efd; --shopee: #ee4d2d; --facebook: #1877f2; --google: #ea4335; --bg: #f8fafc; }
+        body { font-family: 'Prompt', sans-serif; background: var(--bg); padding: 15px; color: #1e293b; margin: 0; }
+        
+        /* Header & Save Indicator */
+        .header-box { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 6px solid var(--primary); }
+        .save-status { font-size: 12px; color: #10b981; font-weight: 700; display: flex; align-items: center; gap: 5px; opacity: 0; transition: 0.3s; margin-bottom: 10px; }
+        .save-status.show { opacity: 1; }
+
+        /* Form Controls */
+        .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; align-items: end; }
+        .input-group { display: flex; flex-direction: column; gap: 4px; }
+        .input-group label { font-size: 11px; font-weight: 700; color: #64748b; text-uppercase: true; }
+        .input-group input, .input-group select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; font-family: 'Prompt'; font-size: 14px; }
+
+        /* Summary Stats */
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 12px; border-left: 4px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .stat-card.active { border-left-color: var(--primary); background: #f0f7ff; }
+        .stat-label { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 4px; }
+        .stat-value { font-size: 1.4rem; font-weight: 800; color: #1e293b; }
+
+        /* ROI Section */
+        .roi-panel { background: #fff; padding: 18px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border: 1px solid #e2e8f0; }
+        .roi-display { text-align: right; }
+        .roi-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); line-height: 1; }
+
+        /* Table */
+        .table-container { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; font-size: 13px; }
+        th { background: #f1f5f9; padding: 10px; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; z-index: 5; }
+        td:first-child, th:first-child { position: sticky; left: 0; z-index: 6; background: #fff; border-right: 2px solid #e2e8f0; min-width: 130px; padding-left: 12px; }
+        
+        .inp-cell { width: 100%; border: none; text-align: center; padding: 6px 0; background: transparent; font-family: 'Prompt'; font-size: 13px; font-weight: 600; }
+        .inp-cell:focus { background: #eff6ff; outline: none; }
+        .row-bal { background: #f8fafc; font-size: 11px; font-weight: 700; text-align: center; color: #64748b; }
+
+        .empty-warn { background: #fee2e2 !important; color: #991b1b; }
+        .low-warn { background: #ffedd5 !important; color: #9a3412; }
+    </style>
+</head>
+<body>
+
+    <div class="header-box">
+        <div id="saveStatus" class="save-status"><i class="fas fa-check-circle"></i> ข้อมูลบันทึกลงระบบ Cloud แล้ว</div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0"><i class="fas fa-bullseye text-primary me-2"></i>Marketing Ad Planner</h5>
+            <input type="month" id="monthPicker" onchange="changeMonth()" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 4px 8px; font-weight: 700;">
+        </div>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label>Platform</label>
+                <select id="sel-plat">
+                    <option value="shopee">Shopee</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="google">Google</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Day Start</label>
+                <select id="sel-day"></select>
+            </div>
+            <div class="input-group">
+                <label>Top-up (เติม)</label>
+                <input type="number" id="inp-budget" placeholder="0">
+            </div>
+            <div class="input-group">
+                <label>Daily Burn (ใช้วันละ)</label>
+                <input type="number" id="inp-daily" placeholder="0">
+            </div>
+            <button class="btn btn-primary fw-bold" onclick="applyPlan()" style="border-radius: 8px; height: 38px;">Push to Table</button>
+        </div>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card active">
+            <div class="stat-label">TOTAL BUDGET (งบรวม)</div>
+            <div class="stat-value" id="grand-top">฿0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">ACTUAL SPEND (ใช้จริง)</div>
+            <div class="stat-value text-danger" id="grand-use">฿0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">REMAINING (คงเหลือ)</div>
+            <div class="stat-value text-success" id="grand-bal">฿0</div>
+        </div>
+    </div>
+
+    <div class="roi-panel">
+        <div>
+            <label class="fw-bold text-muted small d-block mb-1">REVENUE (ยอดขายรวมจากทุกช่องทาง)</label>
+            <input type="number" id="revenue" oninput="calcROI()" class="form-control fw-bold" placeholder="0.00" style="font-size: 1.2rem; width: 220px; border: 2px solid #cbd5e1; border-radius: 8px; padding: 8px;">
+        </div>
+        <div class="roi-display">
+            <div class="small fw-bold text-muted">ADS COST RATIO (เป้าหมาย ≤ 4%)</div>
+            <div class="roi-num" id="roi-res">0.00%</div>
+            <div id="roi-status" class="fw-bold small">-</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead><tr id="header-row"><th>Date / Channel</th></tr></thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+
+<script>
+    const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE"; 
+    const platforms = [
+        { id: 'shopee', name: 'Shopee' },
+        { id: 'facebook', name: 'Facebook' },
+        { id: 'google', name: 'Google' }
+    ];
+    let currentYear, currentMonth, daysInMonth;
+    let sessionData = JSON.parse(localStorage.getItem("user_session")) || { user: "guest" };
+
+    function init() {
+        const now = new Date();
+        document.getElementById('monthPicker').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        changeMonth();
+    }
+
+    function changeMonth() {
+        const picker = document.getElementById('monthPicker').value;
+        const date = new Date(picker + "-01");
+        currentYear = date.getFullYear(); currentMonth = date.getMonth();
+        daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        renderTable();
+        updateDaySelect();
+        loadFromCloud();
+    }
+
+    function updateDaySelect() {
+        const sel = document.getElementById('sel-day'); sel.innerHTML = '';
+        for(let i=1; i<=daysInMonth; i++) sel.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+
+    function renderTable() {
+        const header = document.getElementById('header-row');
+        const body = document.getElementById('table-body');
+        header.innerHTML = '<th>Date / Channel</th>';
+        body.innerHTML = '';
+        for(let i=1; i<=daysInMonth; i++) header.innerHTML += `<th>${i}</th>`;
+
+        platforms.forEach(p => {
+            let r1 = `<tr style="color:#0f172a"><td>${p.name} (เติม)</td>`, 
+                r2 = `<tr style="color:#dc2626"><td>ใช้จริง</td>`, 
+                r3 = `<tr class="row-bal"><td>คงเหลือ</td>`;
+            for(let i=1; i<=daysInMonth; i++){
+                r1 += `<td><input type="number" class="inp-cell" style="color:#16a34a" data-plat="${p.id}" data-type="top" data-day="${i}" oninput="calcAll()"></td>`;
+                r2 += `<td><input type="number" class="inp-cell" style="color:#dc2626" data-plat="${p.id}" data-type="use" data-day="${i}" oninput="calcAll()"></td>`;
+                r3 += `<td id="bal-${p.id}-${i}">0</td>`;
+            }
+            body.innerHTML += r1 + "</tr>" + r2 + "</tr>" + r3 + "</tr>";
+        });
+    }
+
+    function applyPlan() {
+        const pId = document.getElementById('sel-plat').value, startDay = parseInt(document.getElementById('sel-day').value),
+              budget = parseFloat(document.getElementById('inp-budget').value), daily = parseFloat(document.getElementById('inp-daily').value);
+        if(!budget || !daily) return;
+        document.querySelector(`.inp-cell[data-plat="${pId}"][data-type="top"][data-day="${startDay}"]`).value = budget;
+        let rem = budget;
+        for(let i=startDay; i<=daysInMonth; i++){
+            const cell = document.querySelector(`.inp-cell[data-plat="${pId}"][data-type="use"][data-day="${i}"]`);
+            if(rem >= daily) { cell.value = daily; rem -= daily; }
+            else if(rem > 0) { cell.value = rem; rem = 0; }
+        }
+        calcAll();
+    }
+
+    let saveTimeout;
+    function calcAll(isLoad = false) {
+        let gTop = 0, gUse = 0;
+        platforms.forEach(p => {
+            let pTop = 0, pUse = 0, bal = 0;
+            for(let i=1; i<=daysInMonth; i++){
+                const t = parseFloat(document.querySelector(`.inp-cell[data-plat="${p.id}"][data-type="top"][data-day="${i}"]`).value) || 0;
+                const u = parseFloat(document.querySelector(`.inp-cell[data-plat="${p.id}"][data-type="use"][data-day="${i}"]`).value) || 0;
+                bal += (t - u); pTop += t; pUse += u;
+                const cell = document.getElementById(`bal-${p.id}-${i}`);
+                cell.innerText = bal.toLocaleString();
+                cell.className = bal < 0 ? 'empty-warn' : (bal < (pUse/i) ? 'low-warn' : '');
+            }
+            gTop += pTop; gUse += pUse;
+        });
+        document.getElementById('grand-top').innerText = '฿' + gTop.toLocaleString();
+        document.getElementById('grand-use').innerText = '฿' + gUse.toLocaleString();
+        document.getElementById('grand-bal').innerText = '฿' + (gTop - gUse).toLocaleString();
+        calcROI(gUse);
+        if(!isLoad) { clearTimeout(saveTimeout); saveTimeout = setTimeout(saveToCloud, 1500); }
+    }
+
+    async function saveToCloud() {
+        const userId = sessionData.user, monthId = document.getElementById('monthPicker').value;
+        const cells = [];
+        document.querySelectorAll('.inp-cell').forEach(inp => {
+            if(inp.value) cells.push({ plat: inp.dataset.plat, type: inp.dataset.type, day: inp.dataset.day, val: inp.value });
+        });
+        const payload = { action: 'savePlan', userId, data: { month: monthId, revenue: document.getElementById('revenue').value, cells } };
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const st = document.getElementById('saveStatus'); st.classList.add('show'); setTimeout(() => st.classList.remove('show'), 2000);
+        } catch(e) { console.error(e); }
+    }
+
+    async function loadFromCloud() {
+        const userId = sessionData.user, monthId = document.getElementById('monthPicker').value;
+        try {
+            const resp = await fetch(`${SCRIPT_URL}?action=loadPlan&userId=${userId}&month=${monthId}`);
+            const data = await resp.json();
+            document.querySelectorAll('.inp-cell').forEach(inp => inp.value = "");
+            if(data.cells) {
+                document.getElementById('revenue').value = data.revenue || "";
+                data.cells.forEach(c => {
+                    const el = document.querySelector(`.inp-cell[data-plat="${c.plat}"][data-type="${c.type}"][data-day="${c.day}"]`);
+                    if(el) el.value = c.val;
+                });
+            }
+            calcAll(true);
+        } catch(e) { console.error(e); }
+    }
+
+    function calcROI(totalUse) {
+        const rev = parseFloat(document.getElementById('revenue').value) || 0;
+        const res = rev > 0 ? (totalUse / rev * 100) : 0;
+        const el = document.getElementById('roi-res'), st = document.getElementById('roi-status');
+        el.innerText = res.toFixed(2) + "%";
+        if(res > 6) { el.style.color = "#dc2626"; st.innerText = "🚨 High Cost"; }
+        else if(res > 4) { el.style.color = "#ea580c"; st.innerText = "⚠️ Monitoring"; }
+        else { el.style.color = "#16a34a"; st.innerText = "✅ Efficient"; }
+    }
+
+    init();
+</script>
+</body>
+</html>
