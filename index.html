@@ -10,13 +10,13 @@
     <style>
         :root { --primary: #007bff; --bg: #f4f7f6; --card: #ffffff; --text: #1e293b; --text-muted: #64748b; --header-h: 75px; }
         
-        /* 🌙 Dark Mode (แก้สีฟอนต์ให้ชัดเจน) */
+        /* 🌙 Dark Mode */
         body.dark-mode { --bg: #0f172a; --card: #1e293b; --text: #ffffff; --text-muted: #cbd5e1; --border: #334155; }
         body.dark-mode .form-control, body.dark-mode .form-select { background-color: #334155; border-color: #475569; color: #fff; }
         
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; overflow: hidden; }
 
-        /* 🔴 สไตล์ประกาศสำคัญ (Important) */
+        /* 🔴 ประกาศสำคัญ */
         .post-important { border: 2px solid #ef4444 !important; background: rgba(239,68,68,0.05) !important; }
         .badge-important { background: #ef4444; color: white; font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: bold; margin-bottom: 5px; display: inline-block; }
 
@@ -33,7 +33,6 @@
         #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; }
         .login-box { background: #fff; padding: 30px; border-radius: 20px; width: 350px; text-align: center; color: #333; }
         
-        /* ✅ แก้ฟอนต์ชื่อ/ตำแหน่งให้ชัด */
         #u-name { font-weight: 800; font-size: 15px; color: var(--text); }
         #u-pos, #u-dept { font-size: 11px; font-weight: 600; color: var(--text-muted); }
 
@@ -78,6 +77,21 @@
 
             <main class="main-content">
                 <div id="view-news">
+                    
+                    <div class="post-card bg-primary text-white p-3 border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #007bff, #0056b3);">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="opacity-75 fw-bold">MAIN SALES (MTD)</small>
+                            <i class="fas fa-chart-line opacity-50"></i>
+                        </div>
+                        <h2 class="fw-bold mb-2">฿ 1,984,469.24</h2>
+                        
+                        <div class="bg-white bg-opacity-25 rounded px-2 py-1 mt-2">
+                            <marquee scrollamount="5" style="font-size: 12px;">
+                                📢 ยินดีต้อนรับเข้าสู่ระบบ ULKA SYSTEM | กรุณาตรวจสอบประกาศสำคัญประจำวัน | 🚀 ยอดขายวันนี้พุ่งทะลุเป้า!
+                            </marquee>
+                        </div>
+                    </div>
+
                     <div id="bday-area"></div>
 
                     <div class="post-card p-3 mb-4 shadow-sm">
@@ -89,7 +103,7 @@
                         <input type="text" id="post-title" class="form-control mb-2" placeholder="หัวข้อประกาศ">
                         <textarea id="post-body" class="form-control mb-2" rows="2" placeholder="รายละเอียด..."></textarea>
                         <input type="text" id="post-img" class="form-control mb-3" placeholder="ลิงก์รูปภาพ (ถ้ามี)">
-                        <button onclick="publishPost()" class="btn btn-primary w-100 fw-bold">โพสต์ลงบอร์ด</button>
+                        <button id="btn-post" onclick="publishPost()" class="btn btn-primary w-100 fw-bold">โพสต์ลงบอร์ด</button>
                     </div>
 
                     <div id="news-feed"></div>
@@ -104,7 +118,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // ✅ URL ล่าสุดของลูกพี่
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby93Wmes2V7sfmCTPfYSi8mbNeSRLbUsbVI4Ae04p3oc94i8D1DopztXaNCpLBNcIZE/exec";
         let sessionData = null;
 
@@ -128,7 +141,6 @@
             document.getElementById('login-screen').classList.add('d-none');
             document.getElementById('main-app').classList.remove('d-none');
             
-            // ✅ ดึงชื่อ/ตำแหน่ง/แผนก ให้ตรง (F,G,I,N,O)
             document.getElementById('u-name').innerText = data.name || "ไม่พบชื่อ";
             document.getElementById('u-pos').innerText = data.pos || "";
             document.getElementById('u-dept').innerText = data.dept || "";
@@ -141,7 +153,6 @@
                 const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
                 const data = await resp.json();
                 
-                // 🎂 แสดงวันเกิด
                 if(data.birthdays && data.birthdays.length > 0) {
                     document.getElementById('bday-area').innerHTML = `
                         <div class="mb-3 p-3 text-white rounded shadow-sm" style="background: linear-gradient(135deg, #667eea, #764ba2);">
@@ -150,7 +161,6 @@
                         </div>`;
                 }
 
-                // 📰 เรียงลำดับ (สำคัญขึ้นก่อน)
                 data.posts.sort((a, b) => (b.category === 'Important' ? 1 : -1) - (a.category === 'Important' ? 1 : -1));
 
                 const feed = document.getElementById('news-feed');
@@ -171,7 +181,7 @@
                             ${p.img ? `<img src="${p.img}" class="img-fluid rounded mb-3">` : ''}
                             
                             <div class="d-flex gap-4 border-top pt-2">
-                                <span style="cursor:pointer" onclick="actionPost('likePost', '${p.id}')">❤️ <b>${p.likes}</b> Likes</span>
+                                <span style="cursor:pointer" id="like-${p.id}" onclick="actionPost('likePost', '${p.id}', this)">❤️ <b>${p.likes}</b> Likes</span>
                                 <span>💬 <b>${p.comments.length}</b> Comments</span>
                             </div>
                             
@@ -179,7 +189,7 @@
                                 ${p.comments.map(c => `<div class="mb-1"><b>${c.user}:</b> ${c.text}</div>`).join('')}
                                 <div class="input-group input-group-sm mt-2">
                                     <input type="text" id="cmt-${p.id}" class="form-control" placeholder="คอมเม้นต์...">
-                                    <button class="btn btn-primary" onclick="submitComment('${p.id}')">ส่ง</button>
+                                    <button class="btn btn-primary" id="btn-cmt-${p.id}" onclick="submitComment('${p.id}')">ส่ง</button>
                                 </div>
                             </div>
                         </div>
@@ -189,14 +199,17 @@
         }
 
         async function publishPost() {
+            const btn = document.getElementById('btn-post');
             const type = document.getElementById('post-type').value;
             const title = document.getElementById('post-title').value;
             const body = document.getElementById('post-body').value;
             const img = document.getElementById('post-img').value;
             
-            if(!title || !body) return Swal.fire('แจ้งเตือน', 'กรุณากรอกหัวข้อและเนื้อหา', 'warning');
+            if(!title || !body) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'warning');
             
-            Swal.fire({title: 'กำลังโพสต์...', didOpen: () => Swal.showLoading()});
+            // 🔒 ล็อคปุ่มกันเบิ้ล
+            btn.disabled = true; btn.innerText = 'กำลังโพสต์...';
+            
             await fetch(SCRIPT_URL, { 
                 method: 'POST', 
                 body: JSON.stringify({ action: 'addAnnounce', title, body, img, category: type, author: sessionData.name }) 
@@ -205,13 +218,20 @@
         }
 
         async function submitComment(postId) {
+            const btn = document.getElementById(`btn-cmt-${postId}`);
             const text = document.getElementById(`cmt-${postId}`).value;
             if(!text) return;
+            
+            // 🔒 ล็อคปุ่มกันเบิ้ล
+            btn.disabled = true; btn.innerText = '...';
+            
             await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addComment', postId, user: sessionData.name, text }) });
             loadAnnounce();
         }
 
-        async function actionPost(action, postId) {
+        async function actionPost(action, postId, el) {
+            // 🔒 ล็อคชั่วคราว
+            if(el) el.style.pointerEvents = 'none';
             await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action, postId }) });
             loadAnnounce();
         }
@@ -223,7 +243,6 @@
             document.getElementById('view-news').classList.toggle('d-none', !isNews);
             document.getElementById('view-iframe').classList.toggle('d-none', isNews);
             if(!isNews) {
-                // ไฟล์หน้าย่อยของลูกพี่ (ห้ามลบ)
                 const fileMap = { 'exec': 'dashboard.html', 'biz': 'biz_plan.html', 'mkt': 'marketing_ad_planner.html', 'csr': 'CSR.html' };
                 document.getElementById('main-iframe').src = fileMap[v] || (v + ".html");
             }
