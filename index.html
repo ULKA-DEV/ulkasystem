@@ -1,230 +1,93 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM v1.0.50</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root { 
-            --primary: #007bff; --bg: #f4f7f6; --card: #ffffff; --text: #1e293b; 
-            --text-muted: #64748b; --border: #e2e8f0; --header-h: 65px; --sidebar-w: 240px; 
-        }
-        
-        /* 🌙 Dark Mode Tuning (High Contrast) */
-        body.dark-mode { 
-            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; 
-            --text-muted: #94a3b8; --border: #334155; 
-        }
-        
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; overflow: hidden; transition: 0.3s; }
-
-        /* 🔒 Login Screen */
-        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; }
-
-        /* 🔝 Top Header */
-        .top-header { 
-            position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
-            background: var(--card); border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 2000;
-        }
-
-        /* 🔘 Tool Buttons */
-        .btn-tool { width: 38px; height: 38px; border-radius: 10px; border: none; background: rgba(0,0,0,0.05); color: var(--text); display: flex; align-items: center; justify-content: center; }
-        body.dark-mode .btn-tool { background: rgba(255,255,255,0.1); color: #fff; }
-
-        /* 📂 Widget Dropdown */
-        .widget-dropdown { 
-            position: absolute; top: 70px; right: 20px; width: 240px;
-            background: var(--card); border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 15px; display: none; z-index: 2100; border: 1px solid var(--border);
-        }
-        .widget-dropdown.show { display: block; }
-
-        /* 🏢 Sidebar & Layout */
-        .app-wrapper { display: flex; height: 100vh; padding-top: var(--header-h); }
-        .sidebar { width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border); padding: 15px 0; overflow-y: auto; }
-        .nav-item-side { padding: 12px 20px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .nav-item-side:hover { background: rgba(0,0,0,0.03); color: var(--primary); }
-        .nav-item-side.active { background: var(--primary); color: #fff !important; }
-
-        /* 📱 Bottom Nav (Mobile) */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: var(--card);
-            display: none; align-items: center; border-top: 1px solid var(--border); z-index: 1050;
-            overflow-x: auto; scrollbar-width: none; gap: 15px; padding: 0 20px;
-        }
-        .nav-item-bottom { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; min-width: 60px; }
-        .nav-item-bottom.active { color: var(--primary); }
-
-        /* 📦 Main Container */
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 20px; position: relative; }
-        .widget-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        
-        iframe { width: 100%; height: 100%; border: none; border-radius: 20px; background: #fff; }
-
-        @media (max-width: 768px) {
-            .sidebar { display: none !important; }
-            .bottom-nav { display: flex; }
-            .main-content { padding-bottom: 80px; }
-            .widget-card { padding: 15px; }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="login-screen">
-        <div class="bg-white p-4 rounded-4 shadow-lg text-center" style="width: 320px; color: #333;">
-            <i class="fas fa-cube fa-3x text-primary mb-3"></i>
-            <h5 class="fw-bold">ULKA SYSTEM LOGIN</h5>
-            <input type="text" id="user" class="form-control mb-2" placeholder="User ID">
-            <input type="password" id="pass" class="form-control mb-3" placeholder="Password">
-            <button onclick="checkLogin()" class="btn btn-primary w-100 fw-bold">SIGN IN</button>
+<header class="top-header">
+    <div class="d-flex align-items-center gap-3">
+        <div class="user-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; font-weight: 800; font-size: 1.2rem;">
+            <span id="u-initial">-</span>
+        </div>
+        <div class="user-details" style="line-height: 1.2;">
+            <div id="u-name" class="fw-bold" style="font-size: 15px; color: var(--text);">กำลังโหลด...</div>
+            <div style="font-size: 11px; color: var(--text-muted);">
+                <span id="u-pos">ตำแหน่ง</span> | <span id="u-dept">หน่วยงาน</span>
+            </div>
         </div>
     </div>
+    
+    <div class="d-flex gap-2">
+        <button class="btn-tool" onclick="toggleWidgetDropdown()"><i class="fas fa-th-large"></i></button>
+        <button class="btn-tool" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+    </div>
+</header>
 
-    <div id="main-app" class="d-none">
-        <header class="top-header">
-            <div class="fw-bold text-primary"><i class="fas fa-cube me-2"></i>ULKA SYSTEM</div>
-            <div class="d-flex gap-2">
-                <button class="btn-tool" onclick="toggleWidgetDropdown()"><i class="fas fa-th-large"></i></button>
-                <button class="btn-tool" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
-                <button class="btn-tool text-danger d-none d-md-flex" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-            
-            <div class="widget-dropdown" id="widget-dropdown">
-                <h6 class="fw-bold mb-3">ตั้งค่าหน้า News</h6>
-                <div id="widget-selectors"></div>
-            </div>
-        </header>
+<main class="main-content" id="view-news">
+    <div id="announce-container">
+        </div>
+</main>
 
-        <div class="app-wrapper">
-            <aside class="sidebar">
-                <div onclick="switchView('news', this)" class="nav-item-side active"><i class="fas fa-newspaper"></i> ข่าวสารส่วนกลาง</div>
-                <hr class="mx-3 my-2 opacity-50">
-                <div onclick="switchView('exec', this)" class="nav-item-side"><i class="fas fa-crown"></i> ฝ่ายบริหาร</div>
-                <div onclick="switchView('biz', this)" class="nav-item-side"><i class="fas fa-file-invoice-dollar"></i> แผนธุรกิจ</div>
-                <div onclick="switchView('mkt', this)" class="nav-item-side"><i class="fas fa-ad"></i> กลยุทธ์การตลาด</div>
-                <div onclick="switchView('csr', this)" class="nav-item-side"><i class="fas fa-headset"></i> บริการหลังการขาย</div>
-            </aside>
+<script>
+    // --- ฟังก์ชันคืนค่าข้อมูล User ---
+    function displayUserInfo(data) {
+        document.getElementById('u-name').innerText = data.name || "ไม่ระบุชื่อ";
+        document.getElementById('u-pos').innerText = data.pos || "ไม่ระบุตำแหน่ง";
+        document.getElementById('u-dept').innerText = data.dept || "ไม่ระบุหน่วยงาน";
+        document.getElementById('u-initial').innerText = (data.nickname || data.name || "U")[0];
+    }
 
-            <main class="main-content">
-                <div id="view-news">
-                    <div class="widget-card bg-primary text-white border-0 shadow-sm mb-4">
-                        <small class="fw-bold opacity-75">ยอดขายสาขาหลัก (MTD)</small>
-                        <h2 class="fw-bold mb-0">฿ 1,984,469.24</h2>
+    // --- ฟังก์ชันจัดการบอร์ด (แยกประกาศ & คอมเม้นต์) ---
+    async function loadAnnounceBoard() {
+        // ในอนาคต fetch จาก SCRIPT_URL?action=getAnnounce
+        const announcements = [
+            { 
+                id: "A001", 
+                title: "โปรโมชั่นเครื่องดูดควัน FE-301", 
+                content: "ซื้อ 1 แถม 2 ถึงสิ้นเดือนนี้!", 
+                author: "Moo", 
+                img: "https://via.placeholder.com/400x200",
+                comments: [
+                    { user: "Golf", text: "รับทราบครับ เตรียมทำกราฟิกเพิ่ม" },
+                    { user: "Aum", text: "ยอดจองเริ่มเข้ามาแล้วครับ" }
+                ]
+            }
+        ];
+
+        const container = document.getElementById('announce-container');
+        container.innerHTML = announcements.map(post => `
+            <div class="widget-card mb-4 p-0 overflow-hidden shadow-sm">
+                <div class="p-3">
+                    <h6 class="fw-bold text-primary mb-1">${post.title}</h6>
+                    <small class="text-muted">โดย: ${post.author}</small>
+                    <p class="mt-2" style="font-size: 14px;">${post.content}</p>
+                </div>
+                ${post.img ? `<img src="${post.img}" style="width:100%;">` : ''}
+                
+                <div class="bg-light p-3" style="font-size: 13px; border-top: 1px solid #eee;">
+                    <div class="fw-bold mb-2">คอมเม้นต์:</div>
+                    <div id="comments-${post.id}">
+                        ${post.comments.map(c => `<div class="mb-1"><b>${c.user}:</b> ${c.text}</div>`).join('')}
                     </div>
-                    <div class="row g-4" id="news-widget-grid"></div>
+                    
+                    <div class="input-group mt-2">
+                        <input type="text" id="inp-${post.id}" class="form-control form-control-sm" placeholder="พิมพ์คอมเม้นต์...">
+                        <button class="btn btn-primary btn-sm" onclick="sendComment('${post.id}')">ส่ง</button>
+                    </div>
                 </div>
+            </div>
+        `).join('');
+    }
 
-                <div id="view-iframe" class="d-none h-100">
-                    <iframe id="main-iframe" src=""></iframe>
-                </div>
-            </main>
-
-            <nav class="bottom-nav">
-                <div onclick="switchView('news', this)" class="nav-item-bottom active"><i class="fas fa-newspaper"></i><span>ข่าวสาร</span></div>
-                <div onclick="switchView('exec', this)" class="nav-item-bottom"><i class="fas fa-crown"></i><span>บริหาร</span></div>
-                <div onclick="switchView('biz', this)" class="nav-item-bottom"><i class="fas fa-file-invoice"></i><span>แผน</span></div>
-                <div onclick="switchView('mkt', this)" class="nav-item-bottom"><i class="fas fa-ad"></i><span>ตลาด</span></div>
-                <div onclick="switchView('csr', this)" class="nav-item-bottom"><i class="fas fa-headset"></i><span>CSR</span></div>
-                <div onclick="logout()" class="nav-item-bottom text-danger"><i class="fas fa-sign-out-alt"></i><span>ออก</span></div>
-            </nav>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcCjV81SFv-2Y8rdzb5qZ_u8iRIyHEtuJTruMyff9sVAVyfK_SWntv28vS7FKf77FFZQ/exec";
+    async function sendComment(postId) {
+        const text = document.getElementById(`inp-${postId}`).value;
+        const userName = sessionData.name; // ดึงจาก Login
         
-        const widgetLibrary = {
-            'clock': { name: 'นาฬิกา', icon: 'fa-clock', col: 'col-md-4', default: true },
-            'sales': { name: 'สรุปรายวัน', icon: 'fa-chart-line', col: 'col-md-8', default: true }
-        };
+        if(!text) return;
 
-        function checkLogin() {
-            const u = document.getElementById('user').value;
-            if(u) {
-                const res = { success: true, name: u, dept: 'บริหาร', role: 'admin' };
-                localStorage.setItem("user_session", JSON.stringify(res));
-                initApp(res);
-            }
-        }
+        // บันทึกไปที่ Apps Script (ส่ง action: 'addComment', postId, user, text)
+        const payload = { action: 'addComment', postId, user: userName, text };
+        
+        // อัปเดต UI ทันที (Optimistic Update)
+        const commentBox = document.getElementById(`comments-${postId}`);
+        commentBox.innerHTML += `<div class="mb-1"><b>${userName}:</b> ${text}</div>`;
+        document.getElementById(`inp-${postId}`).value = '';
+    }
 
-        function initApp(data) {
-            document.getElementById('login-screen').classList.add('d-none');
-            document.getElementById('main-app').classList.remove('d-none');
-            setupWidgetDropdown();
-            applyWidgetSettings();
-        }
-
-        // --- Widget Engine ---
-        function setupWidgetDropdown() {
-            const container = document.getElementById('widget-selectors');
-            container.innerHTML = '';
-            Object.keys(widgetLibrary).forEach(key => {
-                container.innerHTML += `<div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" id="check-${key}" onchange="saveWidgetSettings()">
-                    <label class="form-check-label small fw-bold" for="check-${key}">${widgetLibrary[key].name}</label>
-                </div>`;
-            });
-        }
-
-        function saveWidgetSettings() {
-            let settings = {};
-            Object.keys(widgetLibrary).forEach(key => { settings[key] = document.getElementById(`check-${key}`).checked; });
-            localStorage.setItem("news_widgets_v1", JSON.stringify(settings));
-            applyWidgetSettings();
-        }
-
-        function applyWidgetSettings() {
-            const saved = localStorage.getItem("news_widgets_v1");
-            const settings = saved ? JSON.parse(saved) : Object.keys(widgetLibrary).reduce((a, k) => ({...a, [k]: widgetLibrary[k].default}), {});
-            const grid = document.getElementById('news-widget-grid');
-            grid.innerHTML = '';
-            Object.keys(settings).forEach(key => {
-                if(settings[key]) {
-                    const w = widgetLibrary[key];
-                    grid.innerHTML += `<div class="${w.col}"><div class="widget-card">
-                        <h6 class="fw-bold mb-3"><i class="fas ${w.icon} text-primary me-2"></i>${w.name}</h6>
-                        <div id="content-${key}">กำลังโหลด...</div>
-                    </div></div>`;
-                    if(key === 'clock') setInterval(() => { if(document.getElementById('content-clock')) document.getElementById('content-clock').innerHTML = `<h3>${new Date().toLocaleTimeString('th-TH')}</h3>`; }, 1000);
-                    if(key === 'sales') document.getElementById('content-sales').innerHTML = "ยอดขายวันนี้ปกติ";
-                }
-                if(document.getElementById(`check-${key}`)) document.getElementById(`check-${key}`).checked = settings[key];
-            });
-        }
-
-        // --- Navigation ---
-        function switchView(v, el) {
-            document.querySelectorAll('.nav-item-side, .nav-item-bottom').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-
-            const isNews = v === 'news';
-            document.getElementById('view-news').classList.toggle('d-none', !isNews);
-            document.getElementById('view-iframe').classList.toggle('d-none', isNews);
-
-            if(!isNews) {
-                const fileMap = { 'exec': 'dashboard.html', 'biz': 'biz_plan.html', 'mkt': 'marketing_ad_planner.html', 'csr': 'CSR.html' };
-                document.getElementById('main-iframe').src = fileMap[v] || (v + ".html");
-            }
-            document.getElementById('widget-dropdown').classList.remove('show');
-        }
-
-        function toggleWidgetDropdown() { document.getElementById('widget-dropdown').classList.toggle('show'); }
-        function toggleDarkMode() { 
-            document.body.classList.toggle('dark-mode'); 
-            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode'));
-        }
-        function logout() { localStorage.clear(); location.reload(); }
-
-        window.onload = () => {
-            if(localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
-            if(localStorage.getItem("user_session")) initApp(JSON.parse(localStorage.getItem("user_session")));
-        };
-    </script>
-</body>
-</html>
+    // เรียกใช้ตอน App เริ่มทำงาน
+    // initApp(JSON.parse(localStorage.getItem("user_session")));
+</script>
