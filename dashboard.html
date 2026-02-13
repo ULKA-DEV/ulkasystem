@@ -2,156 +2,151 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULKA - Real-time Sales Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ULKA DASHBOARD - War Room</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --primary: #007bff; --success: #10b981; --dark: #0f172a; --accent: #f59e0b; }
-        body { font-family: 'Sarabun', sans-serif; background: #f1f5f9; padding: 20px; color: var(--dark); }
+        :root { --primary: #0062ff; --dark: #0f172a; --success: #10b981; --bg: #f1f5f9; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--dark); overflow-x: hidden; margin: 0; }
+        .main-container { padding: 15px; max-width: 500px; margin: auto; min-height: 100vh; }
         
-        .main-card { background: #fff; border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); border: none; position: relative; }
-        
-        /* แถบแสดงเดือนและเป้าหมาย */
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
-        .month-display { background: var(--dark); color: #fff; padding: 12px 25px; border-radius: 15px; display: inline-flex; align-items: center; gap: 12px; }
-        .target-box { background: #fff; border: 2px solid var(--accent); padding: 10px 20px; border-radius: 15px; color: var(--accent); font-weight: 800; }
+        /* Glassmorphism Design */
+        .glass-card { background: #fff; border-radius: 28px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 15px; }
+        .header-banner { background: var(--dark); color: #fff; padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .month-tag { background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
 
-        .sales-value { font-size: 5rem; font-weight: 800; letter-spacing: -3px; color: var(--dark); line-height: 0.9; }
-        .progress { height: 28px; border-radius: 50px; background: #e2e8f0; margin: 35px 0; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
+        .big-number { font-size: calc(2.4rem + 1.5vw); font-weight: 800; letter-spacing: -2px; line-height: 1; margin: 10px 0; color: var(--dark); }
+        .progress-custom { height: 18px; border-radius: 50px; background: #e2e8f0; margin: 20px 0; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, #0062ff, #00d4ff); width: 0%; transition: width 1.5s ease-in-out; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-item { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center; }
+        .stat-label { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .stat-val { font-size: 1.1rem; font-weight: 800; }
+
+        .sync-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; margin-top: 10px; box-shadow: 0 8px 20px rgba(0, 98, 255, 0.25); display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .sync-btn:active { transform: scale(0.97); }
         
-        .btn-refresh { border-radius: 50px; padding: 12px 30px; font-weight: 700; transition: 0.3s; border: 2px solid #cbd5e1; background: #fff; }
-        .btn-refresh:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
-        .btn-refresh i.spinning { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        
-        .info-box { background: #f8fafc; border-radius: 20px; padding: 25px; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .info-box:hover { background: #fff; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-        .text-label { font-size: 0.9rem; font-weight: 700; color: #64748b; text-uppercase: uppercase; margin-bottom: 8px; }
-        
-        @media (max-width: 768px) {
-            .sales-value { font-size: 3rem; }
-            .main-card { padding: 25px; }
-            .dashboard-header { flex-direction: column; align-items: flex-start; }
-        }
+        .spinning { animation: spin 0.8s linear infinite; }
+        .loading-shimmer { opacity: 0.5; pointer-events: none; transition: 0.3s; }
     </style>
 </head>
 <body>
 
-<div class="container py-4">
-    <div class="main-card">
-        <div class="dashboard-header">
-            <div class="month-display shadow-sm">
-                <i class="fas fa-calendar-day text-warning"></i>
-                <div>
-                    <small class="d-block opacity-75" style="font-size: 0.7rem; font-weight: bold;">สรุปผลการดำเนินงาน</small>
-                    <span class="h5 fw-bold mb-0" id="current-month-text">กุมภาพันธ์ 2569</span>
-                </div>
-            </div>
-            <div class="target-box shadow-sm">
-                <small class="d-block text-dark opacity-50" style="font-size: 0.7rem;">เป้าหมายประจำเดือน (TARGET)</small>
-                <span class="h4 mb-0">฿7,000,000.00</span>
-            </div>
+<div class="main-container">
+    <div class="header-banner shadow-sm">
+        <div>
+            <h5 class="fw-bold mb-0 text-white">ULKA WAR ROOM</h5>
+            <span id="month-name" class="month-tag">กำลังซิงค์...</span>
         </div>
+        <div class="text-end">
+            <i class="fas fa-bolt text-warning h4 mb-0"></i>
+        </div>
+    </div>
 
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <div class="text-label"><i class="fas fa-chart-line text-success me-2"></i>ยอดขายปัจจุบัน (Actual Sales)</div>
-                <div class="sales-value" id="sales-display">฿0.00</div>
-            </div>
-            <div class="col-md-4 text-md-end mt-4 mt-md-0">
-                <button class="btn btn-refresh shadow-sm" onclick="manualRefresh()">
-                    <i id="refresh-icon" class="fas fa-sync-alt me-2"></i>RE-SYNC DATA
-                </button>
-                <div class="small text-muted mt-3">
-                    <i class="far fa-clock me-1"></i>อัปเดตล่าสุด: <span id="sync-time" class="fw-bold">-</span>
-                </div>
-            </div>
+    <div class="glass-card text-center" id="main-display">
+        <span class="badge bg-primary-subtle text-primary rounded-pill mb-2 px-3">ยอดขายสะสมปัจจุบัน</span>
+        <div class="big-number" id="actual-sales">฿0.00</div>
+        
+        <div class="progress-custom">
+            <div id="bar-fill" class="bar-fill"></div>
         </div>
+        
+        <div class="d-flex justify-content-between align-items-center px-1">
+            <span class="h4 fw-bold text-primary mb-0" id="pct-val">0%</span>
+            <small class="text-muted fw-bold">เป้า 7,000,000</small>
+        </div>
+    </div>
 
-        <div class="progress">
-            <div id="prog-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 0%; transition: width 1.5s ease-in-out;"></div>
+    <div class="stat-grid">
+        <div class="stat-item shadow-sm border-start border-danger border-4">
+            <div class="stat-label text-danger">ยังขาดอีก</div>
+            <div class="stat-val text-danger" id="gap-val">฿0</div>
         </div>
+        <div class="stat-item shadow-sm">
+            <div class="stat-label">ต้องทำ/วัน</div>
+            <div class="stat-val" id="daily-val">฿0</div>
+        </div>
+        <div class="stat-item shadow-sm border-start border-success border-4">
+            <div class="stat-label text-success">กำไรสุทธิ</div>
+            <div class="stat-val text-success" id="profit-val">฿0</div>
+        </div>
+        <div class="stat-item shadow-sm">
+            <div class="stat-label">วันคงเหลือ</div>
+            <div class="stat-val" id="days-val">- วัน</div>
+        </div>
+    </div>
 
-        <div class="row g-4 text-center">
-            <div class="col-6 col-md-3">
-                <div class="info-box">
-                    <div class="text-label">ความสำเร็จ</div>
-                    <div class="h2 fw-bold text-primary mb-0" id="prog-pct">0%</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="info-box">
-                    <div class="text-label">ยังขาดอีก</div>
-                    <div class="h4 fw-bold text-danger mb-0" id="remaining">฿0.00</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="info-box">
-                    <div class="text-label">ต้องทำ/วัน</div>
-                    <div class="h4 fw-bold text-dark mb-0" id="avg-daily">฿0.00</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="info-box">
-                    <div class="text-label">วันคงเหลือ</div>
-                    <div class="h4 fw-bold text-dark mb-0">15 วัน</div>
-                </div>
-            </div>
-        </div>
+    <button class="sync-btn" onclick="fetchData()">
+        <i id="sync-icon" class="fas fa-sync-alt"></i>
+        <span>อัปเดตยอดจากชีท</span>
+    </button>
+    
+    <div class="text-center mt-3">
+        <small class="text-muted" style="font-size: 0.75rem;">
+            ซิงค์ล่าสุด: <span id="sync-time" class="fw-bold">-</span>
+        </small>
     </div>
 </div>
 
 <script>
-    // Configuration
-    const TARGET = 7000000.00;
-    const CURRENT_SALES = 2029282.31;
-    const DAYS_LEFT = 15;
+    // ดึง URL Web App ที่ลูกพี่ Deploy มาใช้
+    const API_URL = "https://script.google.com/macros/s/AKfycbxjuIt0g4Hlsh6q-pMIY04eohi94lRkgSoka5k7Ye2RjQNeabgHn5g99_cpCZSxQHjC-Q/exec";
 
-    // ชื่อเดือนไทย
-    const thaiMonths = [
-        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-    ];
-
-    function updateDashboard() {
-        const now = new Date();
-        const monthName = thaiMonths[now.getMonth()];
-        const yearThai = now.getFullYear() + 543;
-        const timeString = now.toLocaleTimeString('th-TH');
-
-        // แสดงชื่อเดือน
-        document.getElementById('current-month-text').innerText = `${monthName} ${yearThai}`;
-
-        const progress = (CURRENT_SALES / TARGET * 100).toFixed(1);
-        const remain = TARGET - CURRENT_SALES;
-        const daily = remain / DAYS_LEFT;
-
-        // อัปเดตตัวเลข
-        document.getElementById('sales-display').innerText = '฿' + CURRENT_SALES.toLocaleString(undefined, {minimumFractionDigits: 2});
-        document.getElementById('prog-pct').innerText = progress + '%';
-        document.getElementById('prog-bar').style.width = Math.min(progress, 100) + '%';
-        document.getElementById('remaining').innerText = '฿' + (remain > 0 ? remain : 0).toLocaleString(undefined, {minimumFractionDigits: 2});
-        document.getElementById('avg-daily').innerText = '฿' + daily.toLocaleString(undefined, {maximumFractionDigits: 0});
-        document.getElementById('sync-time').innerText = timeString;
-    }
-
-    function manualRefresh() {
-        const icon = document.getElementById('refresh-icon');
+    async function fetchData() {
+        const icon = document.getElementById('sync-icon');
+        const mainDisplay = document.getElementById('main-display');
         icon.classList.add('spinning');
-        
-        // จำลองการดึงข้อมูลใหม่
-        setTimeout(() => {
-            updateDashboard();
+        mainDisplay.classList.add('loading-shimmer');
+
+        try {
+            // เรียกข้อมูลโดยระบุ action เป็นตัวที่เราเพิ่มใน code.gs
+            const response = await fetch(`${API_URL}?action=getFebruaryWarRoom`);
+            const data = await response.json();
+            
+            const TARGET = 7000000.00; // เป้า 7 ล้านที่ลูกพี่กำหนด
+            const ACTUAL = data.actual;
+            const PROFIT = data.profit;
+            const DAYS = data.daysLeft;
+
+            // คำนวณ Metric ต่างๆ
+            const pct = (ACTUAL / TARGET * 100).toFixed(1);
+            const gap = TARGET - ACTUAL;
+            const daily = gap / DAYS;
+
+            // อัปเดตข้อมูลลงหน้าจอ
+            document.getElementById('actual-sales').innerText = '฿' + ACTUAL.toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('pct-val').innerText = pct + '%';
+            document.getElementById('bar-fill').style.width = Math.min(pct, 100) + '%';
+            
+            // หน่วยย่อ M/K เพื่อให้เหมาะกับมือถือ
+            document.getElementById('gap-val').innerText = '฿' + (gap > 0 ? (gap/1000000).toFixed(2) + 'M' : '0.00M');
+            document.getElementById('daily-val').innerText = '฿' + (daily > 0 ? (daily/1000).toFixed(0) + 'K' : '0K');
+            document.getElementById('profit-val').innerText = '฿' + (PROFIT/1000000).toFixed(2) + 'M';
+            document.getElementById('days-val').innerText = DAYS + ' วัน';
+            
+            // อัปเดตชื่อเดือนและเวลาซิงค์
+            const now = new Date();
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            document.getElementById('month-name').innerText = `${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}`;
+            document.getElementById('sync-time').innerText = now.toLocaleTimeString('th-TH');
+
+        } catch (error) {
+            console.error("Sync Error:", error);
+        } finally {
             icon.classList.remove('spinning');
-        }, 800);
+            mainDisplay.classList.remove('loading-shimmer');
+        }
     }
 
-    // เริ่มทำงาน
-    updateDashboard();
-    // Auto sync ทุก 1 นาที
-    setInterval(updateDashboard, 60000);
+    // เริ่มทำงานทันที
+    fetchData();
+    // Auto sync ทุก 5 นาที
+    setInterval(fetchData, 300000);
 </script>
 
 </body>
