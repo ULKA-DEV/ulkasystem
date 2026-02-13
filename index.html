@@ -2,245 +2,146 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM - Command Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULKA Command Center v3</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
     <style>
-        :root { --primary: #0062ff; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --text-muted: #64748b; --header-h: 70px; }
+        :root { --primary: #00d4ff; --bg: #0b0f19; --card-bg: rgba(30, 41, 59, 0.5); --border: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Sarabun', sans-serif; background-color: var(--bg); color: #fff; margin: 0; overflow-x: hidden; }
+
+        /* 🌌 Layout & Sidebar */
+        .top-header { height: 60px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--border); position: fixed; width: 100%; z-index: 1000; }
+        .sidebar { position: fixed; left: 0; top: 60px; bottom: 0; width: 240px; background: rgba(15, 23, 42, 0.9); border-right: 1px solid var(--border); transition: 0.3s; transform: translateX(-240px); z-index: 999; }
+        .sidebar.active { transform: translateX(0); }
+        .main-content { padding: 80px 20px 40px 20px; max-width: 1200px; margin: 0 auto; }
+
+        /* 🔋 Section 1: Energy Hub (The Core) */
+        .glass-panel { background: var(--card-bg); backdrop-filter: blur(12px); border-radius: 24px; border: 1px solid var(--border); padding: 30px; margin-bottom: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .energy-label { font-size: 5rem; font-weight: 800; color: var(--primary); text-shadow: 0 0 20px rgba(0, 212, 255, 0.5); line-height: 1; margin-bottom: 10px; }
+        .energy-bar-container { width: 100%; max-width: 600px; height: 18px; background: rgba(255,255,255,0.05); border-radius: 50px; margin: 20px auto; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .energy-bar-fill { height: 100%; background: linear-gradient(90deg, #0062ff, #00d4ff); width: 0%; transition: 2s cubic-bezier(0.22, 1, 0.36, 1); box-shadow: 0 0 15px var(--primary); }
+
+        /* 📊 Section 2: Daily Snapshot (6 Modules) */
+        .snapshot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        @media (min-width: 992px) { .snapshot-grid { grid-template-columns: repeat(6, 1fr); } }
         
-        body.dark-mode { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --text-muted: #94a3b8; }
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; overflow: hidden; transition: 0.3s; }
+        .snap-card { background: rgba(30, 41, 59, 0.4); border-radius: 18px; padding: 20px; border: 1px solid var(--border); text-align: left; position: relative; transition: 0.3s; }
+        .snap-card:hover { transform: translateY(-5px); border-color: var(--primary); background: rgba(0, 212, 255, 0.05); }
+        .snap-card i { font-size: 1.2rem; margin-bottom: 15px; display: block; }
+        .snap-val { font-size: 1.8rem; font-weight: 800; display: block; color: #fff; }
+        .snap-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .snap-card::after { content: ""; position: absolute; bottom: 0; left: 18px; right: 18px; height: 3px; border-radius: 10px; }
+        .card-mkt::after { background: #ef4444; } .card-con::after { background: #ec4899; } .card-sal::after { background: #0ea5e9; }
+        .card-cs::after { background: #a855f7; } .card-stk::after { background: #f59e0b; } .card-tec::after { background: #10b981; }
 
-        /* 🚀 Widgets & UI Components */
-        .widget-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.3s; }
-        .sales-gradient { background: linear-gradient(135deg, #0062ff, #00d4ff); color: white; border: none; }
-        .progress-mini { height: 8px; border-radius: 10px; background: rgba(255,255,255,0.2); margin: 10px 0; }
-        .bar-mini { height: 100%; background: #fff; border-radius: 10px; transition: 1s ease-in-out; }
+        /* 📱 Section 3: Pulse Feed */
+        .feed-card { background: rgba(30, 41, 59, 0.3); border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .feed-header { padding: 15px; display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 40px; height: 40px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .feed-body { padding: 0 20px 20px 20px; }
+        .feed-img { width: 100%; border-radius: 15px; margin-top: 10px; border: 1px solid var(--border); }
 
-        /* Layout Structure */
-        .top-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.08); }
-        .sidebar { width: 260px; background: var(--card); border-right: 1px solid rgba(0,0,0,0.08); padding-top: 20px; display: flex; flex-direction: column; transition: 0.3s; }
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 20px; background: var(--bg); }
-        
-        /* Navigation */
-        .nav-item-side { padding: 12px 20px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .nav-item-side:hover { background: rgba(0,98,255,0.05); color: var(--primary); }
-        .nav-item-side.active { background: var(--primary); color: #fff !important; box-shadow: 0 4px 12px rgba(0,98,255,0.2); }
-
-        .post-card { background: var(--card); border-radius: 20px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.05); }
-        .post-important { border-left: 5px solid #ef4444 !important; }
-
-        /* Login Screen */
-        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; padding: 20px; }
-        .login-box { background: #fff; padding: 40px; border-radius: 30px; width: 100%; max-width: 380px; text-align: center; }
-
-        /* 📱 Mobile Responsive Adjustments */
-        @media (max-width: 991px) {
-            .sidebar { position: fixed; left: -260px; top: var(--header-h); bottom: 0; z-index: 1500; }
-            .sidebar.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
-            .main-content { padding: 15px; }
-            .big-sales-text { font-size: 1.8rem !important; }
-        }
+        .btn-ulka { background: var(--primary); color: #000; font-weight: 800; border-radius: 100px; padding: 8px 25px; border: none; transition: 0.3s; }
+        .btn-ulka:hover { box-shadow: 0 0 20px var(--primary); opacity: 0.9; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-box shadow-lg">
-            <h3 class="fw-extrabold mb-4 text-primary">ULKA LOGIN</h3>
-            <div class="mb-2"><input type="text" id="user" class="form-control rounded-pill px-3" placeholder="User ID"></div>
-            <div class="mb-4"><input type="password" id="pass" class="form-control rounded-pill px-3" placeholder="Password"></div>
-            <button onclick="checkLogin()" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow">Sign In</button>
+    <header class="top-header">
+        <div class="d-flex align-items-center gap-3">
+            <i class="fas fa-bars cursor-pointer" onclick="document.getElementById('sidebar').classList.toggle('active')"></i>
+            <span class="fw-bold tracking-tighter">ULKA <span class="text-info">COMMAND</span></span>
         </div>
-    </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="text-end d-none d-md-block" style="line-height: 1;">
+                <div id="u-name" class="small fw-bold">Loading...</div>
+                <small id="u-dept" class="text-muted" style="font-size: 10px;"></small>
+            </div>
+            <div class="avatar" id="u-initial">U</div>
+        </div>
+    </header>
 
-    <div id="main-app" class="d-none">
-        <header class="top-header shadow-sm">
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn d-lg-none" onclick="document.querySelector('.sidebar').classList.toggle('active')">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div id="u-initial" class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">U</div>
-                <div class="d-none d-sm-block" style="line-height: 1.1;">
-                    <div id="u-name" class="fw-bold small">...</div>
-                    <div id="u-dept" style="font-size: 10px;" class="text-muted">...</div>
+    <aside id="sidebar" class="sidebar">
+        <div class="p-4" id="menu-box">
+            </div>
+    </aside>
+
+    <main class="main-content">
+        <section class="glass-panel text-center">
+            <h5 class="text-muted small fw-bold mb-3 uppercase tracking-widest">MONTHLY MISSION PROGRESS</h5>
+            <div class="energy-label" id="pct-text">0%</div>
+            <div class="text-muted small mb-2">เป้าหมาย: 7,000,000 THB</div>
+            <div class="energy-bar-container">
+                <div id="energy-fill" class="energy-bar-fill"></div>
+            </div>
+            <div class="small opacity-50">SYNCING REAL-TIME DATA FROM ULKA CLOUD...</div>
+        </section>
+
+        <h6 class="fw-bold mb-3 px-2 text-primary">DAILY SNAPSHOT</h6>
+        <section class="snapshot-grid mb-5">
+            <div class="snap-card card-mkt"><i class="fas fa-bullhorn text-danger"></i><span class="snap-val" id="val-mkt">0</span><span class="snap-label">MKT Ads</span></div>
+            <div class="snap-card card-con"><i class="fas fa-video text-pink" style="color:#ec4899"></i><span class="snap-val" id="val-con">0</span><span class="snap-label">Content</span></div>
+            <div class="snap-card card-sal"><i class="fas fa-shopping-cart text-info"></i><span class="snap-val" id="val-sal">0</span><span class="snap-label">Sales</span></div>
+            <div class="snap-card card-cs"><i class="fas fa-headset text-purple" style="color:#a855f7"></i><span class="snap-val" id="val-cs">0</span><span class="snap-label">CS Resolve</span></div>
+            <div class="snap-card card-stk"><i class="fas fa-box text-warning"></i><span class="snap-val" id="val-stk">0</span><span class="snap-label">Packed</span></div>
+            <div class="snap-card card-tec"><i class="fas fa-tools text-success"></i><span class="snap-val" id="val-tec">0</span><span class="snap-label">Repair</span></div>
+        </section>
+
+        <h6 class="fw-bold mb-3 px-2 text-primary">PULSE FEED</h6>
+        <section id="feed-container">
+            <div class="feed-card">
+                <div class="feed-header">
+                    <div class="avatar">U</div>
+                    <div>
+                        <div class="fw-bold small">ULKA Announcements</div>
+                        <small class="text-muted" style="font-size: 10px;">System Bot • Just now</small>
+                    </div>
+                </div>
+                <div class="feed-body">
+                    <p class="small mb-0">ยินดีต้อนรับสู่ระบบ Command Center v3 ข้อมูลทุกอย่างกำลังเชื่อมโยงเข้าด้วยกันเพื่อเป้าหมาย 7 ล้าน!</p>
                 </div>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-light rounded-pill" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
-                <button class="btn btn-sm btn-light rounded-pill text-danger" onclick="logout()"><i class="fas fa-power-off"></i></button>
-            </div>
-        </header>
+        </section>
+    </main>
 
-        <div class="app-wrapper" style="display: flex; padding-top: 70px; height: 100vh;">
-            <aside class="sidebar">
-                <div onclick="switchView('news', this)" class="nav-item-side active"><i class="fas fa-home"></i> หน้าแรก</div>
-                <div onclick="switchView('exec', this)" class="nav-item-side"><i class="fas fa-chart-pie"></i> สรุปยอดขาย</div>
-                <div onclick="switchView('mkt', this)" class="nav-item-side"><i class="fas fa-ad"></i> คอนเทนต์/Ad</div>
-                <div onclick="switchView('csr', this)" class="nav-item-side"><i class="fas fa-headset"></i> งานซ่อม/บริการ</div>
-                <div onclick="switchView('biz', this)" class="nav-item-side"><i class="fas fa-layer-group"></i> แผนธุรกิจ</div>
-            </aside>
-
-            <main class="main-content">
-                <div id="view-news">
-                    <div class="row g-3 mb-4">
-                        <div class="col-12 col-lg-7">
-                            <div class="widget-card sales-gradient shadow-sm">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <small class="fw-bold">ยอดขายปัจจุบัน (MTD)</small>
-                                    <span id="sync-time-mini" class="badge bg-white text-primary rounded-pill" style="font-size: 10px;">00:00</span>
-                                </div>
-                                <h2 class="fw-extrabold big-sales-text mb-1" id="widget-sales-val">฿ 0.00</h2>
-                                <div class="progress-mini"><div id="widget-bar" class="bar-mini" style="width: 0%"></div></div>
-                                <div class="d-flex justify-content-between" style="font-size: 11px;">
-                                    <span id="widget-pct">0% Success</span>
-                                    <span>เป้า 7,000,000</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-5">
-                            <div class="widget-card shadow-sm h-100 d-flex flex-column justify-content-center">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="bg-success-subtle p-3 rounded-circle"><i class="fas fa-birthday-cake text-success"></i></div>
-                                    <div>
-                                        <h6 class="fw-bold mb-0">HBD เพื่อนพนักงาน</h6>
-                                        <small id="bday-summary" class="text-muted">กำลังตรวจสอบข้อมูล...</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="post-card p-3 shadow-sm mb-4">
-                        <h6 class="fw-bold mb-3">📢 สร้างประกาศใหม่</h6>
-                        <input type="text" id="post-title" class="form-control mb-2 rounded-pill border-light bg-light px-3" placeholder="หัวข้อประกาศ">
-                        <textarea id="post-body" class="form-control mb-3 rounded-4 border-light bg-light p-3" rows="2" placeholder="รายละเอียด..."></textarea>
-                        <div class="d-flex justify-content-between">
-                            <select id="post-type" class="form-select w-50 rounded-pill border-light bg-light small">
-                                <option value="General">ข่าวทั่วไป</option>
-                                <option value="Important">ประกาศสำคัญ</option>
-                            </select>
-                            <button onclick="publishPost()" class="btn btn-primary rounded-pill px-4 fw-bold">โพสต์</button>
-                        </div>
-                    </div>
-
-                    <div id="news-feed"></div>
-                </div>
-
-                <div id="view-iframe" class="d-none h-100">
-                    <iframe id="main-iframe" style="width:100%; height:100%; border:none; border-radius:20px; background:white;"></iframe>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // *** ลิงก์ตรงจากลูกพี่ ***
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjuIt0g4Hlsh6q-pMIY04eohi94lRkgSoka5k7Ye2RjQNeabgHn5g99_cpCZSxQHjC-Q/exec";
-        let sessionData = null;
-
-        async function checkLogin() {
-            const u = document.getElementById('user').value, p = document.getElementById('pass').value;
-            if(!u || !p) return;
-            Swal.fire({ title: 'Connecting...', didOpen: () => Swal.showLoading() });
-            try {
-                const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
-                const res = await resp.json();
-                if(res.success) {
-                    localStorage.setItem("user_session", JSON.stringify(res));
-                    initApp(res);
-                    Swal.close();
-                } else { Swal.fire('Error', 'Invalid credentials', 'error'); }
-            } catch(e) { Swal.fire('Error', 'Connection failed', 'error'); }
-        }
-
-        function initApp(data) {
-            sessionData = data;
-            document.getElementById('login-screen').classList.add('d-none');
-            document.getElementById('main-app').classList.remove('d-none');
-            document.getElementById('u-name').innerText = data.name;
-            document.getElementById('u-dept').innerText = data.dept;
-            document.getElementById('u-initial').innerText = (data.nickname || data.name)[0];
-            
-            loadAnnounce();
-            syncSalesWidget();
-        }
-
-        async function syncSalesWidget() {
-            try {
-                const resp = await fetch(`${SCRIPT_URL}?action=getFebruaryWarRoom`);
-                const data = await resp.json();
-                const pct = (data.actual / 7000000 * 100).toFixed(1);
-                document.getElementById('widget-sales-val').innerText = '฿ ' + data.actual.toLocaleString();
-                document.getElementById('widget-bar').style.width = Math.min(pct, 100) + '%';
-                document.getElementById('widget-pct').innerText = pct + '% Success';
-                document.getElementById('sync-time-mini').innerText = new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
-            } catch(e) { console.log("Widget sync error"); }
-        }
-
-        async function loadAnnounce() {
-            const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
-            const data = await resp.json();
-            
-            // Birthday Summary
-            if(data.birthdays && data.birthdays.length > 0) {
-                document.getElementById('bday-summary').innerText = `เดือนนี้มีวันเกิด ${data.birthdays.length} คน`;
-            }
-
-            const feed = document.getElementById('news-feed');
-            feed.innerHTML = data.posts.map(p => `
-                <div class="post-card p-3 shadow-sm ${p.category === 'Important' ? 'post-important' : ''}">
-                    <div class="d-flex justify-content-between mb-2">
-                        <h6 class="fw-extrabold mb-0">${p.title}</h6>
-                        <small class="text-muted" style="font-size: 10px;">${new Date(p.date).toLocaleDateString()}</small>
-                    </div>
-                    <p class="small mb-2">${p.body}</p>
-                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                        <small class="text-primary fw-bold">โดย ${p.author}</small>
-                        <div class="small">❤️ ${p.likes} | 💬 ${p.comments.length}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function publishPost() {
-            const title = document.getElementById('post-title').value;
-            const body = document.getElementById('post-body').value;
-            const category = document.getElementById('post-type').value;
-            if(!title || !body) return;
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addAnnounce', title, body, category, author: sessionData.name }) });
-            location.reload();
-        }
-
-        function switchView(v, el) {
-            document.querySelectorAll('.nav-item-side').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-            if(window.innerWidth < 992) document.querySelector('.sidebar').classList.remove('active');
-            
-            const isNews = v === 'news';
-            document.getElementById('view-news').classList.toggle('d-none', !isNews);
-            document.getElementById('view-iframe').classList.toggle('d-none', isNews);
-            
-            if(!isNews) {
-                const fileMap = { 'exec': 'dashboard.html', 'mkt': 'marketing_ad_planner.html', 'csr': 'CSR.html', 'biz': 'biz_plan.html' };
-                document.getElementById('main-iframe').src = fileMap[v] || (v + ".html");
-            }
-        }
-
-        function toggleDarkMode() { 
-            document.body.classList.toggle('dark-mode'); 
-            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode'));
-        }
-        function logout() { localStorage.clear(); location.reload(); }
-
-        window.onload = () => {
-            if(localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
-            const saved = localStorage.getItem("user_session");
-            if(saved) initApp(JSON.parse(saved));
+        // ข้อมูลจำลองพนักงาน
+        let sessionData = JSON.parse(localStorage.getItem("user_session")) || { 
+            name: "แก้ว ธีรพล", nickname: "แก้ว", pos: "Dev", role: "GOD", dept: "ไอที" 
         };
+
+        function init() {
+            document.getElementById('u-name').innerText = sessionData.name;
+            document.getElementById('u-dept').innerText = sessionData.dept;
+            document.getElementById('u-initial').innerText = sessionData.nickname[0];
+            
+            // อัปเดตยอดจำลอง (จะดึงจาก Apps Script จริงภายหลัง)
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            // สมมติผลตอบแทนจาก API
+            const data = {
+                actual: 2450000,
+                mkt: 12, con: 5, sal: 42, cs: 156, stk: 89, tec: 24
+            };
+
+            const pct = (data.actual / 7000000 * 100).toFixed(1);
+            document.getElementById('pct-text').innerText = pct + '%';
+            document.getElementById('energy-fill').style.width = pct + '%';
+
+            document.getElementById('val-mkt').innerText = data.mkt;
+            document.getElementById('val-con').innerText = data.con;
+            document.getElementById('val-sal').innerText = data.sal;
+            document.getElementById('val-cs').innerText = data.cs;
+            document.getElementById('val-stk').innerText = data.stk;
+            document.getElementById('val-tec').innerText = data.tec;
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
