@@ -3,114 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA SYSTEM</title>
+    <title>ULKA SYSTEM - Command Center</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #007bff; --bg: #f4f7f6; --card: #ffffff; --text: #1e293b; --text-muted: #64748b; --header-h: 75px; }
+        :root { --primary: #0062ff; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --text-muted: #64748b; --header-h: 70px; }
         
-        /* 🌙 Dark Mode */
-        body.dark-mode { --bg: #0f172a; --card: #1e293b; --text: #ffffff; --text-muted: #cbd5e1; --border: #334155; }
-        body.dark-mode .form-control, body.dark-mode .form-select { background-color: #334155; border-color: #475569; color: #fff; }
+        body.dark-mode { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --text-muted: #94a3b8; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; overflow: hidden; transition: 0.3s; }
+
+        /* 🚀 Widgets & UI Components */
+        .widget-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: 0.3s; }
+        .sales-gradient { background: linear-gradient(135deg, #0062ff, #00d4ff); color: white; border: none; }
+        .progress-mini { height: 8px; border-radius: 10px; background: rgba(255,255,255,0.2); margin: 10px 0; }
+        .bar-mini { height: 100%; background: #fff; border-radius: 10px; transition: 1s ease-in-out; }
+
+        /* Layout Structure */
+        .top-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .sidebar { width: 260px; background: var(--card); border-right: 1px solid rgba(0,0,0,0.08); padding-top: 20px; display: flex; flex-direction: column; transition: 0.3s; }
+        .main-content { flex-grow: 1; overflow-y: auto; padding: 20px; background: var(--bg); }
         
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; overflow: hidden; }
+        /* Navigation */
+        .nav-item-side { padding: 12px 20px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .nav-item-side:hover { background: rgba(0,98,255,0.05); color: var(--primary); }
+        .nav-item-side.active { background: var(--primary); color: #fff !important; box-shadow: 0 4px 12px rgba(0,98,255,0.2); }
 
-        /* 🔴 ประกาศสำคัญ */
-        .post-important { border: 2px solid #ef4444 !important; background: rgba(239,68,68,0.05) !important; }
-        .badge-important { background: #ef4444; color: white; font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: bold; margin-bottom: 5px; display: inline-block; }
+        .post-card { background: var(--card); border-radius: 20px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.05); }
+        .post-important { border-left: 5px solid #ef4444 !important; }
 
-        /* Layout */
-        .top-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.1); }
-        .app-wrapper { display: flex; height: 100vh; padding-top: var(--header-h); }
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 15px; }
-        .sidebar { width: 240px; background: var(--card); border-right: 1px solid rgba(0,0,0,0.1); padding: 15px 0; }
-        .nav-item-side { padding: 12px 20px; margin: 4px 15px; border-radius: 10px; cursor: pointer; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        .nav-item-side.active { background: var(--primary); color: #fff !important; }
-        .post-card { background: var(--card); border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
+        /* Login Screen */
+        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; padding: 20px; }
+        .login-box { background: #fff; padding: 40px; border-radius: 30px; width: 100%; max-width: 380px; text-align: center; }
 
-        /* Login & User Info */
-        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #0f172a; }
-        .login-box { background: #fff; padding: 30px; border-radius: 20px; width: 350px; text-align: center; color: #333; }
-        
-        #u-name { font-weight: 800; font-size: 15px; color: var(--text); }
-        #u-pos, #u-dept { font-size: 11px; font-weight: 600; color: var(--text-muted); }
-
-        @media (max-width: 768px) { .sidebar { display: none; } }
+        /* 📱 Mobile Responsive Adjustments */
+        @media (max-width: 991px) {
+            .sidebar { position: fixed; left: -260px; top: var(--header-h); bottom: 0; z-index: 1500; }
+            .sidebar.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+            .main-content { padding: 15px; }
+            .big-sales-text { font-size: 1.8rem !important; }
+        }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-box shadow-lg">
-            <h4 class="fw-bold mb-4">ULKA LOGIN</h4>
-            <input type="text" id="user" class="form-control mb-2" placeholder="User ID">
-            <input type="password" id="pass" class="form-control mb-3" placeholder="Password">
-            <button onclick="checkLogin()" class="btn btn-primary w-100 fw-bold">เข้าสู่ระบบ</button>
+            <h3 class="fw-extrabold mb-4 text-primary">ULKA LOGIN</h3>
+            <div class="mb-2"><input type="text" id="user" class="form-control rounded-pill px-3" placeholder="User ID"></div>
+            <div class="mb-4"><input type="password" id="pass" class="form-control rounded-pill px-3" placeholder="Password"></div>
+            <button onclick="checkLogin()" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow">Sign In</button>
         </div>
     </div>
 
     <div id="main-app" class="d-none">
-        <header class="top-header">
+        <header class="top-header shadow-sm">
             <div class="d-flex align-items-center gap-2">
+                <button class="btn d-lg-none" onclick="document.querySelector('.sidebar').classList.toggle('active')">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div id="u-initial" class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">U</div>
-                <div style="line-height: 1.1;">
-                    <div id="u-name">...</div>
-                    <div id="u-pos">...</div>
-                    <div id="u-dept">...</div>
+                <div class="d-none d-sm-block" style="line-height: 1.1;">
+                    <div id="u-name" class="fw-bold small">...</div>
+                    <div id="u-dept" style="font-size: 10px;" class="text-muted">...</div>
                 </div>
             </div>
-            <div>
-                <button class="btn btn-sm btn-outline-secondary" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
-                <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-light rounded-pill" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+                <button class="btn btn-sm btn-light rounded-pill text-danger" onclick="logout()"><i class="fas fa-power-off"></i></button>
             </div>
         </header>
 
-        <div class="app-wrapper">
+        <div class="app-wrapper" style="display: flex; padding-top: 70px; height: 100vh;">
             <aside class="sidebar">
-                <div onclick="switchView('news', this)" class="nav-item-side active"><i class="fas fa-newspaper"></i> ข่าวสาร</div>
-                <div onclick="switchView('exec', this)" class="nav-item-side"><i class="fas fa-crown"></i> ฝ่ายบริหาร</div>
-                <div onclick="switchView('biz', this)" class="nav-item-side"><i class="fas fa-file-invoice-dollar"></i> แผนธุรกิจ</div>
-                <div onclick="switchView('mkt', this)" class="nav-item-side"><i class="fas fa-ad"></i> การตลาด</div>
-                <div onclick="switchView('csr', this)" class="nav-item-side"><i class="fas fa-headset"></i> บริการลูกค้า</div>
+                <div onclick="switchView('news', this)" class="nav-item-side active"><i class="fas fa-home"></i> หน้าแรก</div>
+                <div onclick="switchView('exec', this)" class="nav-item-side"><i class="fas fa-chart-pie"></i> สรุปยอดขาย</div>
+                <div onclick="switchView('mkt', this)" class="nav-item-side"><i class="fas fa-ad"></i> คอนเทนต์/Ad</div>
+                <div onclick="switchView('csr', this)" class="nav-item-side"><i class="fas fa-headset"></i> งานซ่อม/บริการ</div>
+                <div onclick="switchView('biz', this)" class="nav-item-side"><i class="fas fa-layer-group"></i> แผนธุรกิจ</div>
             </aside>
 
             <main class="main-content">
                 <div id="view-news">
-                    
-                    <div class="post-card bg-primary text-white p-3 border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #007bff, #0056b3);">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <small class="opacity-75 fw-bold">MAIN SALES (MTD)</small>
-                            <i class="fas fa-chart-line opacity-50"></i>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-lg-7">
+                            <div class="widget-card sales-gradient shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="fw-bold">ยอดขายปัจจุบัน (MTD)</small>
+                                    <span id="sync-time-mini" class="badge bg-white text-primary rounded-pill" style="font-size: 10px;">00:00</span>
+                                </div>
+                                <h2 class="fw-extrabold big-sales-text mb-1" id="widget-sales-val">฿ 0.00</h2>
+                                <div class="progress-mini"><div id="widget-bar" class="bar-mini" style="width: 0%"></div></div>
+                                <div class="d-flex justify-content-between" style="font-size: 11px;">
+                                    <span id="widget-pct">0% Success</span>
+                                    <span>เป้า 7,000,000</span>
+                                </div>
+                            </div>
                         </div>
-                        <h2 class="fw-bold mb-2">฿ 1,984,469.24</h2>
-                        
-                        <div class="bg-white bg-opacity-25 rounded px-2 py-1 mt-2">
-                            <marquee scrollamount="5" style="font-size: 12px;">
-                                📢 ยินดีต้อนรับเข้าสู่ระบบ ULKA SYSTEM | กรุณาตรวจสอบประกาศสำคัญประจำวัน | 🚀 ยอดขายวันนี้พุ่งทะลุเป้า!
-                            </marquee>
+                        <div class="col-12 col-lg-5">
+                            <div class="widget-card shadow-sm h-100 d-flex flex-column justify-content-center">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-success-subtle p-3 rounded-circle"><i class="fas fa-birthday-cake text-success"></i></div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0">HBD เพื่อนพนักงาน</h6>
+                                        <small id="bday-summary" class="text-muted">กำลังตรวจสอบข้อมูล...</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="bday-area"></div>
-
-                    <div class="post-card p-3 mb-4 shadow-sm">
-                        <h6 class="fw-bold mb-2">📢 สร้างประกาศ</h6>
-                        <select id="post-type" class="form-select mb-2 fw-bold" style="border-color: #007bff;">
-                            <option value="General">🟢 ข่าวทั่วไป</option>
-                            <option value="Important" class="text-danger">🔴 ประกาศสำคัญ (ด่วน)</option>
-                        </select>
-                        <input type="text" id="post-title" class="form-control mb-2" placeholder="หัวข้อประกาศ">
-                        <textarea id="post-body" class="form-control mb-2" rows="2" placeholder="รายละเอียด..."></textarea>
-                        <input type="text" id="post-img" class="form-control mb-3" placeholder="ลิงก์รูปภาพ (ถ้ามี)">
-                        <button id="btn-post" onclick="publishPost()" class="btn btn-primary w-100 fw-bold">โพสต์ลงบอร์ด</button>
+                    <div class="post-card p-3 shadow-sm mb-4">
+                        <h6 class="fw-bold mb-3">📢 สร้างประกาศใหม่</h6>
+                        <input type="text" id="post-title" class="form-control mb-2 rounded-pill border-light bg-light px-3" placeholder="หัวข้อประกาศ">
+                        <textarea id="post-body" class="form-control mb-3 rounded-4 border-light bg-light p-3" rows="2" placeholder="รายละเอียด..."></textarea>
+                        <div class="d-flex justify-content-between">
+                            <select id="post-type" class="form-select w-50 rounded-pill border-light bg-light small">
+                                <option value="General">ข่าวทั่วไป</option>
+                                <option value="Important">ประกาศสำคัญ</option>
+                            </select>
+                            <button onclick="publishPost()" class="btn btn-primary rounded-pill px-4 fw-bold">โพสต์</button>
+                        </div>
                     </div>
 
                     <div id="news-feed"></div>
                 </div>
-                
+
                 <div id="view-iframe" class="d-none h-100">
-                    <iframe id="main-iframe" style="width:100%; height:100%; border:none; border-radius:15px; background:white;"></iframe>
+                    <iframe id="main-iframe" style="width:100%; height:100%; border:none; border-radius:20px; background:white;"></iframe>
                 </div>
             </main>
         </div>
@@ -118,13 +138,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby93Wmes2V7sfmCTPfYSi8mbNeSRLbUsbVI4Ae04p3oc94i8D1DopztXaNCpLBNcIZE/exec";
+        // *** ลิงก์ตรงจากลูกพี่ ***
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjuIt0g4Hlsh6q-pMIY04eohi94lRkgSoka5k7Ye2RjQNeabgHn5g99_cpCZSxQHjC-Q/exec";
         let sessionData = null;
 
         async function checkLogin() {
             const u = document.getElementById('user').value, p = document.getElementById('pass').value;
             if(!u || !p) return;
-            Swal.fire({ title: 'กำลังโหลด...', didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Connecting...', didOpen: () => Swal.showLoading() });
             try {
                 const resp = await fetch(`${SCRIPT_URL}?action=login&user=${u}&pass=${p}`);
                 const res = await resp.json();
@@ -132,118 +153,79 @@
                     localStorage.setItem("user_session", JSON.stringify(res));
                     initApp(res);
                     Swal.close();
-                } else { Swal.fire('ล้มเหลว', 'ID หรือรหัสผ่านผิด', 'error'); }
-            } catch(e) { Swal.fire('Error', 'เชื่อมต่อไม่ได้', 'error'); }
+                } else { Swal.fire('Error', 'Invalid credentials', 'error'); }
+            } catch(e) { Swal.fire('Error', 'Connection failed', 'error'); }
         }
 
         function initApp(data) {
             sessionData = data;
             document.getElementById('login-screen').classList.add('d-none');
             document.getElementById('main-app').classList.remove('d-none');
+            document.getElementById('u-name').innerText = data.name;
+            document.getElementById('u-dept').innerText = data.dept;
+            document.getElementById('u-initial').innerText = (data.nickname || data.name)[0];
             
-            document.getElementById('u-name').innerText = data.name || "ไม่พบชื่อ";
-            document.getElementById('u-pos').innerText = data.pos || "";
-            document.getElementById('u-dept').innerText = data.dept || "";
-            document.getElementById('u-initial').innerText = (data.nickname || data.name || "U")[0].toUpperCase();
             loadAnnounce();
+            syncSalesWidget();
+        }
+
+        async function syncSalesWidget() {
+            try {
+                const resp = await fetch(`${SCRIPT_URL}?action=getFebruaryWarRoom`);
+                const data = await resp.json();
+                const pct = (data.actual / 7000000 * 100).toFixed(1);
+                document.getElementById('widget-sales-val').innerText = '฿ ' + data.actual.toLocaleString();
+                document.getElementById('widget-bar').style.width = Math.min(pct, 100) + '%';
+                document.getElementById('widget-pct').innerText = pct + '% Success';
+                document.getElementById('sync-time-mini').innerText = new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
+            } catch(e) { console.log("Widget sync error"); }
         }
 
         async function loadAnnounce() {
-            try {
-                const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
-                const data = await resp.json();
-                
-                if(data.birthdays && data.birthdays.length > 0) {
-                    document.getElementById('bday-area').innerHTML = `
-                        <div class="mb-3 p-3 text-white rounded shadow-sm" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                            <i class="fas fa-birthday-cake me-2"></i> <b>เพื่อนเกิดเดือนนี้:</b> 
-                            ${data.birthdays.map(b => `${b.name} (${b.nick}) วันที่ ${b.day}`).join(', ')}
-                        </div>`;
-                }
+            const resp = await fetch(`${SCRIPT_URL}?action=getAnnounce`);
+            const data = await resp.json();
+            
+            // Birthday Summary
+            if(data.birthdays && data.birthdays.length > 0) {
+                document.getElementById('bday-summary').innerText = `เดือนนี้มีวันเกิด ${data.birthdays.length} คน`;
+            }
 
-                data.posts.sort((a, b) => (b.category === 'Important' ? 1 : -1) - (a.category === 'Important' ? 1 : -1));
-
-                const feed = document.getElementById('news-feed');
-                feed.innerHTML = data.posts.map(p => {
-                    const isImportant = p.category === 'Important';
-                    return `
-                    <div class="post-card shadow-sm mb-3 ${isImportant ? 'post-important' : ''}">
-                        <div class="p-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    ${isImportant ? '<span class="badge-important">📢 ประกาศสำคัญ</span>' : ''}
-                                    <h5 class="fw-bold mb-1 ${isImportant ? 'text-danger' : ''}">${p.title}</h5>
-                                </div>
-                                <small class="text-muted">${new Date(p.date).toLocaleDateString('th-TH')}</small>
-                            </div>
-                            <small class="text-muted d-block mb-2">โดย ${p.author}</small>
-                            <p class="mb-3">${p.body}</p>
-                            ${p.img ? `<img src="${p.img}" class="img-fluid rounded mb-3">` : ''}
-                            
-                            <div class="d-flex gap-4 border-top pt-2">
-                                <span style="cursor:pointer" id="like-${p.id}" onclick="actionPost('likePost', '${p.id}', this)">❤️ <b>${p.likes}</b> Likes</span>
-                                <span>💬 <b>${p.comments.length}</b> Comments</span>
-                            </div>
-                            
-                            <div class="mt-2 p-2 rounded bg-light" style="font-size:12px; color:#333;">
-                                ${p.comments.map(c => `<div class="mb-1"><b>${c.user}:</b> ${c.text}</div>`).join('')}
-                                <div class="input-group input-group-sm mt-2">
-                                    <input type="text" id="cmt-${p.id}" class="form-control" placeholder="คอมเม้นต์...">
-                                    <button class="btn btn-primary" id="btn-cmt-${p.id}" onclick="submitComment('${p.id}')">ส่ง</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
-            } catch(e) { console.error(e); }
+            const feed = document.getElementById('news-feed');
+            feed.innerHTML = data.posts.map(p => `
+                <div class="post-card p-3 shadow-sm ${p.category === 'Important' ? 'post-important' : ''}">
+                    <div class="d-flex justify-content-between mb-2">
+                        <h6 class="fw-extrabold mb-0">${p.title}</h6>
+                        <small class="text-muted" style="font-size: 10px;">${new Date(p.date).toLocaleDateString()}</small>
+                    </div>
+                    <p class="small mb-2">${p.body}</p>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                        <small class="text-primary fw-bold">โดย ${p.author}</small>
+                        <div class="small">❤️ ${p.likes} | 💬 ${p.comments.length}</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         async function publishPost() {
-            const btn = document.getElementById('btn-post');
-            const type = document.getElementById('post-type').value;
             const title = document.getElementById('post-title').value;
             const body = document.getElementById('post-body').value;
-            const img = document.getElementById('post-img').value;
-            
-            if(!title || !body) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'warning');
-            
-            // 🔒 ล็อคปุ่มกันเบิ้ล
-            btn.disabled = true; btn.innerText = 'กำลังโพสต์...';
-            
-            await fetch(SCRIPT_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: 'addAnnounce', title, body, img, category: type, author: sessionData.name }) 
-            });
+            const category = document.getElementById('post-type').value;
+            if(!title || !body) return;
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addAnnounce', title, body, category, author: sessionData.name }) });
             location.reload();
-        }
-
-        async function submitComment(postId) {
-            const btn = document.getElementById(`btn-cmt-${postId}`);
-            const text = document.getElementById(`cmt-${postId}`).value;
-            if(!text) return;
-            
-            // 🔒 ล็อคปุ่มกันเบิ้ล
-            btn.disabled = true; btn.innerText = '...';
-            
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addComment', postId, user: sessionData.name, text }) });
-            loadAnnounce();
-        }
-
-        async function actionPost(action, postId, el) {
-            // 🔒 ล็อคชั่วคราว
-            if(el) el.style.pointerEvents = 'none';
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action, postId }) });
-            loadAnnounce();
         }
 
         function switchView(v, el) {
             document.querySelectorAll('.nav-item-side').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
+            if(window.innerWidth < 992) document.querySelector('.sidebar').classList.remove('active');
+            
             const isNews = v === 'news';
             document.getElementById('view-news').classList.toggle('d-none', !isNews);
             document.getElementById('view-iframe').classList.toggle('d-none', isNews);
+            
             if(!isNews) {
-                const fileMap = { 'exec': 'dashboard.html', 'biz': 'biz_plan.html', 'mkt': 'marketing_ad_planner.html', 'csr': 'CSR.html' };
+                const fileMap = { 'exec': 'dashboard.html', 'mkt': 'marketing_ad_planner.html', 'csr': 'CSR.html', 'biz': 'biz_plan.html' };
                 document.getElementById('main-iframe').src = fileMap[v] || (v + ".html");
             }
         }
