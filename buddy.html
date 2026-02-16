@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ULKA Buddy - Master Catalog 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-light: #e3f2fd;
+            --sidebar-bg: #101820;
+            --sidebar-active: #2196f3;
+            --bg: #f4f7f6;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --hover-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+            color: var(--text-main); 
+        }
+
+        /* --- Sidebar (Responsive) --- */
+        .sidebar { 
+            width: 260px; 
+            background: var(--sidebar-bg); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0; 
+            z-index: 100; 
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header { padding: 25px 20px; background: #0a0e12; border-bottom: 1px solid #2c3e50; }
+        .sidebar-header h2 { margin: 0; font-size: 1.5rem; color: #fff; }
+
+        .category-list { flex-grow: 1; overflow-y: auto; padding-top: 10px; }
+        .cat-item { padding: 16px 24px; cursor: pointer; transition: all 0.2s ease; border-left: 4px solid transparent; font-size: 0.95rem; color: #b0bec5; display: flex; align-items: center; gap: 10px; }
+        .cat-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .cat-item.active { background: rgba(33, 150, 243, 0.1); border-left-color: var(--sidebar-active); color: var(--sidebar-active); font-weight: 600; }
+
+        /* --- Main Content --- */
+        .main-content { flex-grow: 1; overflow-y: auto; padding: 20px 30px; position: relative; scroll-behavior: smooth; }
+        
+        /* --- ROI Calculator --- */
+        .roi-container { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 20px; border-radius: 16px; margin-bottom: 30px; box-shadow: var(--card-shadow); border: 1px solid rgba(0,0,0,0.05); }
+        .roi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .roi-title { font-weight: 700; color: var(--primary); font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .roi-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-items: end; }
+        .roi-input-group { display: flex; flex-direction: column; gap: 6px; }
+        .roi-input-group label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        .roi-input-group input { padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1.1rem; font-weight: 600; color: var(--text-main); width: 100%; box-sizing: border-box; background: #fff; }
+        .roi-display { background: #f8f9fa; padding: 10px 15px; border-radius: 10px; text-align: center; border: 1px solid #e9ecef; height: 66px; display: flex; flex-direction: column; justify-content: center; }
+        .roi-display.highlight { background: #e8f5e9; border-color: #c8e6c9; }
+        .roi-display.highlight .val { color: #2e7d32; }
+        .roi-display.payback { background: #fff3e0; border-color: #ffe0b2; }
+        .roi-display.payback .val { color: #ef6c00; }
+        .roi-display small { font-weight: 600; font-size: 0.75rem; display: block; margin-bottom: 2px; opacity: 0.8; text-transform: uppercase; }
+        .roi-display .val { font-size: 1.4rem; font-weight: 700; line-height: 1.1; }
+        .calc-info { grid-column: 1 / -1; margin-top: 15px; font-size: 0.8rem; color: var(--text-muted); background: #f8f9fa; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
+
+        /* --- Product Grid --- */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 100px; }
+        .product-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: var(--card-shadow); display: flex; flex-direction: column; transition: all 0.3s ease; cursor: pointer; border: 1px solid transparent; position: relative; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--hover-shadow); border-color: var(--primary-light); }
+        .product-card.selected { border: 2px solid var(--success); background: #f1f8e9; }
+        .card-top { padding: 20px; display: flex; gap: 15px; align-items: center; }
+        .card-img { width: 80px; height: 80px; object-fit: contain; background: #fff; border-radius: 12px; padding: 5px; border: 1px solid #f0f0f0; }
+        .card-title-area { flex: 1; }
+        .p-name { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0 0 4px 0; line-height: 1.3; }
+        .p-price { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+        .card-specs-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 5px; padding: 15px 20px; background: #fafafa; border-top: 1px solid #f0f0f0; }
+        .preview-item { font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; }
+        .preview-item span { font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; }
+        .preview-item b { color: var(--text-main); font-weight: 600; }
+
+        /* --- Bottom Sheet --- */
+        .bottom-sheet { position: fixed; bottom: -100%; left: 260px; right: 0; height: 75vh; background: white; z-index: 200; transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 24px 24px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; }
+        .bottom-sheet.open { bottom: 0; }
+        .sheet-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 24px 24px 0 0; position: sticky; top: 0; }
+        .sheet-content { padding: 30px; overflow-y: auto; flex: 1; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); display: none; z-index: 150; backdrop-filter: blur(3px); }
+        .overlay.active { display: block; }
+        .spec-table-full { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .spec-table-full tr { border-bottom: 1px solid #f0f0f0; }
+        .spec-table-full td { padding: 14px 10px; font-size: 0.95rem; }
+        .s-label { color: var(--text-muted); width: 45%; }
+        .s-val { font-weight: 600; text-align: right; color: var(--text-main); }
+        .close-btn { border: none; background: #f1f2f6; color: #2c3e50; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 24px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .close-btn:hover { background: #dfe4ea; transform: rotate(90deg); }
+        .highlight-box { background: linear-gradient(135deg, #e3f2fd, #bbdefb); padding: 20px; border-radius: 12px; color: #0d47a1; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; }
+        .highlight-icon { font-size: 24px; }
+
+        /* --- Mobile Responsive Layout --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .sidebar-header { display: none; }
+            .category-list { display: flex; flex-direction: row; width: 100%; padding: 0; overflow-x: auto; scrollbar-width: none; }
+            .category-list::-webkit-scrollbar { display: none; }
+            .cat-item { padding: 15px 20px; border-bottom: 3px solid transparent; border-left: none; flex-shrink: 0; white-space: nowrap; }
+            .cat-item.active { border-bottom-color: var(--sidebar-active); border-left: none; background: transparent; }
+            .main-content { padding: 15px; }
+            .roi-container { padding: 15px; top: 0; border-radius: 12px; }
+            .roi-bar { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .roi-display { height: 60px; }
+            .roi-display .val { font-size: 1.1rem; }
+            .product-grid { grid-template-columns: 1fr; gap: 15px; }
+            .bottom-sheet { left: 0; height: 85vh; border-radius: 20px 20px 0 0; }
+            .spec-table-full td { padding: 12px 8px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>ULKA Buddy 🤖</h2>
+            <small style="color: #90a4ae; display: block; margin-top: 5px;">Spec & ROI Master 2026</small>
+        </div>
+        <div class="category-list" id="cat-list"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="roi-container">
+            <div class="roi-header">
+                <div class="roi-title">
+                    <span>📊 คำนวณความคุ้มค่า</span>
+                </div>
+                <div style="font-size: 0.85em; font-weight: 600; color: var(--primary);" id="model-target">
+                    เลือกรุ่นสินค้าด้านล่าง
+                </div>
+            </div>
+            
+            <div class="roi-bar">
+                <div class="roi-input-group">
+                    <label>ปริมาณที่ใช้ (กก./วัน)</label>
+                    <input type="number" id="dailyKg" value="40" min="1" oninput="updateROI()">
+                </div>
+                <div class="roi-input-group">
+                    <label>ราคาน้ำแข็ง (บ./กก.)</label>
+
+                    <input type="number" id="priceKg" value="2.5" min="0.1" step="0.1" oninput="updateROI()">
+                </div>
+                <div class="roi-display highlight">
+                    <small>ประหยัด/ปี</small>
+                    <div class="val" id="savingVal">0</div>
+                </div>
+                <div class="roi-display payback">
+                    <small>คืนทุน (ด.)</small>
+                    <div class="val" id="paybackVal">-</div>
+                </div>
+            </div>
+            <div class="calc-info">
+                <span>🧊</span>
+                 <span>ราคาน้ำแข็งทั่วประเทศโดยเฉลี่ย 2.5บาท/กก</span>
+                 <span>💡</span>
+                <span>(ราคาซื้อ - ต้นทุนผลิต*) × 365 วัน | *รวมค่าน้ำ/ไฟแล้ว</span>
+            </div>
+        </div>
+
+        <div class="product-grid" id="product-list"></div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+    <div class="bottom-sheet" id="bottom-sheet">
+        <div class="sheet-header">
+            <h2 id="sheet-title" style="margin:0; font-size: 1.2rem; color: var(--primary);">Product Name</h2>
+            <button onclick="closeSheet()" class="close-btn">&times;</button>
+        </div>
+        <div class="sheet-content" id="sheet-content"></div>
+    </div>
+
+<script>
+    let selectedProduct = null;
+    let currentCategoryIndex = 0;
+
+    // Master Database with Storage Capacity
+    const iceData = [
+        { 
+            group: '🏠 Home / Small Office', 
+            models: [
+                { name: '15AF', img: 'https://ulka.co.th/wp-content/uploads/2025/10/15AF.webp', price: 4490, cap: '15 กก.', bag: '0.7', shape: 'Half Cube', block: '16 ก้อน', tank: '0.7 กก.', power: '0.96A', bill: 14.4, size: '22*30*33', mat: 'Plastic ABS', weight: '8 กก.' },
+                { name: '13FW เงิน', img: 'https://ulka.co.th/wp-content/uploads/2025/10/13F.webp', price: 5690, cap: '25 กก.', bag: '1.25', shape: 'Full Cube', block: '24 ก้อน', tank: '1.3 กก.', power: '1.1A', bill: 14.4, size: '29*38*36', mat: 'Plastic ABS', weight: '11 กก.' },
+                { name: '13FW เงิน + ลูกลอย', img: 'https://ulka.co.th/wp-content/uploads/2025/10/13F.webp', price: 6190, cap: '25 กก.', bag: '1.25', shape: 'Full Cube', block: '24 ก้อน', tank: '1.3 กก.', power: '1.1A', bill: 14.4, size: '29*38*36', mat: 'Plastic ABS', weight: '11 กก.' },
+                { name: '13F WB ดำ', img: 'https://ulka.co.th/wp-content/uploads/2026/01/13FW-scaled.webp', price: 5690, cap: '25 กก.', bag: '1.25', shape: 'Full Cube', block: '24 ก้อน', tank: '1.3 กก.', power: '1.1A', bill: 14.4, size: '29*38*36', mat: 'Plastic ABS', weight: '11 กก.' },
+                { name: '13F WB ดำ + ลูกลอย', img: 'https://ulka.co.th/wp-content/uploads/2026/01/13FW-scaled.webp', price: 6190, cap: '25 กก.', bag: '1.25', shape: 'Full Cube', block: '24 ก้อน', tank: '1.3 กก.', power: '1.1A', bill: 14.4, size: '29*38*36', mat: 'Plastic ABS', weight: '11 กก.' },
+                { name: '20AF', img: 'https://ulka.co.th/wp-content/uploads/2025/10/20AF.webp', price: 6590, cap: '25 กก.', bag: '1.25', shape: 'Full Cube', block: '24 ก้อน', tank: '1.3 กก.', power: '1.0A', bill: 13.2, size: '29*38*36', mat: 'Stainless', weight: '11 กก.' }
+            ]
+        },
+        { 
+            group: '🏢 Commercial (ร้านค้า)', 
+            models: [
+                { name: '38F', img: 'https://ulka.co.th/wp-content/uploads/2025/10/38F.webp', price: 15900, cap: '40 กก.', bag: '2', shape: 'Full Cube', block: '40 ก้อน', tank: '4 กก.', power: '1.3A', bill: 17.16, size: '35*34*61', mat: 'เหล็กกรมดำ', weight: '19 กก.' },
+                { name: '45F', img: 'https://ulka.co.th/wp-content/uploads/2026/02/45F.webp', price: 21900, cap: '45 กก.', bag: '2.5', shape: 'Full Cube', block: '46 ก้อน', tank: '15 กก.', power: '1.7A', bill: 22.44, size: '45*40*80', mat: 'Stainless/ABS', weight: '29 กก.' },
+                { name: '45M', img: 'https://ulka.co.th/wp-content/uploads/2025/10/45M.webp', price: 24900, cap: '50 กก.', bag: '2.5', shape: 'Crescent Ice', block: '64 ก้อน', tank: '15 กก.', power: '2.3A', bill: 30.36, size: '45*40*80', mat: 'Stainless/ABS', weight: '27 กก.' },
+                { name: '65S', img: 'https://ulka.co.th/wp-content/uploads/2025/10/65S.webp', price: 27000, cap: '65 กก.', bag: '3.5', shape: 'Full Cube', block: '66 ก้อน', tank: '15 กก.', power: '1.7A', bill: 22.44, size: '45*40*80', mat: 'Stainless', weight: '30 กก.' },
+                { name: '100XJ', img: 'https://ulka.co.th/wp-content/uploads/2025/10/100XJ.webp', price: 67900, cap: '40 กก.', bag: '2', shape: 'Dice Ice', block: '35 ก้อน', tank: '15 กก.', power: '2.3A', bill: 28.0, size: '55*63*79', mat: 'Stainless/ABS', weight: '57 กก.' },
+                { name: '120F', img: 'https://ulka.co.th/wp-content/uploads/2025/10/120F.webp', price: 41900, cap: '120 กก.', bag: '6', shape: 'Full Cube', block: '120 ก้อน', tank: '25 กก.', power: '3.0A', bill: 39.6, size: '56*44*91', mat: 'Stainless/ABS', weight: '37 กก.' },
+                { name: '150XJ', img: 'https://ulka.co.th/wp-content/uploads/2026/02/150XJ-scaled.webp', price: 76000, cap: '50 กก.', bag: '2.5', shape: 'Dice Ice', block: '35 ก้อน', tank: '15 กก.', power: '2.3A', bill: 32.0, size: '55*63*79', mat: 'Stainless/ABS', weight: '57 กก.' }
+            ]
+        },
+        { 
+            group: '🏭 Industrial (อุตสาหกรรม)', 
+            models: [
+                { name: '220F', img: 'https://ulka.co.th/wp-content/uploads/2025/10/220F350F.webp', price: 95900, cap: '200 กก.', bag: '10', shape: 'Full Cube', block: '224 ก้อน', tank: '100 กก.', power: '5.7A', bill: 75, size: '58*66*165', mat: 'Stainless/ABS', weight: '66 กก.' },
+                { name: '350F', img: 'https://ulka.co.th/wp-content/uploads/2025/10/220F350F.webp', price: 99900, cap: '200 กก.', bag: '10', shape: 'Half Cube', block: '350 ก้อน', tank: '100 กก.', power: '5.7A', bill: 75, size: '58*66*165', mat: 'Stainless/ABS', weight: '66 กก.' },
+                { name: '500XJ', img: 'https://ulka.co.th/wp-content/uploads/2026/02/500XJ.webp', price: 179000, cap: '500 กก. (Est)', bag: '-', shape: 'Crescent', block: '448 ก้อน', tank: '200 กก.', power: '4.9A', bill: 51, size: '76*86*179', mat: 'Stainless', weight: '132 กก.' },
+                { name: '700XJ', img: 'https://ulka.co.th/wp-content/uploads/2025/10/700XJ.webp', price: 190000, cap: '300 กก.', bag: '15', shape: 'Full Cube', block: '260 ก้อน', tank: '200 กก.', power: '6.3A', bill: 110, size: '76*84*165', mat: 'Stainless/ABS', weight: '126 กก.' },
+                { name: '1400XJ', img: 'https://ulka.co.th/wp-content/uploads/2026/02/1400XJ-2.webp', price: 299000, cap: '540 กก.', bag: '27', shape: 'Full Cube', block: '468 ก้อน', tank: '500 กก.', power: '12A', bill: 160, size: '126*84*191', mat: 'Stainless', weight: '197 กก.' }
+            ]
+        }
+    ];
+
+    function init() {
+        renderSidebar();
+        showProducts(0);
+    }
+
+    function renderSidebar() {
+        const catList = document.getElementById('cat-list');
+        catList.innerHTML = '';
+        iceData.forEach((g, i) => {
+            const div = document.createElement('div');
+            div.className = `cat-item ${i === currentCategoryIndex ? 'active' : ''}`;
+            div.innerText = g.group;
+            div.onclick = () => {
+                currentCategoryIndex = i;
+                renderSidebar();
+                showProducts(i);
+            };
+            catList.appendChild(div);
+        });
+    }
+
+    function showProducts(idx) {
+        const list = document.getElementById('product-list');
+        list.innerHTML = '';
+        iceData[idx].models.forEach(m => {
+            const card = document.createElement('div');
+            const isSelected = selectedProduct && selectedProduct.name === m.name;
+            card.className = `product-card ${isSelected ? 'selected' : ''}`;
+            card.innerHTML = `
+                <div class="card-top">
+                    <img src="${m.img}" class="card-img" alt="${m.name}" onerror="this.src='https://placehold.co/100?text=ULKA'">
+                    <div class="card-title-area">
+                        <div class="p-name">${m.name}</div>
+                        <div class="p-price">฿${m.price.toLocaleString()}</div>
+                    </div>
+                </div>
+                <div class="card-specs-preview">
+                    <div class="preview-item"><span>กำลังผลิต</span><b>${m.cap}</b></div>
+                    <div class="preview-item"><span>ถังเก็บ</span><b>${m.tank}</b></div>
+                    <div class="preview-item"><span>รูปทรง</span><b>${m.shape}</b></div>
+                    <div class="preview-item"><span>หน้าบล็อก</span><b>${m.block}</b></div>
+                </div>
+            `;
+            card.onclick = () => {
+                selectedProduct = m;
+                selectProduct(m);
+                openSheet(m);
+            };
+            list.appendChild(card);
+        });
+    }
+
+    function selectProduct(m) {
+        const allCards = document.querySelectorAll('.product-card');
+        allCards.forEach(c => {
+            c.classList.remove('selected');
+            if(c.querySelector('.p-name').innerText === m.name) c.classList.add('selected');
+        });
+        updateROI();
+    }
+
+    function updateROI() {
+        if (!selectedProduct) return;
+        const kg = parseFloat(document.getElementById('dailyKg').value) || 0;
+        const buyPrice = parseFloat(document.getElementById('priceKg').value) || 0;
+        const productionCostPerDay = selectedProduct.bill + (kg * 0.05); 
+        const buyingCostPerDay = kg * buyPrice;
+        const dailySaving = buyingCostPerDay - productionCostPerDay;
+        const yearlySave = dailySaving * 365;
+
+        document.getElementById('model-target').innerHTML = `รุ่น: <span style="color:#000;">${selectedProduct.name}</span>`;
+        const savingEl = document.getElementById('savingVal');
+        const paybackEl = document.getElementById('paybackVal');
+
+        if (yearlySave > 0) {
+            savingEl.innerText = Math.round(yearlySave).toLocaleString();
+            const monthlySave = dailySaving * 30;
+            const months = selectedProduct.price / monthlySave;
+            paybackEl.innerText = months > 60 ? ">5 ปี" : months.toFixed(1);
+        } else {
+            savingEl.innerText = "ไม่คุ้มทุน";
+            paybackEl.innerText = "∞";
+        }
+    }
+
+    function openSheet(m) {
+        const sheet = document.getElementById('bottom-sheet');
+        const content = document.getElementById('sheet-content');
+        const title = document.getElementById('sheet-title');
+        title.innerText = m.name;
+
+        content.innerHTML = `
+            <div class="highlight-box">
+                <div class="highlight-icon">❄️</div>
+                <div>
+                    <div style="font-weight:bold; margin-bottom:4px;">จุดเด่นสเปกพี่</div>
+                    <div style="font-size:0.9em; opacity:0.9;">
+                        รุ่นนี้มีถังเก็บน้ำแข็งขนาด <b>${m.tank}</b> ${parseFloat(m.cap) > 30 ? 'เหมาะสำหรับธุรกิจที่ต้องเตรียมน้ำแข็งสำรองไว้จำนวนมาก' : 'เพียงพอสำหรับใช้ในบ้านและออฟฟิศตลอดทั้งวัน'}
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:20px; padding:0 10px;">
+                 <span style="font-size:1rem; color:var(--text-muted);">ราคาปกติ</span>
+                 <span style="font-size:1.8rem; font-weight:700; color:var(--primary);">฿${m.price.toLocaleString()}</span>
+            </div>
+
+            <table class="spec-table-full">
+                <tr style="background:#e3f2fd;"><td class="s-label" style="color:var(--primary); font-weight:bold;">ความจุถังเก็บน้ำแข็ง</td><td class="s-val" style="color:var(--primary); font-size:1.1rem;">${m.tank}</td></tr>
+                <tr><td class="s-label">กำลังผลิต (24ชม.)</td><td class="s-val">${m.cap}</td></tr>
+                <tr><td class="s-label">จำนวนกระสอบ/วัน</td><td class="s-val">${m.bag} กระสอบ</td></tr>
+                <tr><td class="s-label">รูปทรงน้ำแข็ง</td><td class="s-val">${m.shape}</td></tr>
+                <tr><td class="s-label">จำนวนหน้าบล็อก</td><td class="s-val">${m.block}</td></tr>
+                <tr><td class="s-label">กำลังไฟฟ้า</td><td class="s-val">${m.power}</td></tr>
+                <tr><td class="s-label">ค่าไฟ (12ชม.)</td><td class="s-val">${m.bill} บาท</td></tr>
+                <tr><td class="s-label">ขนาด (กxยxส)</td><td class="s-val">${m.size} ซม.</td></tr>
+                <tr><td class="s-label">วัสดุตัวเครื่อง</td><td class="s-val">${m.mat}</td></tr>
+                <tr><td class="s-label">น้ำหนักเครื่อง</td><td class="s-val">${m.weight}</td></tr>
+            </table>
+        `;
+        sheet.classList.add('open');
+        document.getElementById('overlay').classList.add('active');
+    }
+
+    function closeSheet() {
+        document.getElementById('bottom-sheet').classList.remove('open');
+        document.getElementById('overlay').classList.remove('active');
+    }
+
+    init();
+</script>
+</body>
+</html>
