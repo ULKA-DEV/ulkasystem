@@ -3,62 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULKA DASHBOARD - War Room</title>
+    <title>ULKA WAR ROOM - Command Center</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #0062ff; --dark: #0f172a; --success: #10b981; --bg: #f1f5f9; }
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--dark); overflow-x: hidden; margin: 0; }
-        .main-container { padding: 15px; max-width: 500px; margin: auto; min-height: 100vh; }
-        
-        /* Glassmorphism Design */
+        :root { --primary: #0062ff; --dark: #0f172a; --success: #10b981; --bg: #f1f5f9; --purple: #a855f7; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--dark); margin: 0; overflow-x: hidden; }
+
+        /* 🔒 Login Screen */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--dark); z-index: 9999; display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .login-card { background: white; padding: 40px; border-radius: 30px; width: 100%; max-width: 400px; text-align: center; }
+
+        /* 📊 Dashboard Layout */
+        .main-container { padding: 15px; max-width: 500px; margin: auto; display: none; min-height: 100vh; }
         .glass-card { background: #fff; border-radius: 28px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 15px; }
-        .header-banner { background: var(--dark); color: #fff; padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .month-tag { background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
+        .header-banner { background: var(--dark); color: #fff; padding: 15px 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        .avatar { width: 45px; height: 45px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: white; }
 
-        .big-number { font-size: calc(2.4rem + 1.5vw); font-weight: 800; letter-spacing: -2px; line-height: 1; margin: 10px 0; color: var(--dark); }
-        .progress-custom { height: 18px; border-radius: 50px; background: #e2e8f0; margin: 20px 0; overflow: hidden; }
-        .bar-fill { height: 100%; background: linear-gradient(90deg, #0062ff, #00d4ff); width: 0%; transition: width 1.5s ease-in-out; }
+        .big-number { font-size: 3rem; font-weight: 800; letter-spacing: -2px; line-height: 1; margin: 10px 0; color: var(--dark); }
+        .progress-custom { height: 18px; border-radius: 50px; background: #e2e8f0; margin: 20px 0; overflow: hidden; border: 1px solid #cbd5e1; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, #0062ff, #00d4ff); width: 0%; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1); }
 
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .stat-item { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center; }
-        .stat-label { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
-        .stat-val { font-size: 1.1rem; font-weight: 800; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .stat-item { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center; transition: 0.3s; text-decoration: none; color: inherit; display: block; }
+        .stat-item:active { transform: scale(0.95); }
+        .stat-label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .stat-val { font-size: 1.2rem; font-weight: 800; }
 
+        .btn-cs { border-left: 5px solid var(--purple) !important; background: #faf5ff; }
         .sync-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; margin-top: 10px; box-shadow: 0 8px 20px rgba(0, 98, 255, 0.25); display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .sync-btn:active { transform: scale(0.97); }
         
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .spinning { animation: spin 0.8s linear infinite; }
-        .loading-shimmer { opacity: 0.5; pointer-events: none; transition: 0.3s; }
+        .loading-shimmer { opacity: 0.6; pointer-events: none; }
     </style>
 </head>
 <body>
 
-<div class="main-container">
+<div id="login-screen">
+    <div class="login-card shadow-lg">
+        <div class="mb-4"><i class="fas fa-id-card text-primary fa-3x"></i></div>
+        <h3 class="fw-bold mb-1">ULKA WAR ROOM</h3>
+        <p class="text-muted small mb-4">เข้าใช้งานด้วยรหัสพนักงาน (user_db)</p>
+        
+        <div class="mb-3 text-start">
+            <input type="text" id="pass-input" class="form-control form-control-lg border-0 bg-light text-center" placeholder="ใส่รหัสพนักงาน">
+        </div>
+        <button onclick="checkLogin()" id="login-btn" class="btn btn-primary w-100 btn-lg rounded-pill fw-bold py-3">LOGIN</button>
+        <p id="login-err" class="text-danger mt-3 small fw-bold" style="display:none;">ไม่พบข้อมูลพนักงานในระบบ!</p>
+    </div>
+</div>
+
+<div class="main-container" id="dashboard-content">
     <div class="header-banner shadow-sm">
         <div>
-            <h5 class="fw-bold mb-0 text-white">ULKA WAR ROOM</h5>
-            <span id="month-name" class="month-tag">กำลังซิงค์...</span>
+            <h6 class="fw-bold mb-0 text-white" id="u-name">Loading...</h6>
+            <small id="u-dept" class="opacity-75" style="font-size: 0.7rem;"></small>
         </div>
-        <div class="text-end">
-            <i class="fas fa-bolt text-warning h4 mb-0"></i>
-        </div>
+        <div class="avatar" id="u-initial">U</div>
     </div>
 
     <div class="glass-card text-center" id="main-display">
-        <span class="badge bg-primary-subtle text-primary rounded-pill mb-2 px-3">ยอดขายสะสมปัจจุบัน</span>
+        <span class="badge bg-primary-subtle text-primary rounded-pill mb-2 px-3">ยอดขายกุมภาพันธ์</span>
         <div class="big-number" id="actual-sales">฿0.00</div>
-        
-        <div class="progress-custom">
-            <div id="bar-fill" class="bar-fill"></div>
-        </div>
-        
+        <div class="progress-custom"><div id="bar-fill" class="bar-fill"></div></div>
         <div class="d-flex justify-content-between align-items-center px-1">
             <span class="h4 fw-bold text-primary mb-0" id="pct-val">0%</span>
-            <small class="text-muted fw-bold">เป้า 7,000,000</small>
+            <small class="text-muted fw-bold small">เป้า 7,000,000</small>
         </div>
     </div>
 
@@ -67,87 +85,109 @@
             <div class="stat-label text-danger">ยังขาดอีก</div>
             <div class="stat-val text-danger" id="gap-val">฿0</div>
         </div>
-        <div class="stat-item shadow-sm">
-            <div class="stat-label">ต้องทำ/วัน</div>
-            <div class="stat-val" id="daily-val">฿0</div>
+        <div class="stat-item shadow-sm border-start border-info border-4">
+            <div class="stat-label text-info">ต้องทำ/วัน</div>
+            <div class="stat-val text-info" id="daily-val">฿0</div>
         </div>
+        
+        <a href="https://blanister.github.io/csspace/" class="stat-item shadow-sm btn-cs">
+            <div class="stat-label" style="color: var(--purple);">CS SPACE</div>
+            <div class="stat-val" style="color: var(--purple);"><i class="fas fa-external-link-alt small me-1"></i> คลิก</div>
+        </a>
+
         <div class="stat-item shadow-sm border-start border-success border-4">
             <div class="stat-label text-success">กำไรสุทธิ</div>
             <div class="stat-val text-success" id="profit-val">฿0</div>
-        </div>
-        <div class="stat-item shadow-sm">
-            <div class="stat-label">วันคงเหลือ</div>
-            <div class="stat-val" id="days-val">- วัน</div>
         </div>
     </div>
 
     <button class="sync-btn" onclick="fetchData()">
         <i id="sync-icon" class="fas fa-sync-alt"></i>
-        <span>อัปเดตยอดจากชีท</span>
+        <span>อัปเดตข้อมูล</span>
     </button>
     
-    <div class="text-center mt-3">
-        <small class="text-muted" style="font-size: 0.75rem;">
-            ซิงค์ล่าสุด: <span id="sync-time" class="fw-bold">-</span>
-        </small>
+    <div class="text-center mt-4">
+        <small class="text-muted d-block mb-2">ซิงค์ล่าสุด: <span id="sync-time">-</span></small>
+        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="logout()" style="font-size: 0.7rem;">ออกจากระบบ</button>
     </div>
 </div>
 
 <script>
-    // ดึง URL Web App ที่ลูกพี่ Deploy มาใช้
     const API_URL = "https://script.google.com/macros/s/AKfycbxjuIt0g4Hlsh6q-pMIY04eohi94lRkgSoka5k7Ye2RjQNeabgHn5g99_cpCZSxQHjC-Q/exec";
 
-    async function fetchData() {
-        const icon = document.getElementById('sync-icon');
-        const mainDisplay = document.getElementById('main-display');
-        icon.classList.add('spinning');
-        mainDisplay.classList.add('loading-shimmer');
+    // 🔑 ฟังก์ชันเช็ค Login จาก user_db ใน Google Sheets
+    async function checkLogin() {
+        const userId = document.getElementById('pass-input').value;
+        const btn = document.getElementById('login-btn');
+        const err = document.getElementById('login-err');
+        
+        if(!userId) return;
+        
+        btn.disabled = true;
+        btn.innerText = "CHECKING...";
+        err.style.display = 'none';
 
         try {
-            // เรียกข้อมูลโดยระบุ action เป็นตัวที่เราเพิ่มใน code.gs
-            const response = await fetch(`${API_URL}?action=getFebruaryWarRoom`);
-            const data = await response.json();
-            
-            const TARGET = 7000000.00; // เป้า 7 ล้านที่ลูกพี่กำหนด
-            const ACTUAL = data.actual;
-            const PROFIT = data.profit;
-            const DAYS = data.daysLeft;
+            // ส่งไปเช็คที่ Apps Script โดยระบุ action และ id
+            const response = await fetch(`${API_URL}?action=checkUser&id=${userId}`);
+            const user = await response.json();
 
-            // คำนวณ Metric ต่างๆ
-            const pct = (ACTUAL / TARGET * 100).toFixed(1);
-            const gap = TARGET - ACTUAL;
-            const daily = gap / DAYS;
-
-            // อัปเดตข้อมูลลงหน้าจอ
-            document.getElementById('actual-sales').innerText = '฿' + ACTUAL.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('pct-val').innerText = pct + '%';
-            document.getElementById('bar-fill').style.width = Math.min(pct, 100) + '%';
-            
-            // หน่วยย่อ M/K เพื่อให้เหมาะกับมือถือ
-            document.getElementById('gap-val').innerText = '฿' + (gap > 0 ? (gap/1000000).toFixed(2) + 'M' : '0.00M');
-            document.getElementById('daily-val').innerText = '฿' + (daily > 0 ? (daily/1000).toFixed(0) + 'K' : '0K');
-            document.getElementById('profit-val').innerText = '฿' + (PROFIT/1000000).toFixed(2) + 'M';
-            document.getElementById('days-val').innerText = DAYS + ' วัน';
-            
-            // อัปเดตชื่อเดือนและเวลาซิงค์
-            const now = new Date();
-            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-            document.getElementById('month-name').innerText = `${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}`;
-            document.getElementById('sync-time').innerText = now.toLocaleTimeString('th-TH');
-
-        } catch (error) {
-            console.error("Sync Error:", error);
+            if (user.found) {
+                localStorage.setItem("ulka_session", JSON.stringify(user));
+                initDashboard();
+            } else {
+                err.style.display = 'block';
+            }
+        } catch (e) {
+            alert("ไม่สามารถเชื่อมต่อข้อมูลได้!");
         } finally {
-            icon.classList.remove('spinning');
-            mainDisplay.classList.remove('loading-shimmer');
+            btn.disabled = false;
+            btn.innerText = "LOGIN";
         }
     }
 
-    // เริ่มทำงานทันที
-    fetchData();
-    // Auto sync ทุก 5 นาที
-    setInterval(fetchData, 300000);
-</script>
+    function initDashboard() {
+        const session = localStorage.getItem("ulka_session");
+        if (!session) return;
 
+        const user = JSON.parse(session);
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+        
+        // ดึงชื่อและแผนกจาก user_db มาแสดง
+        document.getElementById('u-name').innerText = user.name;
+        document.getElementById('u-dept').innerText = user.dept;
+        document.getElementById('u-initial').innerText = user.name.charAt(0);
+        
+        fetchData();
+    }
+
+    async function fetchData() {
+        const icon = document.getElementById('sync-icon');
+        icon.classList.add('spinning');
+
+        try {
+            const response = await fetch(`${API_URL}?action=getFebruaryWarRoom`);
+            const data = await response.json();
+            
+            const TARGET = 7000000;
+            const ACTUAL = data.actual;
+            const pct = (ACTUAL / TARGET * 100).toFixed(1);
+            const gap = TARGET - ACTUAL;
+
+            document.getElementById('actual-sales').innerText = '฿' + ACTUAL.toLocaleString();
+            document.getElementById('pct-val').innerText = pct + '%';
+            document.getElementById('bar-fill').style.width = Math.min(pct, 100) + '%';
+            document.getElementById('gap-val').innerText = '฿' + (gap > 0 ? (gap/1000000).toFixed(2) + 'M' : '0.00M');
+            document.getElementById('daily-val').innerText = '฿' + (gap > 0 ? ((gap/data.daysLeft)/1000).toFixed(0) + 'K' : '0K');
+            document.getElementById('profit-val').innerText = '฿' + (data.profit/1000000).toFixed(2) + 'M';
+            
+            document.getElementById('sync-time').innerText = new Date().toLocaleTimeString('th-TH');
+        } catch (e) { console.error(e); } finally { icon.classList.remove('spinning'); }
+    }
+
+    function logout() { localStorage.removeItem("ulka_session"); location.reload(); }
+    window.onload = () => { if(localStorage.getItem("ulka_session")) initDashboard(); };
+</script>
 </body>
 </html>
